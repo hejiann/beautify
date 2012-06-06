@@ -1,0 +1,16 @@
+README
+===================
+
+Beautify is a set of GIMP/inkscape/shotwell plugins for easiest photo beautify.
+
+INSTALL
+===================
+
+just running the install.sh
+
+UPDATES
+===================
+
+2012-06-06
+Provided the base version of rip-border GIMP plugin.
+
