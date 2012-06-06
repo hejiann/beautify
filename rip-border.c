@@ -132,7 +132,9 @@ run (const gchar      *name,
        gimp_drawable_is_gray(drawable->drawable_id)))
     {
       /* Run! */
+      gimp_image_undo_group_start (image_ID);
       rip_border (image_ID);
+      gimp_image_undo_group_end (image_ID);
 
       /* If run mode is interactive, flush displays */
       if (run_mode != GIMP_RUN_NONINTERACTIVE)
