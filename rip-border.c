@@ -152,7 +152,9 @@ rip_border (gint32 image_ID)
 {
   if (rbvals.texture != NULL)
   {
-    gint32 texture = gimp_file_load_layer(GIMP_RUN_NONINTERACTIVE, image_ID, rbvals.texture);
+    //gint32 texture = gimp_file_load_layer(GIMP_RUN_NONINTERACTIVE, image_ID, rbvals.texture);
+    GdkPixbuf *pixbuf = gdk_pixbuf_new_from_file (rbvals.texture, NULL);
+    gint32 texture = gimp_layer_new_from_pixbuf(image_ID, "texture", pixbuf, 100, GIMP_NORMAL_MODE, 0, 0);
     gimp_image_insert_layer (image_ID, texture, -1, 0);
 
     gint height = gimp_image_height (image_ID);
