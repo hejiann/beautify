@@ -27,8 +27,9 @@
 
 typedef struct
 {
-  gchar *texture;
-  GimpRGB color;
+  gchar   *texture;
+  GimpRGB  color;
+  gdouble  opacity;
 } RipBorderValues;
 
 static void     query    (void);
@@ -42,6 +43,8 @@ static void     rip_border (gint32     image_ID);
 
 static gboolean rip_border_dialog ();
 
+//static void     render_texture (gint32 image_ID, gint32 layer_ID);
+
 const GimpPlugInInfo PLUG_IN_INFO =
 {
   NULL,  /* init_proc  */
@@ -54,10 +57,17 @@ static RipBorderValues rbvals =
 {
   NULL,  /* file_name */
   {1.0, 1.0, 1.0, 1.0},
+  100,
 };
 
-gint32     image_ID;
-GtkWidget *preview;
+static gint32     image_ID         = 0;
+static gint       width;
+static gint       height;
+
+static GtkWidget *preview          = NULL;
+static gint32     preview_image    = 0;
+static gint32     color_layer      = 0;
+static gint32     texture_mask     = 0;
 
 MAIN ()
 
@@ -110,6 +120,9 @@ run (const gchar      *name,
   image_ID = param[1].data.d_image;
   drawable = gimp_drawable_get (param[2].data.d_drawable);
 
+  width = gimp_image_width (image_ID);
+  height = gimp_image_height (image_ID);
+
   switch (run_mode)
   {
     case GIMP_RUN_INTERACTIVE:
@@ -132,9 +145,9 @@ run (const gchar      *name,
        gimp_drawable_is_gray(drawable->drawable_id)))
     {
       /* Run! */
-      gimp_image_undo_group_start (image_ID);
+      //gimp_image_undo_group_start (image_ID);
       rip_border (image_ID);
-      gimp_image_undo_group_end (image_ID);
+      //gimp_image_undo_group_end (image_ID);
 
       /* If run mode is interactive, flush displays */
       if (run_mode != GIMP_RUN_NONINTERACTIVE)
@@ -154,35 +167,32 @@ rip_border (gint32 image_ID)
 {
   if (rbvals.texture != NULL)
   {
-    //gint32 texture = gimp_file_load_layer(GIMP_RUN_NONINTERACTIVE, image_ID, rbvals.texture);
+    gint32 color_layer = gimp_layer_new (image_ID, "color",
+                                         width, height,
+                                         GIMP_RGBA_IMAGE,
+                                         rbvals.opacity,
+                                         GIMP_NORMAL_MODE);
+    gimp_image_insert_layer (image_ID, color_layer, -1, 0);
+
+    gimp_context_set_foreground (&rbvals.color);
+    gimp_edit_fill (color_layer, GIMP_FOREGROUND_FILL);
+
+    gint32 texture_mask = gimp_layer_create_mask (color_layer,
+                                                  GIMP_ADD_WHITE_MASK);
+    gimp_layer_add_mask (color_layer, texture_mask);
+
     GdkPixbuf *pixbuf = gdk_pixbuf_new_from_file (rbvals.texture, NULL);
-    gint32 texture = gimp_layer_new_from_pixbuf(image_ID, "texture", pixbuf, 100, GIMP_NORMAL_MODE, 0, 0);
+    gint32 texture = gimp_layer_new_from_pixbuf(image_ID, "texture", pixbuf, rbvals.opacity, GIMP_NORMAL_MODE, 0, 0);
     gimp_image_insert_layer (image_ID, texture, -1, 0);
+    gimp_layer_scale (texture, width, height, FALSE);
+    gimp_invert (texture);
+    gimp_edit_copy (texture);
+    gint32 floating_sel_ID = gimp_edit_paste (texture_mask, TRUE);
+    gimp_image_remove_layer (image_ID, texture);
 
-    gint height = gimp_image_height (image_ID);
-    gint width = gimp_image_width (image_ID);
-    gimp_layer_scale(texture, width, height, FALSE);
+    gimp_floating_sel_anchor (floating_sel_ID);
 
-    GimpDrawable * drawable = gimp_drawable_get (texture);
-    static gchar *l_colortoalpha_proc = "plug-in-colortoalpha";
-    gint nreturn_vals;
-    GimpRGB color = {1.0, 1.0, 1.0, 1.0};
-    GimpParam *return_vals = gimp_run_procedure (l_colortoalpha_proc,
-                                                 &nreturn_vals,
-                                                 GIMP_PDB_INT32, GIMP_RUN_NONINTERACTIVE,
-                                                 GIMP_PDB_IMAGE, image_ID,
-                                                 GIMP_PDB_DRAWABLE, drawable->drawable_id,
-                                                 GIMP_PDB_COLOR, &color,
-                                                 GIMP_PDB_END);
-
-    /* set texture color */
-    GimpHSL hsl;
-    gimp_rgb_to_hsl (&rbvals.color, &hsl);
-    if (hsl.h == -1) // GIMP_HSL_UNDEFINED
-      hsl.h = 0;
-    gimp_colorize(drawable->drawable_id, hsl.h * 360, hsl.s * 100, hsl.l * 100);
-
-    gimp_image_merge_down(image_ID, texture, GIMP_CLIP_TO_BOTTOM_LAYER);
+    gimp_image_merge_down(image_ID, color_layer, GIMP_CLIP_TO_BOTTOM_LAYER);
   }
 }
 
@@ -198,25 +208,59 @@ is_hidden (const gchar *filename)
 static void
 preview_update (GtkWidget *preview)
 {
-  gint32 new_image_ID = gimp_image_duplicate(image_ID);
-  rip_border(new_image_ID);
   gint preview_size = PREVIEW_SIZE;
-  gint height = gimp_image_height (image_ID);
-  gint width = gimp_image_width (image_ID);
   gint max_size = height;
   if (height < width)
     max_size = width;
   if (preview_size > max_size)
     preview_size = max_size;
-  GdkPixbuf *pixbuf = gimp_image_get_thumbnail (new_image_ID, preview_size, preview_size, GIMP_PIXBUF_SMALL_CHECKS);
+  GdkPixbuf *pixbuf = gimp_image_get_thumbnail (preview_image, preview_size, preview_size, GIMP_PIXBUF_SMALL_CHECKS);
   gtk_image_set_from_pixbuf (GTK_IMAGE(preview), pixbuf);
 }
 
 static gboolean
-select_texture(GtkWidget *event_box, GdkEventButton *event, gchar* texture)
+select_texture (GtkWidget *event_box, GdkEventButton *event, gchar* texture)
 {
   rbvals.texture = texture;
+
+  GdkPixbuf *pixbuf = gdk_pixbuf_new_from_file (rbvals.texture, NULL);
+  gint32 texture_layer = gimp_layer_new_from_pixbuf (preview_image,
+                                              "texture",
+                                              pixbuf,
+                                              rbvals.opacity,
+                                              GIMP_NORMAL_MODE, 0, 0);
+  gimp_image_insert_layer (preview_image, texture_layer, -1, 0);
+  gimp_layer_scale (texture_layer, width, height, FALSE);
+  gimp_invert (texture_layer);
+  gimp_edit_copy (texture_layer);
+  gimp_edit_paste (texture_mask, TRUE);
+  gimp_image_remove_layer (preview_image, texture_layer);
+
+  /*GdkPixbuf *pixbuf = gdk_pixbuf_new_from_file (rbvals.texture, NULL);
+  preview_texture = gimp_layer_new_from_pixbuf(preview_image, "texture", pixbuf, rbvals.opacity, GIMP_NORMAL_MODE, 0, 0);
+  gimp_image_insert_layer (preview_image, preview_texture, -1, 0);
+
+  render_texture (preview_image, preview_texture);*/
+
   preview_update (preview);
+}
+
+static void
+color_update (GtkWidget *preview)
+{
+  gimp_context_set_foreground (&rbvals.color);
+  gimp_edit_fill (color_layer, GIMP_FOREGROUND_FILL);
+  
+  /*  GimpDrawable * drawable = gimp_drawable_get (preview_texture);
+    GimpHSL hsl;
+    gimp_rgb_to_hsl (&rbvals.color, &hsl);
+    if (hsl.h == -1) // GIMP_HSL_UNDEFINED
+      hsl.h = 0;
+    gimp_colorize (drawable->drawable_id, hsl.h * 360, hsl.s * 100, hsl.l * 100);
+
+    gimp_drawable_detach (drawable);*/
+
+    preview_update (preview);
 }
 
 static gboolean
@@ -287,23 +331,29 @@ rip_border_dialog ()
   gtk_box_pack_start (GTK_BOX (middle_vbox), label, FALSE, FALSE, 0);
   gtk_widget_show (label);
 
-  gint32 new_image_ID = gimp_image_duplicate(image_ID);
-  rip_border(new_image_ID);
-  gint preview_size = PREVIEW_SIZE;
-  gint height = gimp_image_height (image_ID);
-  gint width = gimp_image_width (image_ID);
-  gint max_size = height;
-  if (height < width)
-    max_size = width;
-  if (preview_size > max_size)
-    preview_size = max_size;
-  GdkPixbuf *pixbuf = gimp_image_get_thumbnail (new_image_ID, preview_size, preview_size, GIMP_PIXBUF_SMALL_CHECKS);
-  preview = gtk_image_new_from_pixbuf(pixbuf);
+  preview_image = gimp_image_duplicate(image_ID);
+  color_layer = gimp_layer_new (preview_image, "color",
+                                         width, height,
+                                         GIMP_RGBA_IMAGE,
+                                         rbvals.opacity,
+                                         GIMP_NORMAL_MODE);
+  gimp_image_insert_layer (preview_image, color_layer, -1, 0);
+
+  gimp_context_set_foreground (&rbvals.color);
+  gimp_edit_fill (color_layer, GIMP_FOREGROUND_FILL);
+
+  texture_mask = gimp_layer_create_mask (color_layer,
+                                         GIMP_ADD_BLACK_MASK);
+  gimp_layer_add_mask (color_layer, texture_mask);
+
+  preview = gtk_image_new();
+  preview_update (preview);
+
   gtk_box_pack_start (GTK_BOX (middle_vbox), preview, TRUE, TRUE, 0);
   gtk_widget_show (preview);
 
   g_signal_connect_swapped (button, "color-changed",
-                           G_CALLBACK (preview_update),
+                           G_CALLBACK (color_update),
                            preview);
 
   /* textures */
@@ -367,3 +417,32 @@ rip_border_dialog ()
   return run;
 }
 
+/*static void
+render_texture (gint32 image_ID, gint32 layer_ID) {
+  gint height = gimp_image_height (image_ID);
+  gint width = gimp_image_width (image_ID);
+  gimp_layer_scale(layer_ID, width, height, FALSE);
+
+  GimpDrawable * drawable = gimp_drawable_get (layer_ID);
+
+  static gchar *l_colortoalpha_proc = "plug-in-colortoalpha";
+  gint nreturn_vals;
+  GimpRGB color = {1.0, 1.0, 1.0, 1.0};
+  GimpParam *return_vals = gimp_run_procedure (l_colortoalpha_proc,
+                                               &nreturn_vals,
+                                               GIMP_PDB_INT32, GIMP_RUN_NONINTERACTIVE,
+                                               GIMP_PDB_IMAGE, image_ID,
+                                               GIMP_PDB_DRAWABLE, drawable->drawable_id,
+                                               GIMP_PDB_COLOR, &color,
+                                               GIMP_PDB_END);
+
+  // set texture color
+  GimpHSL hsl;
+  gimp_rgb_to_hsl (&rbvals.color, &hsl);
+  if (hsl.h == -1) // GIMP_HSL_UNDEFINED
+    hsl.h = 0;
+  gimp_colorize(drawable->drawable_id, hsl.h * 360, hsl.s * 100, hsl.l * 100);
+
+  gimp_drawable_detach (drawable);
+}
+*/
