@@ -43,8 +43,6 @@ static void     rip_border (gint32     image_ID);
 
 static gboolean rip_border_dialog ();
 
-//static void     render_texture (gint32 image_ID, gint32 layer_ID);
-
 const GimpPlugInInfo PLUG_IN_INFO =
 {
   NULL,  /* init_proc  */
@@ -55,9 +53,9 @@ const GimpPlugInInfo PLUG_IN_INFO =
 
 static RipBorderValues rbvals =
 {
-  NULL,  /* file_name */
-  {1.0, 1.0, 1.0, 1.0},
-  100,
+  NULL,                 /* texture file */
+  {1.0, 1.0, 1.0, 1.0}, /* color */
+  100,                  /* opacity */
 };
 
 static gint32     image_ID         = 0;
@@ -236,12 +234,6 @@ select_texture (GtkWidget *event_box, GdkEventButton *event, gchar* texture)
   gimp_edit_paste (texture_mask, TRUE);
   gimp_image_remove_layer (preview_image, texture_layer);
 
-  /*GdkPixbuf *pixbuf = gdk_pixbuf_new_from_file (rbvals.texture, NULL);
-  preview_texture = gimp_layer_new_from_pixbuf(preview_image, "texture", pixbuf, rbvals.opacity, GIMP_NORMAL_MODE, 0, 0);
-  gimp_image_insert_layer (preview_image, preview_texture, -1, 0);
-
-  render_texture (preview_image, preview_texture);*/
-
   preview_update (preview);
 }
 
@@ -251,16 +243,14 @@ color_update (GtkWidget *preview)
   gimp_context_set_foreground (&rbvals.color);
   gimp_edit_fill (color_layer, GIMP_FOREGROUND_FILL);
   
-  /*  GimpDrawable * drawable = gimp_drawable_get (preview_texture);
-    GimpHSL hsl;
-    gimp_rgb_to_hsl (&rbvals.color, &hsl);
-    if (hsl.h == -1) // GIMP_HSL_UNDEFINED
-      hsl.h = 0;
-    gimp_colorize (drawable->drawable_id, hsl.h * 360, hsl.s * 100, hsl.l * 100);
+  preview_update (preview);
+}
 
-    gimp_drawable_detach (drawable);*/
-
-    preview_update (preview);
+static void
+opacity_update (GtkRange *range, gpointer data) {
+  rbvals.opacity = gtk_range_get_value (range);
+  gimp_layer_set_opacity (color_layer, rbvals.opacity);
+  preview_update (preview);
 }
 
 static gboolean
@@ -326,6 +316,21 @@ rip_border_dialog ()
                    G_CALLBACK (gimp_color_button_get_color),
                    &rbvals.color);
 
+  /* opacity */
+  label = gtk_label_new ("Border opacity");
+  gtk_box_pack_start (GTK_BOX (left_vbox), label, FALSE, FALSE, 0);
+  gtk_widget_show (label);
+
+  GtkWidget *hscale = gtk_hscale_new_with_range (0, 100, 1);
+  gtk_range_set_value (GTK_RANGE (hscale), rbvals.opacity);
+  gtk_scale_set_value_pos (GTK_SCALE (hscale), GTK_POS_BOTTOM);
+  gtk_box_pack_start (GTK_BOX (left_vbox), hscale, FALSE, FALSE, 0);
+  gtk_widget_show (hscale);
+
+  g_signal_connect (hscale, "value-changed",
+                   G_CALLBACK (opacity_update),
+                   NULL);
+
   /* preview */
   label = gtk_label_new ("Preview");
   gtk_box_pack_start (GTK_BOX (middle_vbox), label, FALSE, FALSE, 0);
@@ -366,7 +371,6 @@ rip_border_dialog ()
   GtkWidget *table = gtk_table_new (rows, cols, FALSE);
   gtk_table_set_col_spacings (GTK_TABLE (table), 6);
   gtk_table_set_row_spacings (GTK_TABLE (table), 6);
-  //gtk_container_add (GTK_CONTAINER (right_vbox), table);
   gtk_box_pack_start (GTK_BOX (right_vbox), table, FALSE, FALSE, 0);
   gtk_widget_show (table);
 
@@ -417,32 +421,3 @@ rip_border_dialog ()
   return run;
 }
 
-/*static void
-render_texture (gint32 image_ID, gint32 layer_ID) {
-  gint height = gimp_image_height (image_ID);
-  gint width = gimp_image_width (image_ID);
-  gimp_layer_scale(layer_ID, width, height, FALSE);
-
-  GimpDrawable * drawable = gimp_drawable_get (layer_ID);
-
-  static gchar *l_colortoalpha_proc = "plug-in-colortoalpha";
-  gint nreturn_vals;
-  GimpRGB color = {1.0, 1.0, 1.0, 1.0};
-  GimpParam *return_vals = gimp_run_procedure (l_colortoalpha_proc,
-                                               &nreturn_vals,
-                                               GIMP_PDB_INT32, GIMP_RUN_NONINTERACTIVE,
-                                               GIMP_PDB_IMAGE, image_ID,
-                                               GIMP_PDB_DRAWABLE, drawable->drawable_id,
-                                               GIMP_PDB_COLOR, &color,
-                                               GIMP_PDB_END);
-
-  // set texture color
-  GimpHSL hsl;
-  gimp_rgb_to_hsl (&rbvals.color, &hsl);
-  if (hsl.h == -1) // GIMP_HSL_UNDEFINED
-    hsl.h = 0;
-  gimp_colorize(drawable->drawable_id, hsl.h * 360, hsl.s * 100, hsl.l * 100);
-
-  gimp_drawable_detach (drawable);
-}
-*/
