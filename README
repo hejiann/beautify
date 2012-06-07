@@ -8,6 +8,9 @@ INSTALL
 
 just running the install.sh
 
+Note:
+Be sure that you have installed the gimp-devel-tools package before install.
+
 USING
 ===================
 
@@ -15,6 +18,9 @@ GIMP menu: Tools -> Beautify -> Rip Border
 
 UPDATES
 ===================
+
+2012-06-07
+Add the border opacity adjustment for rip-border plugin.
 
 2012-06-06
 Provided the base version of rip-border GIMP plugin.
