@@ -22,6 +22,8 @@
 #define PLUG_IN_BINARY "rip-border"
 #define PLUG_IN_ROLE   "gimp-rip-border"
 
+#define TEXTURE_PATH   "textures"
+
 #define PREVIEW_SIZE  480
 #define THUMBNAIL_SIZE  80
 
@@ -253,6 +255,61 @@ opacity_update (GtkRange *range, gpointer data) {
   preview_update (preview);
 }
 
+void
+create_texture_page (GtkNotebook *notebook, const gchar* category, const gchar* path) {
+  GtkWidget *label = gtk_label_new (category);
+
+  GtkWidget *thispage = gtk_box_new (GTK_ORIENTATION_VERTICAL, 12);
+  gtk_container_set_border_width (GTK_CONTAINER (thispage), 12);
+  gtk_widget_show (thispage);
+
+  gint rows = 5;
+  gint cols = 3;
+  GtkWidget *table = gtk_table_new (rows, cols, FALSE);
+  gtk_table_set_col_spacings (GTK_TABLE (table), 6);
+  gtk_table_set_row_spacings (GTK_TABLE (table), 6);
+  gtk_box_pack_start (GTK_BOX (thispage), table, FALSE, FALSE, 0);
+  gtk_widget_show (table);
+
+  gint row = 1;
+  gint col = 1;
+
+  GDir *dir = g_dir_open(path, 0, NULL);
+  if (dir)
+  {
+    const gchar *dir_ent;
+    while (dir_ent = g_dir_read_name(dir))
+    {
+      if (is_hidden (dir_ent))
+        continue;
+
+      gchar *filename = g_build_filename (path, dir_ent, NULL);
+      GdkPixbuf *pixbuf = gdk_pixbuf_new_from_file (filename, NULL);
+      pixbuf = gdk_pixbuf_scale_simple (pixbuf, THUMBNAIL_SIZE, THUMBNAIL_SIZE, GDK_INTERP_BILINEAR);
+      GtkWidget *image = gtk_image_new_from_pixbuf (pixbuf);
+      GtkWidget *event_box = gtk_event_box_new ();
+      gtk_container_add (GTK_CONTAINER (event_box), image);
+      gtk_widget_show (image);
+      gtk_table_attach_defaults (GTK_TABLE (table), event_box, col - 1, col, row - 1, row);
+      gtk_widget_show (event_box);
+
+      col++;
+      if (col > cols)
+      {
+        row++;
+        col = 1;
+      }
+
+      g_signal_connect (event_box, "button_press_event", G_CALLBACK (select_texture), filename);
+
+      //g_free(filename);
+    }
+    g_dir_close (dir);
+  }
+
+  gtk_notebook_append_page_menu (notebook, thispage, label, NULL);
+}
+
 static gboolean
 rip_border_dialog ()
 {
@@ -366,48 +423,26 @@ rip_border_dialog ()
   gtk_box_pack_start (GTK_BOX (right_vbox), label, FALSE, FALSE, 0);
   gtk_widget_show (label);
 
-  gint rows = 5;
-  gint cols = 3;
-  GtkWidget *table = gtk_table_new (rows, cols, FALSE);
-  gtk_table_set_col_spacings (GTK_TABLE (table), 6);
-  gtk_table_set_row_spacings (GTK_TABLE (table), 6);
-  gtk_box_pack_start (GTK_BOX (right_vbox), table, FALSE, FALSE, 0);
-  gtk_widget_show (table);
+  GtkWidget *notebook = gtk_notebook_new ();
+  gtk_box_pack_start (GTK_BOX (right_vbox), notebook, FALSE, FALSE, 0);
+  gtk_widget_show (notebook);
 
-  gint row = 1;
-  gint col = 1;
   const gchar *home = g_get_home_dir();
-  gchar *dirname = g_strconcat(home, "/textures", NULL);
+  //gchar *dirname = g_strconcat(home, TEXTURE_PATH, NULL);
+  gchar *dirname = g_build_filename(home, TEXTURE_PATH, NULL);
   GDir *dir = g_dir_open(dirname, 0, NULL);
   if (dir)
   {
     const gchar *dir_ent;
     while (dir_ent = g_dir_read_name(dir))
     {
-      gchar *filename;
-
       if (is_hidden (dir_ent))
         continue;
 
-      filename = g_build_filename (dirname, dir_ent, NULL);
-
-      GdkPixbuf *pixbuf = gdk_pixbuf_new_from_file (filename, NULL);
-      pixbuf = gdk_pixbuf_scale_simple (pixbuf, THUMBNAIL_SIZE, THUMBNAIL_SIZE, GDK_INTERP_BILINEAR);
-      GtkWidget *image = gtk_image_new_from_pixbuf (pixbuf);
-      GtkWidget *event_box = gtk_event_box_new ();
-      gtk_container_add (GTK_CONTAINER (event_box), image);
-      gtk_widget_show (image);
-      gtk_table_attach_defaults (GTK_TABLE (table), event_box, col - 1, col, row - 1, row);
-      gtk_widget_show (event_box);
-
-      col++;
-      if (col > cols)
-      {
-        row++;
-        col = 1;
+      gchar *filename = g_build_filename (dirname, dir_ent, NULL);
+      if (g_file_test(filename, G_FILE_TEST_IS_DIR)) {
+        create_texture_page (GTK_NOTEBOOK (notebook), dir_ent, filename);
       }
-
-      g_signal_connect (event_box, "button_press_event", G_CALLBACK (select_texture), filename);
 
       //g_free(filename);
     }
