@@ -31,6 +31,10 @@ typedef struct
   gint contrast;
   gdouble saturation;
   gdouble sharpeness;
+  gdouble hue;
+  gdouble cyan_red;
+  gdouble magenta_green;
+  gdouble yellow_blue;
 } BeautifyValues;
 
 static void     query    (void);
@@ -46,9 +50,15 @@ static gboolean beautify_dialog (gint32        image_ID,
                                  GimpDrawable *drawable);
 
 static void     create_base_page (GtkNotebook *notebook);
+static void     create_color_page (GtkNotebook *notebook);
 
-static void     brightness_update (GtkRange *range, gpointer data);
-static void     contrast_update   (GtkRange *range, gpointer data);
+static void     brightness_update    (GtkRange *range, gpointer data);
+static void     contrast_update      (GtkRange *range, gpointer data);
+static void     saturation_update    (GtkRange *range, gpointer data);
+static void     hue_update           (GtkRange *range, gpointer data);
+static void     cyan_red_update      (GtkRange *range, gpointer data);
+static void     magenta_green_update (GtkRange *range, gpointer data);
+static void     yellow_blue_update   (GtkRange *range, gpointer data);
 
 static void     adjustment();
 
@@ -66,6 +76,10 @@ static BeautifyValues bvals =
   0,  /* contrast   */
   0,  /* saturation */
   0,  /* sharpeness */
+  0,  /* hue */
+  0,  /* cyan_red */
+  0,  /* magenta_green */
+  0,  /* yellow_blue */
 };
 
 static gint32     image_ID         = 0;
@@ -241,6 +255,7 @@ beautify_dialog (gint32        image_ID,
   gtk_widget_show (notebook);
 
   create_base_page (GTK_NOTEBOOK (notebook));
+  create_color_page (GTK_NOTEBOOK (notebook));
 
   /* preview */
   label = gtk_label_new ("Preview");
@@ -303,6 +318,22 @@ create_base_page (GtkNotebook *notebook) {
                    G_CALLBACK (contrast_update),
                    NULL);
 
+  /* saturation */
+  label = gtk_label_new ("Saturation");
+  gtk_box_pack_start (GTK_BOX (thispage), label, FALSE, FALSE, 0);
+  gtk_widget_show (label);
+
+  hscale = gtk_hscale_new_with_range (-50, 50, 1);
+  gtk_range_set_value (GTK_RANGE (hscale), bvals.saturation);
+  gtk_scale_set_value_pos (GTK_SCALE (hscale), GTK_POS_BOTTOM);
+  gtk_box_pack_start (GTK_BOX (thispage), hscale, FALSE, FALSE, 0);
+  gtk_widget_show (hscale);
+
+  g_signal_connect (hscale, "value-changed",
+                   G_CALLBACK (saturation_update),
+                   NULL);
+
+
   gtk_notebook_append_page_menu (notebook, thispage, pagelabel, NULL);
 }
 
@@ -321,11 +352,217 @@ contrast_update (GtkRange *range, gpointer data) {
 }
 
 static void
+saturation_update (GtkRange *range, gpointer data) {
+  bvals.saturation = gtk_range_get_value (range);
+  adjustment ();
+  preview_update (preview);
+}
+
+static void
+create_color_page (GtkNotebook *notebook) {
+  GtkWidget *label;
+  GtkWidget *hscale;
+
+  GtkWidget *pagelabel = gtk_label_new ("Color");
+
+  GtkWidget *thispage = gtk_box_new (GTK_ORIENTATION_VERTICAL, 12);
+  gtk_container_set_border_width (GTK_CONTAINER (thispage), 12);
+  gtk_widget_show (thispage);
+
+  /* hue */
+  label = gtk_label_new ("Hue");
+  gtk_box_pack_start (GTK_BOX (thispage), label, FALSE, FALSE, 0);
+  gtk_widget_show (label);
+
+  hscale = gtk_hscale_new_with_range (-180, 180, 1);
+  gtk_range_set_value (GTK_RANGE (hscale), bvals.hue);
+  gtk_scale_set_value_pos (GTK_SCALE (hscale), GTK_POS_BOTTOM);
+  gtk_box_pack_start (GTK_BOX (thispage), hscale, FALSE, FALSE, 0);
+  gtk_widget_show (hscale);
+
+  g_signal_connect (hscale, "value-changed",
+                   G_CALLBACK (hue_update),
+                   NULL);
+
+  GtkWidget *table = gtk_table_new (3, 3, FALSE);
+  gtk_table_set_col_spacings (GTK_TABLE (table), 6);
+  gtk_table_set_row_spacings (GTK_TABLE (table), 6);
+  gtk_box_pack_start (GTK_BOX (thispage), table, FALSE, FALSE, 0);
+  gtk_widget_show (table);
+
+  /* cyan_red */
+  GtkWidget *event_box;
+  GdkColor color;
+
+  event_box = gtk_event_box_new ();
+  color.red = 0x0; color.green = 0xFFFF; color.blue = 0xFFFF;
+  gtk_widget_modify_bg (event_box, 0, &color);
+
+  label = gtk_label_new ("C");
+  gtk_container_add (GTK_CONTAINER (event_box), label);
+  gtk_widget_show (label);
+  gtk_table_attach_defaults (GTK_TABLE (table), event_box, 0, 1, 0, 1);
+  gtk_widget_show (event_box);
+
+  hscale = gtk_hscale_new_with_range (-50, 50, 1);
+  gtk_range_set_value (GTK_RANGE (hscale), bvals.cyan_red);
+  gtk_scale_set_value_pos (GTK_SCALE (hscale), GTK_POS_BOTTOM);
+  gtk_table_attach_defaults (GTK_TABLE (table), hscale, 1, 2, 0, 1);
+  gtk_widget_show (hscale);
+
+  gtk_widget_set_size_request (hscale, 100, -1);
+
+  g_signal_connect (hscale, "value-changed",
+                   G_CALLBACK (cyan_red_update),
+                   NULL);
+
+  event_box = gtk_event_box_new ();
+  color.red = 0xFFFF; color.green = 0x0; color.blue = 0x0;
+  gtk_widget_modify_bg (event_box, 0, &color);
+
+  label = gtk_label_new ("R");
+  gtk_container_add (GTK_CONTAINER (event_box), label);
+  gtk_widget_show (label);
+  gtk_table_attach_defaults (GTK_TABLE (table), event_box, 2, 3, 0, 1);
+  gtk_widget_show (event_box);
+
+  /* magenta_green */
+  event_box = gtk_event_box_new ();
+  color.red = 0xFFFF; color.green = 0x0; color.blue = 0xFFFF;
+  gtk_widget_modify_bg (event_box, 0, &color);
+
+  label = gtk_label_new ("M");
+  gtk_container_add (GTK_CONTAINER (event_box), label);
+  gtk_widget_show (label);
+  gtk_table_attach_defaults (GTK_TABLE (table), event_box, 0, 1, 1, 2);
+  gtk_widget_show (event_box);
+
+  hscale = gtk_hscale_new_with_range (-50, 50, 1);
+  gtk_range_set_value (GTK_RANGE (hscale), bvals.magenta_green);
+  gtk_scale_set_value_pos (GTK_SCALE (hscale), GTK_POS_BOTTOM);
+  gtk_table_attach_defaults (GTK_TABLE (table), hscale, 1, 2, 1, 2);
+  gtk_widget_show (hscale);
+
+  g_signal_connect (hscale, "value-changed",
+                   G_CALLBACK (magenta_green_update),
+                   NULL);
+
+  event_box = gtk_event_box_new ();
+  color.red = 0x0; color.green = 0xFFFF; color.blue = 0x0;
+  gtk_widget_modify_bg (event_box, 0, &color);
+
+  label = gtk_label_new ("G");
+  gtk_container_add (GTK_CONTAINER (event_box), label);
+  gtk_widget_show (label);
+  gtk_table_attach_defaults (GTK_TABLE (table), event_box, 2, 3, 1, 2);
+  gtk_widget_show (event_box);
+
+  /* yellow_blue */
+  event_box = gtk_event_box_new ();
+  color.red = 0xFFFF; color.green = 0xFFFF; color.blue = 0x0;
+  gtk_widget_modify_bg (event_box, 0, &color);
+
+  label = gtk_label_new ("Y");
+  gtk_container_add (GTK_CONTAINER (event_box), label);
+  gtk_widget_show (label);
+  gtk_table_attach_defaults (GTK_TABLE (table), event_box, 0, 1, 2, 3);
+  gtk_widget_show (event_box);
+
+  hscale = gtk_hscale_new_with_range (-50, 50, 1);
+  gtk_range_set_value (GTK_RANGE (hscale), bvals.yellow_blue);
+  gtk_scale_set_value_pos (GTK_SCALE (hscale), GTK_POS_BOTTOM);
+  gtk_table_attach_defaults (GTK_TABLE (table), hscale, 1, 2, 2, 3);
+  gtk_widget_show (hscale);
+
+  g_signal_connect (hscale, "value-changed",
+                   G_CALLBACK (yellow_blue_update),
+                   NULL);
+
+  event_box = gtk_event_box_new ();
+  color.red = 0x0; color.green = 0x0; color.blue = 0xFFFF;
+  gtk_widget_modify_bg (event_box, 0, &color);
+
+  label = gtk_label_new ("B");
+  gtk_container_add (GTK_CONTAINER (event_box), label);
+  gtk_widget_show (label);
+  gtk_table_attach_defaults (GTK_TABLE (table), event_box, 2, 3, 2, 3);
+  gtk_widget_show (event_box);
+
+  gtk_notebook_append_page_menu (notebook, thispage, pagelabel, NULL);
+}
+
+static void
+hue_update (GtkRange *range, gpointer data) {
+  bvals.hue = gtk_range_get_value (range);
+  adjustment ();
+  preview_update (preview);
+}
+
+static void
+cyan_red_update (GtkRange *range, gpointer data) {
+  bvals.cyan_red = gtk_range_get_value (range);
+  adjustment ();
+  preview_update (preview);
+}
+
+static void
+magenta_green_update (GtkRange *range, gpointer data) {
+  bvals.magenta_green = gtk_range_get_value (range);
+  adjustment ();
+  preview_update (preview);
+}
+
+static void
+yellow_blue_update (GtkRange *range, gpointer data) {
+  bvals.yellow_blue = gtk_range_get_value (range);
+  adjustment ();
+  preview_update (preview);
+}
+static void
 adjustment () {
+  if (bvals.brightness == 0 && bvals.contrast == 0 && bvals.saturation == 0 && bvals.hue == 0 && bvals.cyan_red == 0 && bvals.magenta_green == 0 && bvals.yellow_blue == 0) {
+    return;
+  }
+
+  preview_image = gimp_image_duplicate (image_ID);
+  gint32 layer = gimp_image_get_active_layer (preview_image);
+
   if (bvals.brightness != 0 || bvals.contrast != 0) {
-    preview_image = gimp_image_duplicate (image_ID);
-    gint32 layer = gimp_image_get_active_layer (preview_image);
-    gimp_brightness_contrast (layer, bvals.brightness, bvals.contrast);
+    gint low_input = 0;
+    gint high_input = 255;
+    gint low_output = 0;
+    gint high_output = 255;
+    if (bvals.brightness > 0) {
+      high_input -= bvals.brightness;
+    }
+    if (bvals.brightness < 0) {
+      high_output += bvals.brightness;
+    }
+    if (bvals.contrast > 0) {
+      low_input += bvals.contrast;
+      high_input -= bvals.contrast;
+    }
+    if (bvals.contrast < 0) {
+      low_output -= bvals.contrast;
+      high_output += bvals.contrast;
+    }
+    gimp_levels (layer, GIMP_HISTOGRAM_VALUE,
+                 low_input, high_input,
+                 1,
+                 low_output, high_output);
+  }
+
+  if (bvals.saturation != 0 || bvals.hue) {
+    gimp_hue_saturation (layer, GIMP_ALL_HUES, bvals.hue, 0, bvals.saturation);
+  }
+
+  if (bvals.cyan_red != 0 || bvals.magenta_green != 0 || bvals.yellow_blue != 0) {
+    gimp_color_balance (layer, GIMP_SHADOWS, TRUE,
+                        bvals.cyan_red, bvals.magenta_green, bvals.yellow_blue);
+    gimp_color_balance (layer, GIMP_MIDTONES, TRUE,
+                        bvals.cyan_red, bvals.magenta_green, bvals.yellow_blue);
+    gimp_color_balance (layer, GIMP_HIGHLIGHTS, TRUE,
+                        bvals.cyan_red, bvals.magenta_green, bvals.yellow_blue);
   }
 }
 
