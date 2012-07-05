@@ -1,5 +1,7 @@
 #!/bin/bash
 
+gimptool --install beautify.c
+
 TEXTURES="$HOME/textures"
 [ -d "$TEXTURES" ] && rm -rf $TEXTURES/*
 [ -d "$TEXTURES" ] || mkdir -p "$TEXTURES"

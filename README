@@ -25,7 +25,10 @@ CHANGELOG
 ===================
 
 2012-07-05
-beatify: Fix brightness and contrast.
+beautify: Add effects: soft light, sharpen
+
+2012-07-04
+beautify: Fix brightness and contrast.
 beautify: Add saturation.
 beautify: Add hue, cyan_red, magenta_green, yellow_blue adjustment.
 

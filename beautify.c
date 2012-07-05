@@ -37,6 +37,13 @@ typedef struct
   gdouble yellow_blue;
 } BeautifyValues;
 
+typedef enum
+{
+  BEAUTIFY_EFFECT_NONE,
+  BEAUTIFY_EFFECT_SOFT_LIGHT,
+  BEAUTIFY_EFFECT_SHARPEN,
+} BeautifyEffectType;
+
 static void     query    (void);
 static void     run      (const gchar      *name,
                           gint              nparams,
@@ -62,6 +69,15 @@ static void     yellow_blue_update   (GtkRange *range, gpointer data);
 
 static void     adjustment();
 
+static void create_effect_pages (GtkNotebook *notebook);
+static GtkWidget* effect_icon_new (BeautifyEffectType effect);
+
+static gboolean select_effect (GtkWidget *widget, GdkEvent *event, gpointer user_data);
+
+static void do_effect (gint32 image, BeautifyEffectType effect);
+static void reset_adjustment ();
+static void apply_effect ();
+
 const GimpPlugInInfo PLUG_IN_INFO =
 {
   NULL,  /* init_proc  */
@@ -86,8 +102,21 @@ static gint32     image_ID         = 0;
 static gint       width;
 static gint       height;
 
+static GtkWidget *brightness = NULL;
+static GtkWidget *contrast = NULL;
+static GtkWidget *saturation = NULL;
+static GtkWidget *sharpeness = NULL;
+static GtkWidget *hue = NULL;
+static GtkWidget *cyan_red = NULL;
+static GtkWidget *magenta_green = NULL;
+static GtkWidget *yellow_blue = NULL;
+
 static GtkWidget *preview          = NULL;
 static gint32     preview_image    = 0;
+static gint32     saved_image      = 0;
+
+static BeautifyEffectType current_effect = BEAUTIFY_EFFECT_NONE;
+gint32 preview_effect_layer = 0;
 
 MAIN ()
 
@@ -102,8 +131,8 @@ query (void)
   };
 
   gimp_install_procedure (PLUG_IN_PROC,
-                          "Beautify, most easiest way for beautify photo.",
-                          "Beautify, most easiest way for beautify photo.",
+                          "Beautify, the easiest way to beautify photo.",
+                          "Beautify, the easiest way to beautify photo.",
                           "Hejian <hejian.he@gmail.com>",
                           "Hejian <hejian.he@gmail.com>",
                           "2012",
@@ -184,9 +213,11 @@ run (const gchar      *name,
 static void
 beautify (GimpDrawable *drawable)
 {
-  if (bvals.brightness != 0 || bvals.contrast != 0) {
-    gimp_brightness_contrast (drawable->drawable_id, bvals.brightness, bvals.contrast);
-  }
+  apply_effect ();
+  gint32 source = gimp_image_get_active_layer (preview_image);
+  gimp_edit_copy (source);
+  gint32 floating_sel = gimp_edit_paste (drawable->drawable_id, FALSE);
+  gimp_floating_sel_anchor (floating_sel);
 }
 
 static void
@@ -270,6 +301,13 @@ beautify_dialog (gint32        image_ID,
   gtk_box_pack_start (GTK_BOX (middle_vbox), preview, TRUE, TRUE, 0);
   gtk_widget_show (preview);
 
+  /* effects */
+  notebook = gtk_notebook_new ();
+  gtk_box_pack_start (GTK_BOX (right_vbox), notebook, FALSE, FALSE, 0);
+  gtk_widget_show (notebook);
+
+  create_effect_pages (GTK_NOTEBOOK (notebook));
+
   gboolean run = (gimp_dialog_run (GIMP_DIALOG (dialog)) == GTK_RESPONSE_OK);
 
   gtk_widget_destroy (dialog);
@@ -293,13 +331,13 @@ create_base_page (GtkNotebook *notebook) {
   gtk_box_pack_start (GTK_BOX (thispage), label, FALSE, FALSE, 0);
   gtk_widget_show (label);
 
-  hscale = gtk_hscale_new_with_range (-127, 127, 1);
-  gtk_range_set_value (GTK_RANGE (hscale), bvals.brightness);
-  gtk_scale_set_value_pos (GTK_SCALE (hscale), GTK_POS_BOTTOM);
-  gtk_box_pack_start (GTK_BOX (thispage), hscale, FALSE, FALSE, 0);
-  gtk_widget_show (hscale);
+  brightness = gtk_hscale_new_with_range (-127, 127, 1);
+  gtk_range_set_value (GTK_RANGE (brightness), bvals.brightness);
+  gtk_scale_set_value_pos (GTK_SCALE (brightness), GTK_POS_BOTTOM);
+  gtk_box_pack_start (GTK_BOX (thispage), brightness, FALSE, FALSE, 0);
+  gtk_widget_show (brightness);
 
-  g_signal_connect (hscale, "value-changed",
+  g_signal_connect (brightness, "value-changed",
                    G_CALLBACK (brightness_update),
                    NULL);
 
@@ -308,13 +346,13 @@ create_base_page (GtkNotebook *notebook) {
   gtk_box_pack_start (GTK_BOX (thispage), label, FALSE, FALSE, 0);
   gtk_widget_show (label);
 
-  hscale = gtk_hscale_new_with_range (-50, 50, 1);
-  gtk_range_set_value (GTK_RANGE (hscale), bvals.contrast);
-  gtk_scale_set_value_pos (GTK_SCALE (hscale), GTK_POS_BOTTOM);
-  gtk_box_pack_start (GTK_BOX (thispage), hscale, FALSE, FALSE, 0);
-  gtk_widget_show (hscale);
+  contrast = gtk_hscale_new_with_range (-50, 50, 1);
+  gtk_range_set_value (GTK_RANGE (contrast), bvals.contrast);
+  gtk_scale_set_value_pos (GTK_SCALE (contrast), GTK_POS_BOTTOM);
+  gtk_box_pack_start (GTK_BOX (thispage), contrast, FALSE, FALSE, 0);
+  gtk_widget_show (contrast);
 
-  g_signal_connect (hscale, "value-changed",
+  g_signal_connect (contrast, "value-changed",
                    G_CALLBACK (contrast_update),
                    NULL);
 
@@ -323,16 +361,15 @@ create_base_page (GtkNotebook *notebook) {
   gtk_box_pack_start (GTK_BOX (thispage), label, FALSE, FALSE, 0);
   gtk_widget_show (label);
 
-  hscale = gtk_hscale_new_with_range (-50, 50, 1);
-  gtk_range_set_value (GTK_RANGE (hscale), bvals.saturation);
-  gtk_scale_set_value_pos (GTK_SCALE (hscale), GTK_POS_BOTTOM);
-  gtk_box_pack_start (GTK_BOX (thispage), hscale, FALSE, FALSE, 0);
-  gtk_widget_show (hscale);
+  saturation = gtk_hscale_new_with_range (-50, 50, 1);
+  gtk_range_set_value (GTK_RANGE (saturation), bvals.saturation);
+  gtk_scale_set_value_pos (GTK_SCALE (saturation), GTK_POS_BOTTOM);
+  gtk_box_pack_start (GTK_BOX (thispage), saturation, FALSE, FALSE, 0);
+  gtk_widget_show (saturation);
 
-  g_signal_connect (hscale, "value-changed",
+  g_signal_connect (saturation, "value-changed",
                    G_CALLBACK (saturation_update),
                    NULL);
-
 
   gtk_notebook_append_page_menu (notebook, thispage, pagelabel, NULL);
 }
@@ -374,13 +411,13 @@ create_color_page (GtkNotebook *notebook) {
   gtk_box_pack_start (GTK_BOX (thispage), label, FALSE, FALSE, 0);
   gtk_widget_show (label);
 
-  hscale = gtk_hscale_new_with_range (-180, 180, 1);
-  gtk_range_set_value (GTK_RANGE (hscale), bvals.hue);
-  gtk_scale_set_value_pos (GTK_SCALE (hscale), GTK_POS_BOTTOM);
-  gtk_box_pack_start (GTK_BOX (thispage), hscale, FALSE, FALSE, 0);
-  gtk_widget_show (hscale);
+  hue = gtk_hscale_new_with_range (-180, 180, 1);
+  gtk_range_set_value (GTK_RANGE (hue), bvals.hue);
+  gtk_scale_set_value_pos (GTK_SCALE (hue), GTK_POS_BOTTOM);
+  gtk_box_pack_start (GTK_BOX (thispage), hue, FALSE, FALSE, 0);
+  gtk_widget_show (hue);
 
-  g_signal_connect (hscale, "value-changed",
+  g_signal_connect (hue, "value-changed",
                    G_CALLBACK (hue_update),
                    NULL);
 
@@ -404,15 +441,15 @@ create_color_page (GtkNotebook *notebook) {
   gtk_table_attach_defaults (GTK_TABLE (table), event_box, 0, 1, 0, 1);
   gtk_widget_show (event_box);
 
-  hscale = gtk_hscale_new_with_range (-50, 50, 1);
-  gtk_range_set_value (GTK_RANGE (hscale), bvals.cyan_red);
-  gtk_scale_set_value_pos (GTK_SCALE (hscale), GTK_POS_BOTTOM);
-  gtk_table_attach_defaults (GTK_TABLE (table), hscale, 1, 2, 0, 1);
-  gtk_widget_show (hscale);
+  cyan_red = gtk_hscale_new_with_range (-50, 50, 1);
+  gtk_range_set_value (GTK_RANGE (cyan_red), bvals.cyan_red);
+  gtk_scale_set_value_pos (GTK_SCALE (cyan_red), GTK_POS_BOTTOM);
+  gtk_table_attach_defaults (GTK_TABLE (table), cyan_red, 1, 2, 0, 1);
+  gtk_widget_show (cyan_red);
 
-  gtk_widget_set_size_request (hscale, 100, -1);
+  gtk_widget_set_size_request (cyan_red, 100, -1);
 
-  g_signal_connect (hscale, "value-changed",
+  g_signal_connect (cyan_red, "value-changed",
                    G_CALLBACK (cyan_red_update),
                    NULL);
 
@@ -437,13 +474,13 @@ create_color_page (GtkNotebook *notebook) {
   gtk_table_attach_defaults (GTK_TABLE (table), event_box, 0, 1, 1, 2);
   gtk_widget_show (event_box);
 
-  hscale = gtk_hscale_new_with_range (-50, 50, 1);
-  gtk_range_set_value (GTK_RANGE (hscale), bvals.magenta_green);
-  gtk_scale_set_value_pos (GTK_SCALE (hscale), GTK_POS_BOTTOM);
-  gtk_table_attach_defaults (GTK_TABLE (table), hscale, 1, 2, 1, 2);
-  gtk_widget_show (hscale);
+  magenta_green = gtk_hscale_new_with_range (-50, 50, 1);
+  gtk_range_set_value (GTK_RANGE (magenta_green), bvals.magenta_green);
+  gtk_scale_set_value_pos (GTK_SCALE (magenta_green), GTK_POS_BOTTOM);
+  gtk_table_attach_defaults (GTK_TABLE (table), magenta_green, 1, 2, 1, 2);
+  gtk_widget_show (magenta_green);
 
-  g_signal_connect (hscale, "value-changed",
+  g_signal_connect (magenta_green, "value-changed",
                    G_CALLBACK (magenta_green_update),
                    NULL);
 
@@ -468,13 +505,13 @@ create_color_page (GtkNotebook *notebook) {
   gtk_table_attach_defaults (GTK_TABLE (table), event_box, 0, 1, 2, 3);
   gtk_widget_show (event_box);
 
-  hscale = gtk_hscale_new_with_range (-50, 50, 1);
-  gtk_range_set_value (GTK_RANGE (hscale), bvals.yellow_blue);
-  gtk_scale_set_value_pos (GTK_SCALE (hscale), GTK_POS_BOTTOM);
-  gtk_table_attach_defaults (GTK_TABLE (table), hscale, 1, 2, 2, 3);
-  gtk_widget_show (hscale);
+  yellow_blue = gtk_hscale_new_with_range (-50, 50, 1);
+  gtk_range_set_value (GTK_RANGE (yellow_blue), bvals.yellow_blue);
+  gtk_scale_set_value_pos (GTK_SCALE (yellow_blue), GTK_POS_BOTTOM);
+  gtk_table_attach_defaults (GTK_TABLE (table), yellow_blue, 1, 2, 2, 3);
+  gtk_widget_show (yellow_blue);
 
-  g_signal_connect (hscale, "value-changed",
+  g_signal_connect (yellow_blue, "value-changed",
                    G_CALLBACK (yellow_blue_update),
                    NULL);
 
@@ -524,7 +561,13 @@ adjustment () {
     return;
   }
 
-  preview_image = gimp_image_duplicate (image_ID);
+  apply_effect ();
+
+  if (!saved_image) {
+    saved_image = gimp_image_duplicate (preview_image);
+  }
+
+  preview_image = gimp_image_duplicate (saved_image);
   gint32 layer = gimp_image_get_active_layer (preview_image);
 
   if (bvals.brightness != 0 || bvals.contrast != 0) {
@@ -563,6 +606,161 @@ adjustment () {
                         bvals.cyan_red, bvals.magenta_green, bvals.yellow_blue);
     gimp_color_balance (layer, GIMP_HIGHLIGHTS, TRUE,
                         bvals.cyan_red, bvals.magenta_green, bvals.yellow_blue);
+  }
+}
+
+static void
+create_effect_pages (GtkNotebook *notebook) {
+  GtkWidget *pagelabel = gtk_label_new ("Basic");
+
+  GtkWidget *thispage = gtk_box_new (GTK_ORIENTATION_VERTICAL, 12);
+  gtk_container_set_border_width (GTK_CONTAINER (thispage), 12);
+  gtk_widget_show (thispage);
+
+  BeautifyEffectType effects[] =
+  {
+    BEAUTIFY_EFFECT_SOFT_LIGHT,
+    BEAUTIFY_EFFECT_SHARPEN,
+  };
+
+  gint i;
+  for (i = 0; i < G_N_ELEMENTS (effects); i++) {
+    GtkWidget *icon = effect_icon_new (effects[i]);
+    gtk_box_pack_start (GTK_BOX (thispage), icon, FALSE, FALSE, 0);
+    gtk_widget_show (icon);
+  }
+
+  gtk_notebook_append_page_menu (notebook, thispage, pagelabel, NULL);
+}
+
+static GtkWidget *
+effect_icon_new (BeautifyEffectType effect)
+{
+  gchar *title = 0;
+  switch (effect) {
+    case BEAUTIFY_EFFECT_SOFT_LIGHT:
+      title = "Soft Light";
+      break;
+    case BEAUTIFY_EFFECT_SHARPEN:
+      title = "Sharpen";
+      break;
+  }
+
+  gint32 image = gimp_image_duplicate (preview_image);
+  do_effect (image, effect);
+
+  GtkWidget *box = gtk_box_new (GTK_ORIENTATION_VERTICAL, 12);
+
+  GdkPixbuf *pixbuf = gimp_image_get_thumbnail (image, 60, 60, GIMP_PIXBUF_SMALL_CHECKS);
+  GtkWidget *icon = gtk_image_new_from_pixbuf (pixbuf);
+  GtkWidget *event_box = gtk_event_box_new ();
+  gtk_container_add (GTK_CONTAINER (event_box), icon);
+  gtk_widget_show (icon);
+  gtk_box_pack_start (GTK_BOX (box), event_box, FALSE, FALSE, 0);
+  gtk_widget_show (event_box);
+
+  GtkWidget *label = gtk_label_new (title);
+  gtk_box_pack_start (GTK_BOX (box), label, FALSE, FALSE, 0);
+  gtk_widget_show (label);
+
+  g_signal_connect (event_box, "button_press_event", G_CALLBACK (select_effect), (gpointer) effect);
+
+  return box;
+}
+
+static gboolean
+select_effect (GtkWidget *widget, GdkEvent *event, gpointer user_data)
+{
+  reset_adjustment ();
+  BeautifyEffectType effect = (BeautifyEffectType) user_data;
+  do_effect (preview_image, effect);
+  current_effect = effect;
+  preview_update (preview);
+
+  return TRUE;
+}
+
+static void
+do_effect (gint32 image, BeautifyEffectType effect)
+{
+  gint32 layer = gimp_image_get_active_layer (image);
+  gint32 effect_layer = gimp_layer_copy (layer);
+  gimp_image_add_layer (image, effect_layer, -1);
+
+  switch (effect)
+  {
+    case BEAUTIFY_EFFECT_SOFT_LIGHT:
+      gimp_layer_set_mode (effect_layer, GIMP_SOFTLIGHT_MODE);
+      break;
+
+    case BEAUTIFY_EFFECT_SHARPEN:
+    {
+      gint nreturn_vals;
+      GimpParam *return_vals = gimp_run_procedure ("plug-in-sharpen",
+                                                   &nreturn_vals,
+                                                   GIMP_PDB_INT32, 1,
+                                                   GIMP_PDB_IMAGE, image,
+                                                   GIMP_PDB_DRAWABLE, effect_layer,
+                                                   GIMP_PDB_INT32, 50,
+                                                   GIMP_PDB_END);
+      gimp_destroy_params (return_vals, nreturn_vals);
+    }
+      break;
+  }
+}
+
+static void
+reset_adjustment ()
+{
+  if (bvals.brightness != 0) {
+    bvals.brightness = 0;
+    gtk_range_set_value (GTK_RANGE (brightness), 0);
+  }
+  if (bvals.contrast != 0) {
+    bvals.contrast = 0;
+    gtk_range_set_value (GTK_RANGE (contrast), 0);
+  }
+  if (bvals.saturation != 0) {
+    bvals.saturation = 0;
+    gtk_range_set_value (GTK_RANGE (saturation), 0);
+  }
+  if (bvals.sharpeness != 0) {
+    bvals.sharpeness = 0;
+    gtk_range_set_value (GTK_RANGE (sharpeness), 0);
+  }
+  if (bvals.hue != 0) {
+    bvals.hue = 0;
+    gtk_range_set_value (GTK_RANGE (hue), 0);
+  }
+  if (bvals.cyan_red != 0) {
+    bvals.cyan_red = 0;
+    gtk_range_set_value (GTK_RANGE (cyan_red), 0);
+  }
+  if (bvals.magenta_green != 0) {
+    bvals.magenta_green = 0;
+    gtk_range_set_value (GTK_RANGE (magenta_green), 0);
+  }
+  if (bvals.yellow_blue != 0) {
+    bvals.yellow_blue = 0;
+    gtk_range_set_value (GTK_RANGE (yellow_blue), 0);
+  }
+}
+
+static void
+apply_effect ()
+{
+  if (current_effect == BEAUTIFY_EFFECT_NONE) {
+    return;
+  }
+
+  gint32 current_layer = gimp_image_get_active_layer (preview_image);
+  gimp_image_merge_down (preview_image, current_layer, GIMP_EXPAND_AS_NECESSARY);
+
+  current_effect = BEAUTIFY_EFFECT_NONE;
+
+  if (saved_image) {
+    gimp_image_delete (saved_image);
+    saved_image = 0;
   }
 }
 
