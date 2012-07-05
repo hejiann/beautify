@@ -24,6 +24,11 @@ GIMP menu: Tools -> Beautify -> Rip Border
 CHANGELOG
 ===================
 
+2012-07-05
+beatify: Fix brightness and contrast.
+beautify: Add saturation.
+beautify: Add hue, cyan_red, magenta_green, yellow_blue adjustment.
+
 2012-06-08
 Add more rip-border textures, and display the textures in groups.
 
