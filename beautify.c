@@ -43,6 +43,7 @@ typedef enum
   BEAUTIFY_EFFECT_SOFT_LIGHT,
   BEAUTIFY_EFFECT_WARM,
   BEAUTIFY_EFFECT_SHARPEN,
+  BEAUTIFY_EFFECT_JAPANESE,
 } BeautifyEffectType;
 
 static void     query    (void);
@@ -623,6 +624,7 @@ create_effect_pages (GtkNotebook *notebook) {
     BEAUTIFY_EFFECT_SOFT_LIGHT,
     BEAUTIFY_EFFECT_WARM,
     BEAUTIFY_EFFECT_SHARPEN,
+    BEAUTIFY_EFFECT_JAPANESE,
   };
 
   gint i;
@@ -649,12 +651,15 @@ effect_icon_new (BeautifyEffectType effect)
     case BEAUTIFY_EFFECT_SHARPEN:
       title = "Sharpen";
       break;
+    case BEAUTIFY_EFFECT_JAPANESE:
+      title = "Japanese";
+      break;
   }
 
   gint32 image = gimp_image_duplicate (preview_image);
   do_effect (image, effect);
 
-  GtkWidget *box = gtk_box_new (GTK_ORIENTATION_VERTICAL, 12);
+  GtkWidget *box = gtk_box_new (GTK_ORIENTATION_VERTICAL, 2);
 
   GdkPixbuf *pixbuf = gimp_image_get_thumbnail (image, 60, 60, GIMP_PIXBUF_SMALL_CHECKS);
   GtkWidget *icon = gtk_image_new_from_pixbuf (pixbuf);
@@ -718,6 +723,14 @@ do_effect (gint32 image, BeautifyEffectType effect)
                                                    GIMP_PDB_INT32, 50,
                                                    GIMP_PDB_END);
       gimp_destroy_params (return_vals, nreturn_vals);
+    }
+      break;
+    case BEAUTIFY_EFFECT_JAPANESE:
+    {
+      GimpRGB color = {0.02, 0.07, 0.19, 1.0};
+      gimp_context_set_foreground (&color);
+      gimp_edit_fill (effect_layer, GIMP_FOREGROUND_FILL);
+      gimp_layer_set_mode (effect_layer, GIMP_DIFFERENCE_MODE);
     }
       break;
   }
