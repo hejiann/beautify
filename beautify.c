@@ -41,6 +41,7 @@ typedef enum
 {
   BEAUTIFY_EFFECT_NONE,
   BEAUTIFY_EFFECT_SOFT_LIGHT,
+  BEAUTIFY_EFFECT_WARM,
   BEAUTIFY_EFFECT_SHARPEN,
 } BeautifyEffectType;
 
@@ -620,6 +621,7 @@ create_effect_pages (GtkNotebook *notebook) {
   BeautifyEffectType effects[] =
   {
     BEAUTIFY_EFFECT_SOFT_LIGHT,
+    BEAUTIFY_EFFECT_WARM,
     BEAUTIFY_EFFECT_SHARPEN,
   };
 
@@ -640,6 +642,9 @@ effect_icon_new (BeautifyEffectType effect)
   switch (effect) {
     case BEAUTIFY_EFFECT_SOFT_LIGHT:
       title = "Soft Light";
+      break;
+    case BEAUTIFY_EFFECT_WARM:
+      title = "Warm";
       break;
     case BEAUTIFY_EFFECT_SHARPEN:
       title = "Sharpen";
@@ -691,6 +696,15 @@ do_effect (gint32 image, BeautifyEffectType effect)
   {
     case BEAUTIFY_EFFECT_SOFT_LIGHT:
       gimp_layer_set_mode (effect_layer, GIMP_SOFTLIGHT_MODE);
+      break;
+
+    case BEAUTIFY_EFFECT_WARM:
+    {
+      GimpRGB color = {1.0, 0.5, 0, 1.0};
+      gimp_context_set_foreground (&color);
+      gimp_edit_fill (effect_layer, GIMP_FOREGROUND_FILL);
+      gimp_layer_set_mode (effect_layer, GIMP_OVERLAY_MODE);
+    }
       break;
 
     case BEAUTIFY_EFFECT_SHARPEN:
