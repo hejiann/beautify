@@ -733,10 +733,11 @@ do_effect (gint32 image, BeautifyEffectType effect)
       gimp_levels (effect_layer, GIMP_HISTOGRAM_BLUE, 26, 255, 1, 0, 246);
       */
       guint8 red_pts[] = {
-        0.0, 0.086275 * 255,
-        0.301829 * 255, 0.187500 * 255,
-        0.573171 * 255, 0.605469 * 255,
-        1.000000 * 255, 0.768627 * 255,
+        0.0, 0.042969 * 255,
+        0.350610 * 255, 0.320312 * 255,
+        0.621951 * 255, 0.566406 * 255,
+        0.847561 * 255, 0.632812 * 255,
+        1.000000 * 255, 0.769531 * 255,
       };
       guint8 green_pts[] = {
         0.0, 0.031250 * 255,
@@ -750,7 +751,7 @@ do_effect (gint32 image, BeautifyEffectType effect)
         0.121951 * 255, 0.039062 * 255,
         1.000000 * 255, 0.972656 * 255,
       };
-      gimp_curves_spline (effect_layer, GIMP_HISTOGRAM_RED, 8, red_pts);
+      gimp_curves_spline (effect_layer, GIMP_HISTOGRAM_RED, 10, red_pts);
       gimp_curves_spline (effect_layer, GIMP_HISTOGRAM_GREEN, 10, green_pts);
       gimp_curves_spline (effect_layer, GIMP_HISTOGRAM_BLUE, 6, blue_pts);
     }
