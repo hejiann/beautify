@@ -24,6 +24,9 @@ GIMP menu: Tools -> Beautify -> Rip Border
 CHANGELOG
 ===================
 
+2012-07-09
+beautify: Fix New Japan effect
+
 2012-07-06
 beautify: Add warm effect
 beautify: Add Japanese effect

@@ -43,7 +43,7 @@ typedef enum
   BEAUTIFY_EFFECT_SOFT_LIGHT,
   BEAUTIFY_EFFECT_WARM,
   BEAUTIFY_EFFECT_SHARPEN,
-  BEAUTIFY_EFFECT_JAPANESE,
+  BEAUTIFY_EFFECT_NEW_JAPANESE,
 } BeautifyEffectType;
 
 static void     query    (void);
@@ -624,7 +624,7 @@ create_effect_pages (GtkNotebook *notebook) {
     BEAUTIFY_EFFECT_SOFT_LIGHT,
     BEAUTIFY_EFFECT_WARM,
     BEAUTIFY_EFFECT_SHARPEN,
-    BEAUTIFY_EFFECT_JAPANESE,
+    BEAUTIFY_EFFECT_NEW_JAPANESE,
   };
 
   gint i;
@@ -651,8 +651,8 @@ effect_icon_new (BeautifyEffectType effect)
     case BEAUTIFY_EFFECT_SHARPEN:
       title = "Sharpen";
       break;
-    case BEAUTIFY_EFFECT_JAPANESE:
-      title = "Japanese";
+    case BEAUTIFY_EFFECT_NEW_JAPANESE:
+      title = "New Japan";
       break;
   }
 
@@ -725,12 +725,34 @@ do_effect (gint32 image, BeautifyEffectType effect)
       gimp_destroy_params (return_vals, nreturn_vals);
     }
       break;
-    case BEAUTIFY_EFFECT_JAPANESE:
+    case BEAUTIFY_EFFECT_NEW_JAPANESE:
     {
-      GimpRGB color = {0.02, 0.07, 0.19, 1.0};
-      gimp_context_set_foreground (&color);
-      gimp_edit_fill (effect_layer, GIMP_FOREGROUND_FILL);
-      gimp_layer_set_mode (effect_layer, GIMP_DIFFERENCE_MODE);
+      /*
+      gimp_levels (effect_layer, GIMP_HISTOGRAM_RED, 0, 255, 1, 22, 196);
+      gimp_levels (effect_layer, GIMP_HISTOGRAM_GREEN, 0, 255, 1, 10, 224);
+      gimp_levels (effect_layer, GIMP_HISTOGRAM_BLUE, 26, 255, 1, 0, 246);
+      */
+      guint8 red_pts[] = {
+        0.0, 0.086275 * 255,
+        0.301829 * 255, 0.187500 * 255,
+        0.573171 * 255, 0.605469 * 255,
+        1.000000 * 255, 0.768627 * 255,
+      };
+      guint8 green_pts[] = {
+        0.0, 0.031250 * 255,
+        0.125000 * 255, 0.144531 * 255,
+        0.500000 * 255, 0.523438 * 255,
+        0.881098 * 255, 0.738281 * 255,
+        1.000000 * 255, 0.882812 * 255,
+      };
+      guint8 blue_pts[] = {
+        0.0, 0.0,
+        0.121951 * 255, 0.039062 * 255,
+        1.000000 * 255, 0.972656 * 255,
+      };
+      gimp_curves_spline (effect_layer, GIMP_HISTOGRAM_RED, 8, red_pts);
+      gimp_curves_spline (effect_layer, GIMP_HISTOGRAM_GREEN, 10, green_pts);
+      gimp_curves_spline (effect_layer, GIMP_HISTOGRAM_BLUE, 6, blue_pts);
     }
       break;
   }
