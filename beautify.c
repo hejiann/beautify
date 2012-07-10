@@ -705,10 +705,24 @@ do_effect (gint32 image, BeautifyEffectType effect)
 
     case BEAUTIFY_EFFECT_WARM:
     {
+      /*
       GimpRGB color = {1.0, 0.5, 0, 1.0};
       gimp_context_set_foreground (&color);
       gimp_edit_fill (effect_layer, GIMP_FOREGROUND_FILL);
       gimp_layer_set_mode (effect_layer, GIMP_OVERLAY_MODE);
+      */
+      guint8 red_pts[] = {
+        0.0, 0.082031 * 255,
+        0.405488 * 255, 0.621094 * 255,
+        0.954268 * 255, 1.000000 * 255,
+      };
+      guint8 green_pts[] = {
+        0.0, 0.0,
+        0.503049 * 255, 0.636719 * 255,
+        1.000000 * 255, 1.000000 * 255,
+      };
+      gimp_curves_spline (effect_layer, GIMP_HISTOGRAM_RED, 6, red_pts);
+      gimp_curves_spline (effect_layer, GIMP_HISTOGRAM_GREEN, 6, green_pts);
     }
       break;
 
@@ -727,11 +741,6 @@ do_effect (gint32 image, BeautifyEffectType effect)
       break;
     case BEAUTIFY_EFFECT_NEW_JAPANESE:
     {
-      /*
-      gimp_levels (effect_layer, GIMP_HISTOGRAM_RED, 0, 255, 1, 22, 196);
-      gimp_levels (effect_layer, GIMP_HISTOGRAM_GREEN, 0, 255, 1, 10, 224);
-      gimp_levels (effect_layer, GIMP_HISTOGRAM_BLUE, 26, 255, 1, 0, 246);
-      */
       guint8 red_pts[] = {
         0.0, 0.042969 * 255,
         0.350610 * 255, 0.320312 * 255,
