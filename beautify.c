@@ -22,6 +22,8 @@
 #define PLUG_IN_BINARY "beautify"
 #define PLUG_IN_ROLE   "gimp-beautify"
 
+#define TEXTURE_PATH   "textures/effects"
+
 #define PREVIEW_SIZE  480
 #define THUMBNAIL_SIZE  80
 
@@ -44,6 +46,7 @@ typedef enum
   BEAUTIFY_EFFECT_WARM,
   BEAUTIFY_EFFECT_SHARPEN,
   BEAUTIFY_EFFECT_NEW_JAPANESE,
+  BEAUTIFY_EFFECT_ASTRAL,
 } BeautifyEffectType;
 
 static void     query    (void);
@@ -625,6 +628,7 @@ create_effect_pages (GtkNotebook *notebook) {
     BEAUTIFY_EFFECT_WARM,
     BEAUTIFY_EFFECT_SHARPEN,
     BEAUTIFY_EFFECT_NEW_JAPANESE,
+    BEAUTIFY_EFFECT_ASTRAL,
   };
 
   gint i;
@@ -653,6 +657,9 @@ effect_icon_new (BeautifyEffectType effect)
       break;
     case BEAUTIFY_EFFECT_NEW_JAPANESE:
       title = "New Japan";
+      break;
+    case BEAUTIFY_EFFECT_ASTRAL:
+      title = "Astral";
       break;
   }
 
@@ -705,12 +712,6 @@ do_effect (gint32 image, BeautifyEffectType effect)
 
     case BEAUTIFY_EFFECT_WARM:
     {
-      /*
-      GimpRGB color = {1.0, 0.5, 0, 1.0};
-      gimp_context_set_foreground (&color);
-      gimp_edit_fill (effect_layer, GIMP_FOREGROUND_FILL);
-      gimp_layer_set_mode (effect_layer, GIMP_OVERLAY_MODE);
-      */
       guint8 red_pts[] = {
         0.0, 0.082031 * 255,
         0.405488 * 255, 0.621094 * 255,
@@ -763,6 +764,21 @@ do_effect (gint32 image, BeautifyEffectType effect)
       gimp_curves_spline (effect_layer, GIMP_HISTOGRAM_RED, 10, red_pts);
       gimp_curves_spline (effect_layer, GIMP_HISTOGRAM_GREEN, 10, green_pts);
       gimp_curves_spline (effect_layer, GIMP_HISTOGRAM_BLUE, 6, blue_pts);
+    }
+      break;
+    case BEAUTIFY_EFFECT_ASTRAL:
+    {
+      const gchar *home = g_get_home_dir();
+      printf ("home = %s\n", home);
+      gchar *dirname = g_build_filename(home, TEXTURE_PATH, NULL);
+      printf ("dirname = %s\n", dirname);
+      gchar *texture = g_build_filename(dirname, "astral.jpg", NULL);
+      printf ("texture = %s\n", texture);
+      GdkPixbuf *pixbuf = gdk_pixbuf_new_from_file (texture, NULL);
+      gint32 texture_layer = gimp_layer_new_from_pixbuf (image, "texture", pixbuf, 100, GIMP_SOFTLIGHT_MODE, 0, 0);
+      gimp_image_insert_layer (image, texture_layer, -1, 0);
+      gimp_layer_scale (texture_layer, width, height, FALSE);
+      gimp_image_merge_down (image, texture_layer, GIMP_CLIP_TO_BOTTOM_LAYER);
     }
       break;
   }
