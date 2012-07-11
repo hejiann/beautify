@@ -22,7 +22,7 @@
 #define PLUG_IN_BINARY "rip-border"
 #define PLUG_IN_ROLE   "gimp-rip-border"
 
-#define TEXTURE_PATH   "textures"
+#define TEXTURE_PATH   "textures/borders"
 
 #define PREVIEW_SIZE  480
 #define THUMBNAIL_SIZE  80

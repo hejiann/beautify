@@ -19,7 +19,9 @@ just running the install.sh to update.
 USING
 ===================
 
-GIMP menu: Tools -> Beautify -> Rip Border
+GIMP menu:
+Tools -> Beautify -> Beautify
+Tools -> Beautify -> Rip Border
 
 CHANGELOG
 ===================
