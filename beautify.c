@@ -45,6 +45,7 @@ typedef enum
   BEAUTIFY_EFFECT_SOFT_LIGHT,
   BEAUTIFY_EFFECT_WARM,
   BEAUTIFY_EFFECT_SHARPEN,
+  BEAUTIFY_EFFECT_INVERT,
   BEAUTIFY_EFFECT_NEW_JAPANESE,
   BEAUTIFY_EFFECT_ASTRAL,
 } BeautifyEffectType;
@@ -627,15 +628,36 @@ create_effect_pages (GtkNotebook *notebook) {
     BEAUTIFY_EFFECT_SOFT_LIGHT,
     BEAUTIFY_EFFECT_WARM,
     BEAUTIFY_EFFECT_SHARPEN,
+    BEAUTIFY_EFFECT_INVERT,
     BEAUTIFY_EFFECT_NEW_JAPANESE,
     BEAUTIFY_EFFECT_ASTRAL,
   };
 
+  /* table */
+  gint rows = 5;
+  gint cols = 3;
+  GtkWidget *table = gtk_table_new (rows, cols, FALSE);
+  gtk_table_set_col_spacings (GTK_TABLE (table), 6);
+  gtk_table_set_row_spacings (GTK_TABLE (table), 6);
+  gtk_box_pack_start (GTK_BOX (thispage), table, FALSE, FALSE, 0);
+  gtk_widget_show (table);
+
+  gint row = 1;
+  gint col = 1;
+
   gint i;
   for (i = 0; i < G_N_ELEMENTS (effects); i++) {
     GtkWidget *icon = effect_icon_new (effects[i]);
-    gtk_box_pack_start (GTK_BOX (thispage), icon, FALSE, FALSE, 0);
+    //gtk_box_pack_start (GTK_BOX (thispage), icon, FALSE, FALSE, 0);
+    gtk_table_attach_defaults (GTK_TABLE (table), icon, col - 1, col, row - 1, row);
     gtk_widget_show (icon);
+
+    col++;
+    if (col > cols)
+    {
+      row++;
+      col = 1;
+    }
   }
 
   gtk_notebook_append_page_menu (notebook, thispage, pagelabel, NULL);
@@ -655,6 +677,9 @@ effect_icon_new (BeautifyEffectType effect)
     case BEAUTIFY_EFFECT_SHARPEN:
       title = "Sharpen";
       break;
+    case BEAUTIFY_EFFECT_INVERT:
+      title = "Invert";
+      break;
     case BEAUTIFY_EFFECT_NEW_JAPANESE:
       title = "New Japan";
       break;
@@ -668,7 +693,7 @@ effect_icon_new (BeautifyEffectType effect)
 
   GtkWidget *box = gtk_box_new (GTK_ORIENTATION_VERTICAL, 2);
 
-  GdkPixbuf *pixbuf = gimp_image_get_thumbnail (image, 60, 60, GIMP_PIXBUF_SMALL_CHECKS);
+  GdkPixbuf *pixbuf = gimp_image_get_thumbnail (image, THUMBNAIL_SIZE, THUMBNAIL_SIZE, GIMP_PIXBUF_SMALL_CHECKS);
   GtkWidget *icon = gtk_image_new_from_pixbuf (pixbuf);
   GtkWidget *event_box = gtk_event_box_new ();
   gtk_container_add (GTK_CONTAINER (event_box), icon);
@@ -740,6 +765,9 @@ do_effect (gint32 image, BeautifyEffectType effect)
       gimp_destroy_params (return_vals, nreturn_vals);
     }
       break;
+    case BEAUTIFY_EFFECT_INVERT:
+      gimp_invert (effect_layer);
+      break;
     case BEAUTIFY_EFFECT_NEW_JAPANESE:
     {
       guint8 red_pts[] = {
@@ -769,11 +797,8 @@ do_effect (gint32 image, BeautifyEffectType effect)
     case BEAUTIFY_EFFECT_ASTRAL:
     {
       const gchar *home = g_get_home_dir();
-      printf ("home = %s\n", home);
       gchar *dirname = g_build_filename(home, TEXTURE_PATH, NULL);
-      printf ("dirname = %s\n", dirname);
       gchar *texture = g_build_filename(dirname, "astral.jpg", NULL);
-      printf ("texture = %s\n", texture);
       GdkPixbuf *pixbuf = gdk_pixbuf_new_from_file (texture, NULL);
       gint32 texture_layer = gimp_layer_new_from_pixbuf (image, "texture", pixbuf, 100, GIMP_SOFTLIGHT_MODE, 0, 0);
       gimp_image_insert_layer (image, texture_layer, -1, 0);
