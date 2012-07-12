@@ -182,7 +182,7 @@ rip_border (gint32 image_ID)
     gimp_layer_add_mask (color_layer, texture_mask);
 
     GdkPixbuf *pixbuf = gdk_pixbuf_new_from_file (rbvals.texture, NULL);
-    gint32 texture = gimp_layer_new_from_pixbuf(image_ID, "texture", pixbuf, rbvals.opacity, GIMP_NORMAL_MODE, 0, 0);
+    gint32 texture = gimp_layer_new_from_pixbuf (image_ID, "texture", pixbuf, rbvals.opacity, GIMP_NORMAL_MODE, 0, 0);
     gimp_image_insert_layer (image_ID, texture, -1, 0);
     gimp_layer_scale (texture, width, height, FALSE);
     gimp_invert (texture);
@@ -263,6 +263,7 @@ create_texture_page (GtkNotebook *notebook, const gchar* category, const gchar* 
   gtk_container_set_border_width (GTK_CONTAINER (thispage), 12);
   gtk_widget_show (thispage);
 
+  /* table */
   gint rows = 5;
   gint cols = 3;
   GtkWidget *table = gtk_table_new (rows, cols, FALSE);

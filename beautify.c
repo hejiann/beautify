@@ -46,6 +46,8 @@ typedef enum
   BEAUTIFY_EFFECT_WARM,
   BEAUTIFY_EFFECT_SHARPEN,
   BEAUTIFY_EFFECT_INVERT,
+  BEAUTIFY_EFFECT_ABAO,
+  BEAUTIFY_EFFECT_ICE_SPIRIT,
   BEAUTIFY_EFFECT_NEW_JAPANESE,
   BEAUTIFY_EFFECT_ASTRAL,
 } BeautifyEffectType;
@@ -295,9 +297,9 @@ beautify_dialog (gint32        image_ID,
   create_color_page (GTK_NOTEBOOK (notebook));
 
   /* preview */
-  label = gtk_label_new ("Preview");
+  /*label = gtk_label_new ("Preview");
   gtk_box_pack_start (GTK_BOX (middle_vbox), label, FALSE, FALSE, 0);
-  gtk_widget_show (label);
+  gtk_widget_show (label);*/
 
   preview_image = gimp_image_duplicate(image_ID);
 
@@ -629,6 +631,8 @@ create_effect_pages (GtkNotebook *notebook) {
     BEAUTIFY_EFFECT_WARM,
     BEAUTIFY_EFFECT_SHARPEN,
     BEAUTIFY_EFFECT_INVERT,
+    BEAUTIFY_EFFECT_ABAO,
+    BEAUTIFY_EFFECT_ICE_SPIRIT,
     BEAUTIFY_EFFECT_NEW_JAPANESE,
     BEAUTIFY_EFFECT_ASTRAL,
   };
@@ -679,6 +683,12 @@ effect_icon_new (BeautifyEffectType effect)
       break;
     case BEAUTIFY_EFFECT_INVERT:
       title = "Invert";
+      break;
+    case BEAUTIFY_EFFECT_ABAO:
+      title = "A Bao";
+      break;
+    case BEAUTIFY_EFFECT_ICE_SPIRIT:
+      title ="Ice Spirit";
       break;
     case BEAUTIFY_EFFECT_NEW_JAPANESE:
       title = "New Japan";
@@ -767,6 +777,37 @@ do_effect (gint32 image, BeautifyEffectType effect)
       break;
     case BEAUTIFY_EFFECT_INVERT:
       gimp_invert (effect_layer);
+      break;
+    case BEAUTIFY_EFFECT_ABAO:
+      /* TODO */
+      break;
+    case BEAUTIFY_EFFECT_ICE_SPIRIT:
+    {
+      guint8 red_pts[] = {
+        0.0, 0.007843 * 255, 0.121569 * 255, 0.141176 * 255,
+        0.247059 * 255, 0.286275 * 255, 0.372549 * 255, 0.423529 * 255,
+        0.498039 * 255, 0.552941 * 255, 0.623529 * 255, 0.674510 * 255,
+        0.749020 * 255, 0.792157 * 255, 0.874510 * 255, 0.898039 * 255,
+        1.000000 * 255, 1.000000 * 255,
+      };
+      guint8 green_pts[] = {
+        0.0, 0.007843 * 255, 0.121569 * 255, 0.184314 * 255,
+        0.247059 * 255, 0.360784 * 255, 0.372549 * 255, 0.517647 * 255,
+        0.498039 * 255, 0.654902 * 255, 0.623529 * 255, 0.768627 * 255,
+        0.749020 * 255, 0.866667 * 255, 0.874510 * 255, 0.945098 * 255,
+        1.000000 * 255, 1.000000 * 255,
+      };
+      guint8 blue_pts[] = {
+        0.0, 0.007843 * 255, 0.121569 * 255, 0.211765 * 255,
+        0.247059 * 255, 0.407843 * 255, 0.372549 * 255, 0.576471 * 255,
+        0.498039 * 255, 0.717647 * 255, 0.623529 * 255, 0.827451 * 255,
+        0.749020 * 255, 0.913725 * 255, 0.874510 * 255, 0.972549 * 255,
+        1.000000 * 255, 1.000000 * 255,
+      };
+      gimp_curves_spline (effect_layer, GIMP_HISTOGRAM_RED, 18, red_pts);
+      gimp_curves_spline (effect_layer, GIMP_HISTOGRAM_GREEN, 18, green_pts);
+      gimp_curves_spline (effect_layer, GIMP_HISTOGRAM_BLUE, 18, blue_pts);
+    }
       break;
     case BEAUTIFY_EFFECT_NEW_JAPANESE:
     {

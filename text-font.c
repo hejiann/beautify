@@ -286,14 +286,14 @@ text_font_dialog (gint32        image_ID,
   text_height += 20;
   offset_x -= 10;
   offset_y -= 10;
-  if (offset_x < 0)
+  /*if (offset_x < 0)
     offset_x = 0;
   if (offset_y < 0)
     offset_y = 0;
   if (offset_x + text_width > width)
     text_width = width - offset_x;
   if (offset_y + text_height > height)
-    text_height = height - offset_y;
+    text_height = height - offset_y;*/
   gimp_image_crop (text_image, text_width, text_height, offset_x, offset_y);
   gint thumb_width = MIN (text_width, 192);
   gint thumb_height = MIN (text_height, 48);
@@ -323,10 +323,6 @@ text_font_dialog (gint32        image_ID,
 
     g_signal_connect (event_box, "button_press_event", G_CALLBACK (select_font), fonts[i]);
   }
-
-  GtkWidget *viewport = gtk_widget_get_ancestor (table, GTK_TYPE_VIEWPORT);
-  GtkRequisition size;
-  gtk_widget_size_request (viewport, &size);
 
   gboolean run = (gimp_dialog_run (GIMP_DIALOG (dialog)) == GTK_RESPONSE_OK);
 
