@@ -48,6 +48,7 @@ typedef enum
   BEAUTIFY_EFFECT_INVERT,
   BEAUTIFY_EFFECT_ABAO,
   BEAUTIFY_EFFECT_ICE_SPIRIT,
+  BEAUTIFY_EFFECT_JAPANESE,
   BEAUTIFY_EFFECT_NEW_JAPANESE,
   BEAUTIFY_EFFECT_ASTRAL,
 } BeautifyEffectType;
@@ -633,6 +634,7 @@ create_effect_pages (GtkNotebook *notebook) {
     BEAUTIFY_EFFECT_INVERT,
     BEAUTIFY_EFFECT_ABAO,
     BEAUTIFY_EFFECT_ICE_SPIRIT,
+    BEAUTIFY_EFFECT_JAPANESE,
     BEAUTIFY_EFFECT_NEW_JAPANESE,
     BEAUTIFY_EFFECT_ASTRAL,
   };
@@ -688,7 +690,10 @@ effect_icon_new (BeautifyEffectType effect)
       title = "A Bao";
       break;
     case BEAUTIFY_EFFECT_ICE_SPIRIT:
-      title ="Ice Spirit";
+      title = "Ice Spirit";
+      break;
+    case BEAUTIFY_EFFECT_JAPANESE:
+      title = "Japanese";
       break;
     case BEAUTIFY_EFFECT_NEW_JAPANESE:
       title = "New Japan";
@@ -802,6 +807,34 @@ do_effect (gint32 image, BeautifyEffectType effect)
         0.247059 * 255, 0.407843 * 255, 0.372549 * 255, 0.576471 * 255,
         0.498039 * 255, 0.717647 * 255, 0.623529 * 255, 0.827451 * 255,
         0.749020 * 255, 0.913725 * 255, 0.874510 * 255, 0.972549 * 255,
+        1.000000 * 255, 1.000000 * 255,
+      };
+      gimp_curves_spline (effect_layer, GIMP_HISTOGRAM_RED, 18, red_pts);
+      gimp_curves_spline (effect_layer, GIMP_HISTOGRAM_GREEN, 18, green_pts);
+      gimp_curves_spline (effect_layer, GIMP_HISTOGRAM_BLUE, 18, blue_pts);
+    }
+      break;
+    case BEAUTIFY_EFFECT_JAPANESE:
+    {
+      guint8 red_pts[] = {
+        0.0, 0.098039 * 255, 0.121569 * 255, 0.188479 * 255,
+        0.247059 * 255, 0.329761 * 255, 0.372549 * 255, 0.496682 * 255,
+        0.498039 * 255, 0.657383 * 255, 0.623529 * 255, 0.787002 * 255,
+        0.749020 * 255, 0.864444 * 255, 0.874510 * 255, 0.900704 * 255,
+        1.000000 * 255, 0.917552 * 255,
+      };
+      guint8 green_pts[] = {
+        0.0, 0.103431 * 255, 0.121569 * 255, 0.224676 * 255,
+        0.247059 * 255, 0.394142 * 255, 0.372549 * 255, 0.541888 * 255,
+        0.498039 * 255, 0.675963 * 255, 0.623529 * 255, 0.785613 * 255,
+        0.749020 * 255, 0.893224 * 255, 0.874510 * 255, 0.943625 * 255,
+        1.000000 * 255, 0.972720 * 255,
+      };
+      guint8 blue_pts[] = {
+        0.0, 0.412025 * 255, 0.121569 * 255, 0.469119 * 255,
+        0.247059 * 255, 0.615777 * 255, 0.372549 * 255, 0.751174 * 255,
+        0.498039 * 255, 0.862955 * 255, 0.623529 * 255, 0.954468 * 255,
+        0.749020 * 255, 0.995760 * 255, 0.874510 * 255, 1.000000 * 255,
         1.000000 * 255, 1.000000 * 255,
       };
       gimp_curves_spline (effect_layer, GIMP_HISTOGRAM_RED, 18, red_pts);
