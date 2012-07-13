@@ -46,6 +46,7 @@ typedef enum
   BEAUTIFY_EFFECT_WARM,
   BEAUTIFY_EFFECT_SHARPEN,
   BEAUTIFY_EFFECT_INVERT,
+  BEAUTIFY_EFFECT_LITTLE_FRESH,
   BEAUTIFY_EFFECT_ABAO,
   BEAUTIFY_EFFECT_ICE_SPIRIT,
   BEAUTIFY_EFFECT_JAPANESE,
@@ -632,6 +633,7 @@ create_effect_pages (GtkNotebook *notebook) {
     BEAUTIFY_EFFECT_WARM,
     BEAUTIFY_EFFECT_SHARPEN,
     BEAUTIFY_EFFECT_INVERT,
+    BEAUTIFY_EFFECT_LITTLE_FRESH,
     BEAUTIFY_EFFECT_ABAO,
     BEAUTIFY_EFFECT_ICE_SPIRIT,
     BEAUTIFY_EFFECT_JAPANESE,
@@ -686,6 +688,9 @@ effect_icon_new (BeautifyEffectType effect)
     case BEAUTIFY_EFFECT_INVERT:
       title = "Invert";
       break;
+    case BEAUTIFY_EFFECT_LITTLE_FRESH:
+      title = "Little Fresh";
+      break;
     case BEAUTIFY_EFFECT_ABAO:
       title = "A Bao";
       break;
@@ -696,7 +701,7 @@ effect_icon_new (BeautifyEffectType effect)
       title = "Japanese";
       break;
     case BEAUTIFY_EFFECT_NEW_JAPANESE:
-      title = "New Japan";
+      title = "New Japanese";
       break;
     case BEAUTIFY_EFFECT_ASTRAL:
       title = "Astral";
@@ -782,6 +787,34 @@ do_effect (gint32 image, BeautifyEffectType effect)
       break;
     case BEAUTIFY_EFFECT_INVERT:
       gimp_invert (effect_layer);
+      break;
+    case BEAUTIFY_EFFECT_LITTLE_FRESH:
+    {
+      guint8 red_pts[] = {
+        0.0, 0.002975 * 255, 0.121569 * 255, 0.135413 * 255,
+        0.247059 * 255, 0.271797 * 255, 0.372549 * 255, 0.420642 * 255,
+        0.498039 * 255, 0.587088 * 255, 0.623529 * 255, 0.672206 * 255,
+        0.749020 * 255, 0.781208 * 255, 0.874510 * 255, 0.881668 * 255,
+        1.000000 * 255, 0.993149 * 255,
+      };
+      guint8 green_pts[] = {
+        0.0, 0.001070 * 255, 0.121569 * 255, 0.123393 * 255,
+        0.247059 * 255, 0.254300 * 255, 0.372549 * 255, 0.377336 * 255,
+        0.498039 * 255, 0.486582 * 255, 0.623529 * 255, 0.607331 * 255,
+        0.749020 * 255, 0.722174 * 255, 0.874510 * 255, 0.858206 * 255,
+        1.000000 * 255, 0.992154 * 255,
+      };
+      guint8 blue_pts[] = {
+        0.0, 0.003917 * 255, 0.121569 * 255, 0.098807 * 255,
+        0.247059 * 255, 0.234746 * 255, 0.372549 * 255, 0.378388 * 255,
+        0.498039 * 255, 0.520273 * 255, 0.623529 * 255, 0.633239 * 255,
+        0.749020 * 255, 0.748242 * 255, 0.874510 * 255, 0.862234 * 255,
+        1.000000 * 255, 0.964176 * 255,
+      };
+      gimp_curves_spline (effect_layer, GIMP_HISTOGRAM_RED, 18, red_pts);
+      gimp_curves_spline (effect_layer, GIMP_HISTOGRAM_GREEN, 18, green_pts);
+      gimp_curves_spline (effect_layer, GIMP_HISTOGRAM_BLUE, 18, blue_pts);
+    }
       break;
     case BEAUTIFY_EFFECT_ABAO:
       /* TODO */
