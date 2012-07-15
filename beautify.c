@@ -53,8 +53,30 @@ typedef enum
   BEAUTIFY_EFFECT_ICE_SPIRIT,
   BEAUTIFY_EFFECT_JAPANESE,
   BEAUTIFY_EFFECT_NEW_JAPANESE,
+  BEAUTIFY_EFFECT_WARM_YELLOW,
   BEAUTIFY_EFFECT_ASTRAL,
 } BeautifyEffectType;
+
+static const BeautifyEffectType basic_effects[] =
+{
+  BEAUTIFY_EFFECT_SOFT_LIGHT,
+  BEAUTIFY_EFFECT_WARM,
+  BEAUTIFY_EFFECT_SHARPEN,
+  BEAUTIFY_EFFECT_SMART_COLOR,
+  BEAUTIFY_EFFECT_INVERT,
+};
+
+static const BeautifyEffectType advanced_effects[] =
+{
+  BEAUTIFY_EFFECT_GOTHIC_STYLE,
+  BEAUTIFY_EFFECT_LITTLE_FRESH,
+  BEAUTIFY_EFFECT_ABAO,
+  BEAUTIFY_EFFECT_ICE_SPIRIT,
+  BEAUTIFY_EFFECT_JAPANESE,
+  BEAUTIFY_EFFECT_NEW_JAPANESE,
+  BEAUTIFY_EFFECT_WARM_YELLOW,
+  BEAUTIFY_EFFECT_ASTRAL,
+};
 
 static void     query    (void);
 static void     run      (const gchar      *name,
@@ -82,6 +104,8 @@ static void     yellow_blue_update   (GtkRange *range, gpointer data);
 static void     adjustment();
 
 static void create_effect_pages (GtkNotebook *notebook);
+static void create_effect_page  (GtkNotebook *notebook, gchar *str, const BeautifyEffectType* effects, guint n_effects);
+
 static GtkWidget* effect_icon_new (BeautifyEffectType effect);
 
 static gboolean select_effect (GtkWidget *widget, GdkEvent *event, gpointer user_data);
@@ -623,27 +647,17 @@ adjustment () {
 
 static void
 create_effect_pages (GtkNotebook *notebook) {
-  GtkWidget *pagelabel = gtk_label_new ("Basic");
+  create_effect_page (notebook, "Basic", basic_effects, G_N_ELEMENTS (basic_effects));
+  create_effect_page (notebook, "Advanced", advanced_effects, G_N_ELEMENTS (advanced_effects));
+}
+
+static void
+create_effect_page (GtkNotebook *notebook, gchar *str, const BeautifyEffectType* effects, guint n_effects) {
+  GtkWidget *pagelabel = gtk_label_new (str);
 
   GtkWidget *thispage = gtk_box_new (GTK_ORIENTATION_VERTICAL, 12);
   gtk_container_set_border_width (GTK_CONTAINER (thispage), 12);
   gtk_widget_show (thispage);
-
-  BeautifyEffectType effects[] =
-  {
-    BEAUTIFY_EFFECT_SOFT_LIGHT,
-    BEAUTIFY_EFFECT_WARM,
-    BEAUTIFY_EFFECT_SHARPEN,
-    BEAUTIFY_EFFECT_SMART_COLOR,
-    BEAUTIFY_EFFECT_INVERT,
-    BEAUTIFY_EFFECT_GOTHIC_STYLE,
-    BEAUTIFY_EFFECT_LITTLE_FRESH,
-    BEAUTIFY_EFFECT_ABAO,
-    BEAUTIFY_EFFECT_ICE_SPIRIT,
-    BEAUTIFY_EFFECT_JAPANESE,
-    BEAUTIFY_EFFECT_NEW_JAPANESE,
-    BEAUTIFY_EFFECT_ASTRAL,
-  };
 
   /* table */
   gint rows = 5;
@@ -658,9 +672,8 @@ create_effect_pages (GtkNotebook *notebook) {
   gint col = 1;
 
   gint i;
-  for (i = 0; i < G_N_ELEMENTS (effects); i++) {
+  for (i = 0; i < n_effects; i++) {
     GtkWidget *icon = effect_icon_new (effects[i]);
-    //gtk_box_pack_start (GTK_BOX (thispage), icon, FALSE, FALSE, 0);
     gtk_table_attach_defaults (GTK_TABLE (table), icon, col - 1, col, row - 1, row);
     gtk_widget_show (icon);
 
@@ -712,6 +725,9 @@ effect_icon_new (BeautifyEffectType effect)
       break;
     case BEAUTIFY_EFFECT_NEW_JAPANESE:
       title = "New Japanese";
+      break;
+    case BEAUTIFY_EFFECT_WARM_YELLOW:
+      title = "Warm Yellow";
       break;
     case BEAUTIFY_EFFECT_ASTRAL:
       title = "Astral";
@@ -965,6 +981,34 @@ do_effect (gint32 image, BeautifyEffectType effect)
       gimp_curves_spline (effect_layer, GIMP_HISTOGRAM_RED, 10, red_pts);
       gimp_curves_spline (effect_layer, GIMP_HISTOGRAM_GREEN, 10, green_pts);
       gimp_curves_spline (effect_layer, GIMP_HISTOGRAM_BLUE, 6, blue_pts);
+    }
+      break;
+    case BEAUTIFY_EFFECT_WARM_YELLOW:
+    {
+      guint8 red_pts[] = {
+        0.0, 0.000980 * 255, 0.121569 * 255, 0.065574 * 255,
+        0.247059 * 255, 0.213677 * 255, 0.372549 * 255, 0.383298 * 255,
+        0.498039 * 255, 0.556855 * 255, 0.623529 * 255, 0.726149 * 255,
+        0.749020 * 255, 0.864046 * 255, 0.874510 * 255, 0.958157 * 255,
+        1.000000 * 255, 0.996641 * 255,
+      };
+      guint8 green_pts[] = {
+        0.0, 0.005882 * 255, 0.121569 * 255, 0.107837 * 255,
+        0.247059 * 255, 0.276792 * 255, 0.372549 * 255, 0.452811 * 255,
+        0.498039 * 255, 0.617782 * 255, 0.623529 * 255, 0.763782 * 255,
+        0.749020 * 255, 0.886822 * 255, 0.874510 * 255, 0.965223 * 255,
+        1.000000 * 255, 0.996993 * 255,
+      };
+      guint8 blue_pts[] = {
+        0.0, 0.000495 * 255, 0.121569 * 255, 0.035825 * 255,
+        0.247059 * 255, 0.149480 * 255, 0.372549 * 255, 0.305398 * 255,
+        0.498039 * 255, 0.491352 * 255, 0.623529 * 255, 0.670305 * 255,
+        0.749020 * 255, 0.838898 * 255, 0.874510 * 255, 0.951301 * 255,
+        1.000000 * 255, 0.994118 * 255,
+      };
+      gimp_curves_spline (effect_layer, GIMP_HISTOGRAM_RED, 18, red_pts);
+      gimp_curves_spline (effect_layer, GIMP_HISTOGRAM_GREEN, 18, green_pts);
+      gimp_curves_spline (effect_layer, GIMP_HISTOGRAM_BLUE, 18, blue_pts);
     }
       break;
     case BEAUTIFY_EFFECT_ASTRAL:
