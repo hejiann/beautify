@@ -105,6 +105,9 @@ static void     yellow_blue_update   (GtkRange *range, gpointer data);
 
 static void     adjustment();
 
+static GtkWidget* effect_option_new ();
+static void       effect_opacity_update (GtkRange *range, gpointer data);
+
 static void create_effect_pages (GtkNotebook *notebook);
 static void create_effect_page  (GtkNotebook *notebook, gchar *str, const BeautifyEffectType* effects, guint n_effects);
 
@@ -152,6 +155,9 @@ static GtkWidget *yellow_blue = NULL;
 static GtkWidget *preview          = NULL;
 static gint32     preview_image    = 0;
 static gint32     saved_image      = 0;
+
+static GtkWidget *effect_option    = NULL;
+static GtkWidget *effect_opacity   = NULL;
 
 static BeautifyEffectType current_effect = BEAUTIFY_EFFECT_NONE;
 gint32 preview_effect_layer = 0;
@@ -327,17 +333,17 @@ beautify_dialog (gint32        image_ID,
   create_color_page (GTK_NOTEBOOK (notebook));
 
   /* preview */
-  /*label = gtk_label_new ("Preview");
-  gtk_box_pack_start (GTK_BOX (middle_vbox), label, FALSE, FALSE, 0);
-  gtk_widget_show (label);*/
-
-  preview_image = gimp_image_duplicate(image_ID);
+  preview_image = gimp_image_duplicate (image_ID);
 
   preview = gtk_image_new();
   preview_update (preview);
 
   gtk_box_pack_start (GTK_BOX (middle_vbox), preview, TRUE, TRUE, 0);
   gtk_widget_show (preview);
+
+  /* effect option */
+  effect_option = effect_option_new ();
+  gtk_box_pack_start (GTK_BOX (middle_vbox), effect_option, FALSE, FALSE, 0);
 
   /* effects */
   notebook = gtk_notebook_new ();
@@ -593,6 +599,7 @@ yellow_blue_update (GtkRange *range, gpointer data) {
   adjustment ();
   preview_update (preview);
 }
+
 static void
 adjustment () {
   if (bvals.brightness == 0 && bvals.contrast == 0 && bvals.saturation == 0 && bvals.hue == 0 && bvals.cyan_red == 0 && bvals.magenta_green == 0 && bvals.yellow_blue == 0) {
@@ -645,6 +652,40 @@ adjustment () {
     gimp_color_balance (layer, GIMP_HIGHLIGHTS, TRUE,
                         bvals.cyan_red, bvals.magenta_green, bvals.yellow_blue);
   }
+}
+
+static GtkWidget*
+effect_option_new () {
+  GtkWidget *box = gtk_box_new (GTK_ORIENTATION_HORIZONTAL, 12);
+
+  GtkWidget *label = gtk_label_new ("Effect Opacity:");
+  gtk_box_pack_start (GTK_BOX (box), label, FALSE, FALSE, 0);
+  gtk_widget_show (label);
+
+  effect_opacity = gtk_hscale_new_with_range (0, 100, 1);
+  gtk_range_set_value (GTK_RANGE (effect_opacity), 100);
+  gtk_scale_set_value_pos (GTK_SCALE (effect_opacity), GTK_POS_RIGHT);
+  gtk_box_pack_start (GTK_BOX (box), effect_opacity, TRUE, TRUE, 0);
+  gtk_widget_show (effect_opacity);
+
+  g_signal_connect (effect_opacity, "value-changed",
+                   G_CALLBACK (effect_opacity_update),
+                   NULL);
+
+  return box;
+}
+
+static void
+effect_opacity_update (GtkRange *range, gpointer data) {
+  if (current_effect == BEAUTIFY_EFFECT_NONE) {
+    return;
+  }
+
+  gdouble opacity = gtk_range_get_value (range);
+  gint32 layer = gimp_image_get_active_layer (preview_image);
+  gimp_layer_set_opacity (layer, opacity);
+
+  preview_update (preview);
 }
 
 static void
@@ -769,6 +810,10 @@ select_effect (GtkWidget *widget, GdkEvent *event, gpointer user_data)
   do_effect (preview_image, effect);
   current_effect = effect;
   preview_update (preview);
+
+  /* effect option */
+  gtk_range_set_value (GTK_RANGE (effect_opacity), 100);
+  gtk_widget_show (effect_option);
 
   return TRUE;
 }
@@ -1057,6 +1102,7 @@ do_effect (gint32 image, BeautifyEffectType effect)
     }
       break;
   }
+
 }
 
 static void
@@ -1107,6 +1153,8 @@ apply_effect ()
   gimp_image_merge_down (preview_image, current_layer, GIMP_EXPAND_AS_NECESSARY);
 
   current_effect = BEAUTIFY_EFFECT_NONE;
+
+  gtk_widget_hide (effect_option);
 
   if (saved_image) {
     gimp_image_delete (saved_image);
