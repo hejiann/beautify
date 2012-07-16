@@ -18,6 +18,8 @@
 #include <libgimp/gimp.h>
 #include <libgimp/gimpui.h>
 
+#include "rip-border-textures.h"
+
 #define PLUG_IN_PROC   "plug-in-rip-border"
 #define PLUG_IN_BINARY "rip-border"
 #define PLUG_IN_ROLE   "gimp-rip-border"
@@ -29,7 +31,7 @@
 
 typedef struct
 {
-  gchar   *texture;
+  const guint8* texture;
   GimpRGB  color;
   gdouble  opacity;
 } RipBorderValues;
@@ -44,6 +46,8 @@ static void     run      (const gchar      *name,
 static void     rip_border (gint32     image_ID);
 
 static gboolean rip_border_dialog ();
+
+static void create_texture_page (GtkNotebook *notebook, const gchar* category, const guint8** textures, guint n_textures);
 
 const GimpPlugInInfo PLUG_IN_INFO =
 {
@@ -68,6 +72,98 @@ static GtkWidget *preview          = NULL;
 static gint32     preview_image    = 0;
 static gint32     color_layer      = 0;
 static gint32     texture_mask     = 0;
+
+static const guint8* stars_textures[] =
+{
+  texture_12792,
+  texture_12799,
+  texture_12842,
+  texture_12843,
+  texture_12845,
+  texture_12847,
+  texture_12849,
+  texture_12851,
+  texture_12857,
+  texture_12858,
+  texture_14965,
+  texture_15617,
+  texture_15618,
+  texture_15619,
+  texture_15620,
+};
+
+static const guint8* border_textures[] =
+{
+  texture_12053,
+  texture_12054,
+  texture_12093,
+  texture_12403,
+  texture_12782,
+  texture_15364,
+  texture_15365,
+  texture_15366,
+  texture_15599,
+  texture_15605,
+  texture_15605,
+  texture_15608,
+  texture_15609,
+  texture_15610,
+  texture_15611,
+};
+
+static const guint8* art_textures[] =
+{
+  texture_14757,
+  texture_14963,
+  texture_15614,
+  texture_15616,
+  texture_200442,
+  texture_200549,
+  texture_200623,
+  texture_200836,
+};
+
+static const guint8* flowers_textures[] =
+{
+  texture_12094,
+  texture_12406,
+  texture_12817,
+  texture_12840,
+  texture_14754,
+  texture_14755,
+  texture_14761,
+  texture_14779,
+  texture_14964,
+  texture_15621,
+  texture_15622,
+  texture_15624,
+  texture_15625,
+};
+
+static const guint8* lights_textures[] =
+{
+  texture_14776,
+  texture_14777,
+  texture_14778,
+};
+
+static const guint8* others_textures[] =
+{
+  texture_12356,
+  texture_12357,
+  texture_12402,
+  texture_12811,
+  texture_12813,
+  texture_12815,
+  texture_12859,
+  texture_14772,
+  texture_14774,
+  texture_14911,
+  texture_15612,
+  texture_15613,
+  texture_15623,
+  texture_200287,
+};
 
 MAIN ()
 
@@ -181,7 +277,7 @@ rip_border (gint32 image_ID)
                                                   GIMP_ADD_WHITE_MASK);
     gimp_layer_add_mask (color_layer, texture_mask);
 
-    GdkPixbuf *pixbuf = gdk_pixbuf_new_from_file (rbvals.texture, NULL);
+    GdkPixbuf *pixbuf = gdk_pixbuf_new_from_inline (-1, rbvals.texture, FALSE, NULL);
     gint32 texture = gimp_layer_new_from_pixbuf (image_ID, "texture", pixbuf, rbvals.opacity, GIMP_NORMAL_MODE, 0, 0);
     gimp_image_insert_layer (image_ID, texture, -1, 0);
     gimp_layer_scale (texture, width, height, FALSE);
@@ -219,11 +315,11 @@ preview_update (GtkWidget *preview)
 }
 
 static gboolean
-select_texture (GtkWidget *event_box, GdkEventButton *event, gchar* texture)
+select_texture (GtkWidget *event_box, GdkEventButton *event, const guint8* texture)
 {
   rbvals.texture = texture;
 
-  GdkPixbuf *pixbuf = gdk_pixbuf_new_from_file (rbvals.texture, NULL);
+  GdkPixbuf *pixbuf = gdk_pixbuf_new_from_inline (-1, rbvals.texture, FALSE, NULL);
   gint32 texture_layer = gimp_layer_new_from_pixbuf (preview_image,
                                               "texture",
                                               pixbuf,
@@ -255,61 +351,6 @@ opacity_update (GtkRange *range, gpointer data) {
   preview_update (preview);
 }
 
-void
-create_texture_page (GtkNotebook *notebook, const gchar* category, const gchar* path) {
-  GtkWidget *label = gtk_label_new (category);
-
-  GtkWidget *thispage = gtk_box_new (GTK_ORIENTATION_VERTICAL, 12);
-  gtk_container_set_border_width (GTK_CONTAINER (thispage), 12);
-  gtk_widget_show (thispage);
-
-  /* table */
-  gint rows = 5;
-  gint cols = 3;
-  GtkWidget *table = gtk_table_new (rows, cols, FALSE);
-  gtk_table_set_col_spacings (GTK_TABLE (table), 6);
-  gtk_table_set_row_spacings (GTK_TABLE (table), 6);
-  gtk_box_pack_start (GTK_BOX (thispage), table, FALSE, FALSE, 0);
-  gtk_widget_show (table);
-
-  gint row = 1;
-  gint col = 1;
-
-  GDir *dir = g_dir_open(path, 0, NULL);
-  if (dir)
-  {
-    const gchar *dir_ent;
-    while (dir_ent = g_dir_read_name(dir))
-    {
-      if (is_hidden (dir_ent))
-        continue;
-
-      gchar *filename = g_build_filename (path, dir_ent, NULL);
-      GdkPixbuf *pixbuf = gdk_pixbuf_new_from_file (filename, NULL);
-      pixbuf = gdk_pixbuf_scale_simple (pixbuf, THUMBNAIL_SIZE, THUMBNAIL_SIZE, GDK_INTERP_BILINEAR);
-      GtkWidget *image = gtk_image_new_from_pixbuf (pixbuf);
-      GtkWidget *event_box = gtk_event_box_new ();
-      gtk_container_add (GTK_CONTAINER (event_box), image);
-      gtk_widget_show (image);
-      gtk_table_attach_defaults (GTK_TABLE (table), event_box, col - 1, col, row - 1, row);
-      gtk_widget_show (event_box);
-
-      col++;
-      if (col > cols)
-      {
-        row++;
-        col = 1;
-      }
-
-      g_signal_connect (event_box, "button_press_event", G_CALLBACK (select_texture), filename);
-
-      //g_free(filename);
-    }
-    g_dir_close (dir);
-  }
-
-  gtk_notebook_append_page_menu (notebook, thispage, label, NULL);
-}
 
 static gboolean
 rip_border_dialog ()
@@ -428,8 +469,7 @@ rip_border_dialog ()
   gtk_box_pack_start (GTK_BOX (right_vbox), notebook, FALSE, FALSE, 0);
   gtk_widget_show (notebook);
 
-  const gchar *home = g_get_home_dir();
-  //gchar *dirname = g_strconcat(home, TEXTURE_PATH, NULL);
+  /*const gchar *home = g_get_home_dir();
   gchar *dirname = g_build_filename(home, TEXTURE_PATH, NULL);
   GDir *dir = g_dir_open(dirname, 0, NULL);
   if (dir)
@@ -441,19 +481,84 @@ rip_border_dialog ()
         continue;
 
       gchar *filename = g_build_filename (dirname, dir_ent, NULL);
-      if (g_file_test(filename, G_FILE_TEST_IS_DIR)) {
-        create_texture_page (GTK_NOTEBOOK (notebook), dir_ent, filename);
-      }
+      if (g_file_test(filename, G_FILE_TEST_IS_DIR)) {*/
+        create_texture_page (GTK_NOTEBOOK (notebook), "Stars", stars_textures, G_N_ELEMENTS (stars_textures));
+        create_texture_page (GTK_NOTEBOOK (notebook), "Border", border_textures, G_N_ELEMENTS (border_textures));
+        create_texture_page (GTK_NOTEBOOK (notebook), "Art", art_textures, G_N_ELEMENTS (art_textures));
+        create_texture_page (GTK_NOTEBOOK (notebook), "Flowers", flowers_textures, G_N_ELEMENTS (flowers_textures));
+        create_texture_page (GTK_NOTEBOOK (notebook), "Lights", flowers_textures, G_N_ELEMENTS (lights_textures));
+        create_texture_page (GTK_NOTEBOOK (notebook), "Others", others_textures, G_N_ELEMENTS (others_textures));
+      /*}
 
       //g_free(filename);
     }
     g_dir_close (dir);
-  }
+  }*/
 
   run = (gimp_dialog_run (GIMP_DIALOG (dialog)) == GTK_RESPONSE_OK);
 
   gtk_widget_destroy (dialog);
 
   return run;
+}
+
+static void
+//create_texture_page (GtkNotebook *notebook, const gchar* category, const gchar* path) {
+create_texture_page (GtkNotebook *notebook, const gchar* category, const guint8** textures, guint n_textures) {
+  GtkWidget *label = gtk_label_new (category);
+
+  GtkWidget *thispage = gtk_box_new (GTK_ORIENTATION_VERTICAL, 12);
+  gtk_container_set_border_width (GTK_CONTAINER (thispage), 12);
+  gtk_widget_show (thispage);
+
+  /* table */
+  gint rows = 5;
+  gint cols = 3;
+  GtkWidget *table = gtk_table_new (rows, cols, FALSE);
+  gtk_table_set_col_spacings (GTK_TABLE (table), 6);
+  gtk_table_set_row_spacings (GTK_TABLE (table), 6);
+  gtk_box_pack_start (GTK_BOX (thispage), table, FALSE, FALSE, 0);
+  gtk_widget_show (table);
+
+  gint row = 1;
+  gint col = 1;
+
+  /*GDir *dir = g_dir_open(path, 0, NULL);
+  if (dir)
+  {*/
+    //const gchar *dir_ent;
+    //while (dir_ent = g_dir_read_name(dir))
+    gint i;
+    for (i = 0; i < n_textures; i++)
+    {
+      /*if (is_hidden (dir_ent))
+        continue;
+
+      gchar *filename = g_build_filename (path, dir_ent, NULL);
+      GdkPixbuf *pixbuf = gdk_pixbuf_new_from_file (filename, NULL);*/
+      GdkPixbuf *pixbuf = gdk_pixbuf_new_from_inline (-1, textures[i], FALSE, NULL);
+      pixbuf = gdk_pixbuf_scale_simple (pixbuf, THUMBNAIL_SIZE, THUMBNAIL_SIZE, GDK_INTERP_BILINEAR);
+      GtkWidget *image = gtk_image_new_from_pixbuf (pixbuf);
+      GtkWidget *event_box = gtk_event_box_new ();
+      gtk_container_add (GTK_CONTAINER (event_box), image);
+      gtk_widget_show (image);
+      gtk_table_attach_defaults (GTK_TABLE (table), event_box, col - 1, col, row - 1, row);
+      gtk_widget_show (event_box);
+
+      col++;
+      if (col > cols)
+      {
+        row++;
+        col = 1;
+      }
+
+      g_signal_connect (event_box, "button_press_event", G_CALLBACK (select_texture), (gpointer)textures[i]);
+
+      //g_free(filename);
+    }
+    //g_dir_close (dir);
+  //}
+
+  gtk_notebook_append_page_menu (notebook, thispage, label, NULL);
 }
 

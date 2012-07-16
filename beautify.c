@@ -18,6 +18,8 @@
 #include <libgimp/gimp.h>
 #include <libgimp/gimpui.h>
 
+#include "beautify-textures.h"
+
 #define PLUG_IN_PROC   "plug-in-beautify"
 #define PLUG_IN_BINARY "beautify"
 #define PLUG_IN_ROLE   "gimp-beautify"
@@ -91,6 +93,8 @@ static void     beautify (GimpDrawable *drawable);
 
 static gboolean beautify_dialog (gint32        image_ID,
                                  GimpDrawable *drawable);
+
+static void     preview_update (GtkWidget *preview);
 
 static void     create_base_page (GtkNotebook *notebook);
 static void     create_color_page (GtkNotebook *notebook);
@@ -264,19 +268,6 @@ beautify (GimpDrawable *drawable)
   gimp_floating_sel_anchor (floating_sel);
 }
 
-static void
-preview_update (GtkWidget *preview)
-{
-  gint preview_size = PREVIEW_SIZE;
-  gint max_size = height;
-  if (height < width)
-    max_size = width;
-  if (preview_size > max_size)
-    preview_size = max_size;
-  GdkPixbuf *pixbuf = gimp_image_get_thumbnail (preview_image, preview_size, preview_size, GIMP_PIXBUF_SMALL_CHECKS);
-  gtk_image_set_from_pixbuf (GTK_IMAGE(preview), pixbuf);
-}
-
 static gboolean
 beautify_dialog (gint32        image_ID,
                  GimpDrawable *drawable)
@@ -286,7 +277,6 @@ beautify_dialog (gint32        image_ID,
   GtkWidget *left_vbox;
   GtkWidget *middle_vbox;
   GtkWidget *right_vbox;
-  GtkWidget *label;
 
   gimp_ui_init (PLUG_IN_BINARY, FALSE);
 
@@ -357,6 +347,19 @@ beautify_dialog (gint32        image_ID,
   gtk_widget_destroy (dialog);
 
   return run;
+}
+
+static void
+preview_update (GtkWidget *preview)
+{
+  gint preview_size = PREVIEW_SIZE;
+  gint max_size = height;
+  if (height < width)
+    max_size = width;
+  if (preview_size > max_size)
+    preview_size = max_size;
+  GdkPixbuf *pixbuf = gimp_image_get_thumbnail (preview_image, preview_size, preview_size, GIMP_PIXBUF_SMALL_CHECKS);
+  gtk_image_set_from_pixbuf (GTK_IMAGE(preview), pixbuf);
 }
 
 static void
@@ -715,7 +718,8 @@ create_effect_page (GtkNotebook *notebook, gchar *str, const BeautifyEffectType*
   gint col = 1;
 
   gint i;
-  for (i = 0; i < n_effects; i++) {
+  for (i = 0; i < n_effects; i++)
+  {
     GtkWidget *icon = effect_icon_new (effects[i]);
     gtk_table_attach_defaults (GTK_TABLE (table), icon, col - 1, col, row - 1, row);
     gtk_widget_show (icon);
@@ -734,7 +738,8 @@ create_effect_page (GtkNotebook *notebook, gchar *str, const BeautifyEffectType*
 static GtkWidget *
 effect_icon_new (BeautifyEffectType effect)
 {
-  gchar *title = 0;
+  gchar *title;
+
   switch (effect) {
     case BEAUTIFY_EFFECT_SOFT_LIGHT:
       title = "Soft Light";
@@ -1091,10 +1096,11 @@ do_effect (gint32 image, BeautifyEffectType effect)
       break;
     case BEAUTIFY_EFFECT_ASTRAL:
     {
-      const gchar *home = g_get_home_dir();
+      /*const gchar *home = g_get_home_dir();
       gchar *dirname = g_build_filename(home, TEXTURE_PATH, NULL);
       gchar *texture = g_build_filename(dirname, "astral.jpg", NULL);
-      GdkPixbuf *pixbuf = gdk_pixbuf_new_from_file (texture, NULL);
+      GdkPixbuf *pixbuf = gdk_pixbuf_new_from_file (texture, NULL);*/
+      GdkPixbuf *pixbuf = gdk_pixbuf_new_from_inline (-1, texture_astral, FALSE, NULL);
       gint32 texture_layer = gimp_layer_new_from_pixbuf (image, "texture", pixbuf, 100, GIMP_SOFTLIGHT_MODE, 0, 0);
       gimp_image_insert_layer (image, texture_layer, -1, 0);
       gimp_layer_scale (texture_layer, width, height, FALSE);

@@ -1,0 +1,6 @@
+*.o
+beautify
+beautify-textures.h
+rip-border
+rip-border-textures.h
+skin-whitening
