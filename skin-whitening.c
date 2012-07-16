@@ -29,11 +29,15 @@
 
 typedef enum
 {
+  WHITENING_EFFECT_LITTLE_WHITENING,
+  WHITENING_EFFECT_MODERATE_WHITENING,
   WHITENING_EFFECT_HIGH_WHITENING,
 } WhiteningEffectType;
 
 static const WhiteningEffectType effects[] =
 {
+  WHITENING_EFFECT_LITTLE_WHITENING,
+  WHITENING_EFFECT_MODERATE_WHITENING,
   WHITENING_EFFECT_HIGH_WHITENING,
 };
 
@@ -291,9 +295,17 @@ effect_icon_new (WhiteningEffectType effect)
   gchar  *title;
 
   switch (effect) {
-    case WHITENING_EFFECT_HIGH_WHITENING:
+    case WHITENING_EFFECT_LITTLE_WHITENING:
       data = skin_whitening_1;
-      title = "High Whitening";
+      title = "L Whitening";
+      break;
+    case WHITENING_EFFECT_MODERATE_WHITENING:
+      data = skin_whitening_2;
+      title = "M Whitening";
+      break;
+    case WHITENING_EFFECT_HIGH_WHITENING:
+      data = skin_whitening_3;
+      title = "H Whitening";
       break;
   }
 
@@ -325,6 +337,42 @@ effect_select (GtkWidget *event_box, GdkEventButton *event, WhiteningEffectType 
   gint32 layer = gimp_image_get_active_layer (preview_image);
   switch (effect)
   {
+    case WHITENING_EFFECT_LITTLE_WHITENING:
+    {
+      guint8 pts[] = {
+        0.000000 * 255, 0.007843 * 255,
+        0.121569 * 255, 0.160784 * 255,
+        0.247059 * 255, 0.317647 * 255,
+        0.372549 * 255, 0.462745 * 255,
+        0.498039 * 255, 0.592157 * 255,
+        0.623529 * 255, 0.713725 * 255,
+        0.749020 * 255, 0.819608 * 255,
+        0.874510 * 255, 0.913725 * 255,
+        1.000000 * 255, 0.996078 * 255,
+      };
+      gimp_curves_spline (layer, GIMP_HISTOGRAM_RED, 18, pts);
+      gimp_curves_spline (layer, GIMP_HISTOGRAM_GREEN, 18, pts);
+      gimp_curves_spline (layer, GIMP_HISTOGRAM_BLUE, 18, pts);
+      break;
+    }
+    case WHITENING_EFFECT_MODERATE_WHITENING:
+    {
+      guint8 pts[] = {
+        0.000000 * 255, 0.007843 * 255,
+        0.121569 * 255, 0.192157 * 255,
+        0.247059 * 255, 0.372549 * 255,
+        0.372549 * 255, 0.529412 * 255,
+        0.498039 * 255, 0.666667 * 255,
+        0.623529 * 255, 0.784314 * 255,
+        0.749020 * 255, 0.874510 * 255,
+        0.874510 * 255, 0.945098 * 255,
+        1.000000 * 255, 0.996078 * 255,
+      };
+      gimp_curves_spline (layer, GIMP_HISTOGRAM_RED, 18, pts);
+      gimp_curves_spline (layer, GIMP_HISTOGRAM_GREEN, 18, pts);
+      gimp_curves_spline (layer, GIMP_HISTOGRAM_BLUE, 18, pts);
+      break;
+    }
     case WHITENING_EFFECT_HIGH_WHITENING:
     {
       guint8 pts[] = {
@@ -341,8 +389,8 @@ effect_select (GtkWidget *event_box, GdkEventButton *event, WhiteningEffectType 
       gimp_curves_spline (layer, GIMP_HISTOGRAM_RED, 18, pts);
       gimp_curves_spline (layer, GIMP_HISTOGRAM_GREEN, 18, pts);
       gimp_curves_spline (layer, GIMP_HISTOGRAM_BLUE, 18, pts);
+      break;
     }
-    break;
   }
 
   preview_update (preview);
