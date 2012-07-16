@@ -6,15 +6,10 @@ Beautify is a set of GIMP plugins for easiest and quickly photo beautify.
 INSTALL
 ===================
 
-just running the install.sh
+make && make install
 
 Note:
 Be sure that you have installed the gimp-devel-tools package before install.
-
-UPDATE
-===================
-
-just running the install.sh to update.
 
 USING
 ===================
@@ -27,6 +22,10 @@ Support: #beautify on FreeNode
 
 CHANGELOG
 ===================
+
+2012-07-16
+add Makefile
+add skin whitening tool
 
 2012-07-15
 beautify: add warm yellow effect

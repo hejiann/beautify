@@ -51,7 +51,13 @@ rip-border-textures.h: rip-border-textures.list
 	$(GDK_PIXBUF_CSOURCE) --raw --build-list `cat rip-border-textures.list` > $(@F)
 
 skin-whitening: skin-whitening.o
-	$(CC) $(CFLAGS) -o $@ $^ $(LIBS)
+	$(CC) -o $@ $^ $(LIBS)
+
+skin-whitening.o: skin-whitening.c skin-whitening-images.h
+	$(CC) $(CFLAGS) -c skin-whitening.c -o skin-whitening.o
+
+skin-whitening-images.h: skin-whitening-images.list
+	$(GDK_PIXBUF_CSOURCE) --raw --build-list `cat skin-whitening-images.list` > $(@F)
 
 clean:
 	rm -f *.o beautify rip-border skin-whitening
