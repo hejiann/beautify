@@ -1,3 +1,4 @@
 texture_astral
   ./textures/effects/astral.jpg
-
+texture_christmas_eve
+  ./textures/effects/christmas-eve.jpg

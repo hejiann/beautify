@@ -49,15 +49,19 @@ typedef enum
   BEAUTIFY_EFFECT_SHARPEN,
   BEAUTIFY_EFFECT_SMART_COLOR,
   BEAUTIFY_EFFECT_INVERT,
+
   BEAUTIFY_EFFECT_GOTHIC_STYLE,
   BEAUTIFY_EFFECT_CLASSIC_HDR,
   BEAUTIFY_EFFECT_IMPRESSION,
+
   BEAUTIFY_EFFECT_LITTLE_FRESH,
   BEAUTIFY_EFFECT_ABAO,
   BEAUTIFY_EFFECT_ICE_SPIRIT,
   BEAUTIFY_EFFECT_JAPANESE,
   BEAUTIFY_EFFECT_NEW_JAPANESE,
   BEAUTIFY_EFFECT_WARM_YELLOW,
+
+  BEAUTIFY_EFFECT_CHRISTMAS_EVE,
   BEAUTIFY_EFFECT_ASTRAL,
 } BeautifyEffectType;
 
@@ -81,6 +85,7 @@ static const BeautifyEffectType advanced_effects[] =
   BEAUTIFY_EFFECT_JAPANESE,
   BEAUTIFY_EFFECT_NEW_JAPANESE,
   BEAUTIFY_EFFECT_WARM_YELLOW,
+  BEAUTIFY_EFFECT_CHRISTMAS_EVE,
   BEAUTIFY_EFFECT_ASTRAL,
 };
 
@@ -785,6 +790,9 @@ effect_icon_new (BeautifyEffectType effect)
     case BEAUTIFY_EFFECT_WARM_YELLOW:
       title = "Warm Yellow";
       break;
+    case BEAUTIFY_EFFECT_CHRISTMAS_EVE:
+      title = "Eve";
+      break;
     case BEAUTIFY_EFFECT_ASTRAL:
       title = "Astral";
       break;
@@ -1141,12 +1149,30 @@ do_effect (gint32 image, BeautifyEffectType effect)
       gimp_curves_spline (effect_layer, GIMP_HISTOGRAM_BLUE, 18, blue_pts);
     }
       break;
+    case BEAUTIFY_EFFECT_CHRISTMAS_EVE:
+    {
+      gint32 layer = gimp_layer_new (image, "color", width, height, GIMP_RGB_IMAGE, 100, GIMP_OVERLAY_MODE);
+      gimp_image_insert_layer (image, layer, -1, 0);
+      GimpRGB color =
+      {
+        (gdouble) 156.0 / 255.0,
+        (gdouble) 208.0 / 255.0,
+        (gdouble) 240.0 / 255.0,
+        1.0,
+      };
+      gimp_context_set_foreground (&color);
+      gimp_edit_fill (layer, GIMP_FOREGROUND_FILL);
+      gimp_image_merge_down (image, layer, GIMP_CLIP_TO_BOTTOM_LAYER);
+
+      GdkPixbuf *pixbuf = gdk_pixbuf_new_from_inline (-1, texture_christmas_eve, FALSE, NULL);
+      gint32 texture_layer = gimp_layer_new_from_pixbuf (image, "texture", pixbuf, 100, GIMP_SCREEN_MODE, 0, 0);
+      gimp_image_insert_layer (image, texture_layer, -1, 0);
+      gimp_layer_scale (texture_layer, width, height, FALSE);
+      gimp_image_merge_down (image, texture_layer, GIMP_CLIP_TO_BOTTOM_LAYER);
+      break;
+    }
     case BEAUTIFY_EFFECT_ASTRAL:
     {
-      /*const gchar *home = g_get_home_dir();
-      gchar *dirname = g_build_filename(home, TEXTURE_PATH, NULL);
-      gchar *texture = g_build_filename(dirname, "astral.jpg", NULL);
-      GdkPixbuf *pixbuf = gdk_pixbuf_new_from_file (texture, NULL);*/
       GdkPixbuf *pixbuf = gdk_pixbuf_new_from_inline (-1, texture_astral, FALSE, NULL);
       gint32 texture_layer = gimp_layer_new_from_pixbuf (image, "texture", pixbuf, 100, GIMP_SOFTLIGHT_MODE, 0, 0);
       gimp_image_insert_layer (image, texture_layer, -1, 0);

@@ -297,15 +297,15 @@ effect_icon_new (WhiteningEffectType effect)
   switch (effect) {
     case WHITENING_EFFECT_LITTLE_WHITENING:
       data = skin_whitening_1;
-      title = "L Whitening";
+      title = "Little W";
       break;
     case WHITENING_EFFECT_MODERATE_WHITENING:
       data = skin_whitening_2;
-      title = "M Whitening";
+      title = "Middle W";
       break;
     case WHITENING_EFFECT_HIGH_WHITENING:
       data = skin_whitening_3;
-      title = "H Whitening";
+      title = "High W";
       break;
   }
 
