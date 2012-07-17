@@ -816,6 +816,8 @@ static gboolean
 select_effect (GtkWidget *widget, GdkEvent *event, gpointer user_data)
 {
   reset_adjustment ();
+  apply_effect();
+
   BeautifyEffectType effect = (BeautifyEffectType) user_data;
   do_effect (preview_image, effect);
   current_effect = effect;

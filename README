@@ -17,6 +17,7 @@ USING
 GIMP menu:
 Tools -> Beautify -> Beautify
 Tools -> Beautify -> Rip Border
+Tools -> Beautify -> Skin whitening
 
 Support: #beautify on FreeNode
 
@@ -25,6 +26,7 @@ CHANGELOG
 
 2012-07-17
 beautify: add impression effect
+fix some small bugs
 
 2012-07-16
 add Makefile

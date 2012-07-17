@@ -486,7 +486,7 @@ rip_border_dialog ()
         create_texture_page (GTK_NOTEBOOK (notebook), "Border", border_textures, G_N_ELEMENTS (border_textures));
         create_texture_page (GTK_NOTEBOOK (notebook), "Art", art_textures, G_N_ELEMENTS (art_textures));
         create_texture_page (GTK_NOTEBOOK (notebook), "Flowers", flowers_textures, G_N_ELEMENTS (flowers_textures));
-        create_texture_page (GTK_NOTEBOOK (notebook), "Lights", flowers_textures, G_N_ELEMENTS (lights_textures));
+        create_texture_page (GTK_NOTEBOOK (notebook), "Lights", lights_textures, G_N_ELEMENTS (lights_textures));
         create_texture_page (GTK_NOTEBOOK (notebook), "Others", others_textures, G_N_ELEMENTS (others_textures));
       /*}
 
