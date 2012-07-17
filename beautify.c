@@ -51,6 +51,7 @@ typedef enum
   BEAUTIFY_EFFECT_INVERT,
   BEAUTIFY_EFFECT_GOTHIC_STYLE,
   BEAUTIFY_EFFECT_CLASSIC_HDR,
+  BEAUTIFY_EFFECT_IMPRESSION,
   BEAUTIFY_EFFECT_LITTLE_FRESH,
   BEAUTIFY_EFFECT_ABAO,
   BEAUTIFY_EFFECT_ICE_SPIRIT,
@@ -73,6 +74,7 @@ static const BeautifyEffectType advanced_effects[] =
 {
   BEAUTIFY_EFFECT_GOTHIC_STYLE,
   BEAUTIFY_EFFECT_CLASSIC_HDR,
+  BEAUTIFY_EFFECT_IMPRESSION,
   BEAUTIFY_EFFECT_LITTLE_FRESH,
   BEAUTIFY_EFFECT_ABAO,
   BEAUTIFY_EFFECT_ICE_SPIRIT,
@@ -762,6 +764,9 @@ effect_icon_new (BeautifyEffectType effect)
     case BEAUTIFY_EFFECT_CLASSIC_HDR:
       title = "Classic HDR";
       break;
+    case BEAUTIFY_EFFECT_IMPRESSION:
+      title = "Impression";
+      break;
     case BEAUTIFY_EFFECT_LITTLE_FRESH:
       title = "Little Fresh";
       break;
@@ -953,6 +958,46 @@ do_effect (gint32 image, BeautifyEffectType effect)
       gimp_curves_spline (effect_layer, GIMP_HISTOGRAM_BLUE, 18, blue_pts);
     }
       break;
+    case BEAUTIFY_EFFECT_IMPRESSION:
+    {
+      guint8 red_pts[] = {
+        0.000000 * 255, 0.113725 * 255,
+        0.121569 * 255, 0.213975 * 255,
+        0.247059 * 255, 0.323494 * 255,
+        0.372549 * 255, 0.460137 * 255,
+        0.498039 * 255, 0.621504 * 255,
+        0.623529 * 255, 0.716847 * 255,
+        0.749020 * 255, 0.766909 * 255,
+        0.874510 * 255, 0.817666 * 255,
+        1.000000 * 255, 0.862745 * 255,
+      };
+      guint8 green_pts[] = {
+        0.000000 * 255, 0.200000 * 255,
+        0.121569 * 255, 0.317329 * 255,
+        0.247059 * 255, 0.407881 * 255,
+        0.372549 * 255, 0.535429 * 255,
+        0.498039 * 255, 0.682828 * 255,
+        0.623529 * 255, 0.770688 * 255,
+        0.749020 * 255, 0.813005 * 255,
+        0.874510 * 255, 0.852891 * 255,
+        1.000000 * 255, 0.902716 * 255,
+      };
+      guint8 blue_pts[] = {
+        0.000000 * 255, 0.317714 * 255,
+        0.121569 * 255, 0.364205 * 255,
+        0.247059 * 255, 0.417294 * 255,
+        0.372549 * 255, 0.495841 * 255,
+        0.498039 * 255, 0.612710 * 255,
+        0.623529 * 255, 0.719834 * 255,
+        0.749020 * 255, 0.795937 * 255,
+        0.874510 * 255, 0.845977 * 255,
+        1.000000 * 255, 0.883024 * 255,
+      };
+      gimp_curves_spline (effect_layer, GIMP_HISTOGRAM_RED, 18, red_pts);
+      gimp_curves_spline (effect_layer, GIMP_HISTOGRAM_GREEN, 18, green_pts);
+      gimp_curves_spline (effect_layer, GIMP_HISTOGRAM_BLUE, 18, blue_pts);
+      break;
+    }
     case BEAUTIFY_EFFECT_LITTLE_FRESH:
     {
       guint8 red_pts[] = {

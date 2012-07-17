@@ -23,6 +23,9 @@ Support: #beautify on FreeNode
 CHANGELOG
 ===================
 
+2012-07-17
+beautify: add impression effect
+
 2012-07-16
 add Makefile
 add skin whitening tool
