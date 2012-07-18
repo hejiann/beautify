@@ -62,6 +62,7 @@ typedef enum
   BEAUTIFY_EFFECT_NEW_JAPANESE,
   BEAUTIFY_EFFECT_WARM_YELLOW,
   BEAUTIFY_EFFECT_BLUES,
+  BEAUTIFY_EFFECT_PURPLE_FANTASY,
 
   BEAUTIFY_EFFECT_CHRISTMAS_EVE,
   BEAUTIFY_EFFECT_ASTRAL,
@@ -94,6 +95,7 @@ static const BeautifyEffectType advanced_effects[] =
   BEAUTIFY_EFFECT_NEW_JAPANESE,
   BEAUTIFY_EFFECT_WARM_YELLOW,
   BEAUTIFY_EFFECT_BLUES,
+  BEAUTIFY_EFFECT_PURPLE_FANTASY,
 
   BEAUTIFY_EFFECT_CHRISTMAS_EVE,
   BEAUTIFY_EFFECT_ASTRAL,
@@ -808,6 +810,9 @@ effect_icon_new (BeautifyEffectType effect)
     case BEAUTIFY_EFFECT_BLUES:
       title = "Blues";
       break;
+    case BEAUTIFY_EFFECT_PURPLE_FANTASY:
+      title = "Purple Fantasy";
+      break;
     case BEAUTIFY_EFFECT_CHRISTMAS_EVE:
       title = "Eve";
       break;
@@ -1244,6 +1249,46 @@ do_effect (gint32 image, BeautifyEffectType effect)
         0.749020 * 255, 0.960784 * 255,
         0.874510 * 255, 0.988235 * 255,
         1.000000 * 255, 0.996078 * 255,
+      };
+      gimp_curves_spline (effect_layer, GIMP_HISTOGRAM_RED, 18, red_pts);
+      gimp_curves_spline (effect_layer, GIMP_HISTOGRAM_GREEN, 18, green_pts);
+      gimp_curves_spline (effect_layer, GIMP_HISTOGRAM_BLUE, 18, blue_pts);
+      break;
+    }
+    case BEAUTIFY_EFFECT_PURPLE_FANTASY:
+    {
+      guint8 red_pts[] = {
+        0.000000 * 255, 0.003922 * 255,
+        0.121569 * 255, 0.184314 * 255,
+        0.247059 * 255, 0.376471 * 255,
+        0.372549 * 255, 0.533333 * 255,
+        0.498039 * 255, 0.662745 * 255,
+        0.623529 * 255, 0.788235 * 255,
+        0.749020 * 255, 0.878431 * 255,
+        0.874510 * 255, 0.941176 * 255,
+        1.000000 * 255, 1.000000 * 255,
+      };
+      guint8 green_pts[] = {
+        0.000000 * 255, 0.003922 * 255,
+        0.121569 * 255, 0.113725 * 255,
+        0.247059 * 255, 0.243137 * 255,
+        0.372549 * 255, 0.407843 * 255,
+        0.498039 * 255, 0.623529 * 255,
+        0.623529 * 255, 0.760784 * 255,
+        0.749020 * 255, 0.847059 * 255,
+        0.874510 * 255, 0.925490 * 255,
+        1.000000 * 255, 1.000000 * 255,
+      };
+      guint8 blue_pts[] = {
+        0.000000 * 255, 0.007843 * 255,
+        0.121569 * 255, 0.309804 * 255,
+        0.247059 * 255, 0.505882 * 255,
+        0.372549 * 255, 0.603922 * 255,
+        0.498039 * 255, 0.709804 * 255,
+        0.623529 * 255, 0.784314 * 255,
+        0.749020 * 255, 0.854902 * 255,
+        0.874510 * 255, 0.929412 * 255,
+        1.000000 * 255, 1.000000 * 255,
       };
       gimp_curves_spline (effect_layer, GIMP_HISTOGRAM_RED, 18, red_pts);
       gimp_curves_spline (effect_layer, GIMP_HISTOGRAM_GREEN, 18, green_pts);
