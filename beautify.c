@@ -65,6 +65,7 @@ typedef enum
 
   BEAUTIFY_EFFECT_CHRISTMAS_EVE,
   BEAUTIFY_EFFECT_ASTRAL,
+  BEAUTIFY_EFFECT_PICK_LIGHT,
 } BeautifyEffectType;
 
 static const BeautifyEffectType basic_effects[] =
@@ -96,6 +97,7 @@ static const BeautifyEffectType advanced_effects[] =
 
   BEAUTIFY_EFFECT_CHRISTMAS_EVE,
   BEAUTIFY_EFFECT_ASTRAL,
+  BEAUTIFY_EFFECT_PICK_LIGHT,
 };
 
 static void     query    (void);
@@ -812,6 +814,9 @@ effect_icon_new (BeautifyEffectType effect)
     case BEAUTIFY_EFFECT_ASTRAL:
       title = "Astral";
       break;
+    case BEAUTIFY_EFFECT_PICK_LIGHT:
+      title = "Pick Light";
+      break;
   }
 
   gint32 image = gimp_image_duplicate (preview_image);
@@ -1276,6 +1281,37 @@ do_effect (gint32 image, BeautifyEffectType effect)
       gimp_image_merge_down (image, texture_layer, GIMP_CLIP_TO_BOTTOM_LAYER);
     }
       break;
+    case BEAUTIFY_EFFECT_PICK_LIGHT:
+    {
+      gint32     layer;
+      GdkPixbuf *pixbuf;
+
+      layer = gimp_layer_new (image, "color", width, height, GIMP_RGB_IMAGE, 100, GIMP_SCREEN_MODE);
+      gimp_image_insert_layer (image, layer, -1, 0);
+      GimpRGB color =
+      {
+        (gdouble) 62.0 / 255.0,
+        (gdouble) 62.0 / 255.0,
+        (gdouble) 62.0 / 255.0,
+        1.0,
+      };
+      gimp_context_set_foreground (&color);
+      gimp_edit_fill (layer, GIMP_FOREGROUND_FILL);
+      gimp_image_merge_down (image, layer, GIMP_CLIP_TO_BOTTOM_LAYER);
+
+      pixbuf = gdk_pixbuf_new_from_inline (-1, texture_pick_light_1, FALSE, NULL);
+      layer = gimp_layer_new_from_pixbuf (image, "texture 1", pixbuf, 100, GIMP_SCREEN_MODE, 0, 0);
+      gimp_image_insert_layer (image, layer, -1, 0);
+      gimp_layer_scale (layer, width, height, FALSE);
+      gimp_image_merge_down (image, layer, GIMP_CLIP_TO_BOTTOM_LAYER);
+
+      pixbuf = gdk_pixbuf_new_from_inline (-1, texture_pick_light_2, FALSE, NULL);
+      layer = gimp_layer_new_from_pixbuf (image, "texture 2", pixbuf, 100, GIMP_SCREEN_MODE, 0, 0);
+      gimp_image_insert_layer (image, layer, -1, 0);
+      gimp_layer_scale (layer, width, height, FALSE);
+      gimp_image_merge_down (image, layer, GIMP_CLIP_TO_BOTTOM_LAYER);
+      break;
+    }
   }
 
 }
