@@ -64,6 +64,7 @@ typedef enum
   BEAUTIFY_EFFECT_BLUES,
   BEAUTIFY_EFFECT_PURPLE_FANTASY,
 
+  BEAUTIFY_EFFECT_BRIGHT_RED,
   BEAUTIFY_EFFECT_CHRISTMAS_EVE,
   BEAUTIFY_EFFECT_ASTRAL,
   BEAUTIFY_EFFECT_PICK_LIGHT,
@@ -97,6 +98,7 @@ static const BeautifyEffectType advanced_effects[] =
   BEAUTIFY_EFFECT_BLUES,
   BEAUTIFY_EFFECT_PURPLE_FANTASY,
 
+  BEAUTIFY_EFFECT_BRIGHT_RED,
   BEAUTIFY_EFFECT_CHRISTMAS_EVE,
   BEAUTIFY_EFFECT_ASTRAL,
   BEAUTIFY_EFFECT_PICK_LIGHT,
@@ -813,6 +815,9 @@ effect_icon_new (BeautifyEffectType effect)
     case BEAUTIFY_EFFECT_PURPLE_FANTASY:
       title = "Purple Fantasy";
       break;
+    case BEAUTIFY_EFFECT_BRIGHT_RED:
+      title = "Bright Red";
+      break;
     case BEAUTIFY_EFFECT_CHRISTMAS_EVE:
       title = "Eve";
       break;
@@ -1293,6 +1298,56 @@ do_effect (gint32 image, BeautifyEffectType effect)
       gimp_curves_spline (effect_layer, GIMP_HISTOGRAM_RED, 18, red_pts);
       gimp_curves_spline (effect_layer, GIMP_HISTOGRAM_GREEN, 18, green_pts);
       gimp_curves_spline (effect_layer, GIMP_HISTOGRAM_BLUE, 18, blue_pts);
+      break;
+    }
+    case BEAUTIFY_EFFECT_BRIGHT_RED:
+    {
+      gint32     layer;
+      GdkPixbuf *pixbuf;
+
+      pixbuf = gdk_pixbuf_new_from_inline (-1, texture_bright_red, FALSE, NULL);
+      layer = gimp_layer_new_from_pixbuf (image, "texture", pixbuf, 100, GIMP_SCREEN_MODE, 0, 0);
+      gimp_image_insert_layer (image, layer, -1, 0);
+      gimp_layer_scale (layer, width, height, FALSE);
+      gimp_image_merge_down (image, layer, GIMP_CLIP_TO_BOTTOM_LAYER);
+
+      guint8 red_pts[] = {
+        0.000000 * 255, 0.001183 * 255,
+        0.121569 * 255, 0.131140 * 255,
+        0.247059 * 255, 0.353431 * 255,
+        0.372549 * 255, 0.538498 * 255,
+        0.498039 * 255, 0.690185 * 255,
+        0.623529 * 255, 0.804008 * 255,
+        0.749020 * 255, 0.900806 * 255,
+        0.874510 * 255, 0.988271 * 255,
+        1.000000 * 255, 1.000000 * 255,
+      };
+      guint8 green_pts[] = {
+        0.000000 * 255, 0.000098 * 255,
+        0.121569 * 255, 0.097098 * 255,
+        0.247059 * 255, 0.286323 * 255,
+        0.372549 * 255, 0.458654 * 255,
+        0.498039 * 255, 0.611045 * 255,
+        0.623529 * 255, 0.744221 * 255,
+        0.749020 * 255, 0.858522 * 255,
+        0.874510 * 255, 0.968540 * 255,
+        1.000000 * 255, 1.000000 * 255,
+      };
+      guint8 blue_pts[] = {
+        0.000000 * 255, 0.000369 * 255,
+        0.121569 * 255, 0.100320 * 255,
+        0.247059 * 255, 0.285806 * 255,
+        0.372549 * 255, 0.459693 * 255,
+        0.498039 * 255, 0.612676 * 255,
+        0.623529 * 255, 0.745027 * 255,
+        0.749020 * 255, 0.860280 * 255,
+        0.874510 * 255, 0.967918 * 255,
+        1.000000 * 255, 1.000000 * 255,
+      };
+      layer = gimp_image_get_active_layer (image);
+      gimp_curves_spline (layer, GIMP_HISTOGRAM_RED, 18, red_pts);
+      gimp_curves_spline (layer, GIMP_HISTOGRAM_GREEN, 18, green_pts);
+      gimp_curves_spline (layer, GIMP_HISTOGRAM_BLUE, 18, blue_pts);
       break;
     }
     case BEAUTIFY_EFFECT_CHRISTMAS_EVE:
