@@ -60,6 +60,7 @@ typedef enum
   BEAUTIFY_EFFECT_JAPANESE,
   BEAUTIFY_EFFECT_NEW_JAPANESE,
   BEAUTIFY_EFFECT_WARM_YELLOW,
+  BEAUTIFY_EFFECT_BLUES,
 
   BEAUTIFY_EFFECT_CHRISTMAS_EVE,
   BEAUTIFY_EFFECT_ASTRAL,
@@ -85,6 +86,7 @@ static const BeautifyEffectType advanced_effects[] =
   BEAUTIFY_EFFECT_JAPANESE,
   BEAUTIFY_EFFECT_NEW_JAPANESE,
   BEAUTIFY_EFFECT_WARM_YELLOW,
+  BEAUTIFY_EFFECT_BLUES,
   BEAUTIFY_EFFECT_CHRISTMAS_EVE,
   BEAUTIFY_EFFECT_ASTRAL,
 };
@@ -790,6 +792,9 @@ effect_icon_new (BeautifyEffectType effect)
     case BEAUTIFY_EFFECT_WARM_YELLOW:
       title = "Warm Yellow";
       break;
+    case BEAUTIFY_EFFECT_BLUES:
+      title = "Blues";
+      break;
     case BEAUTIFY_EFFECT_CHRISTMAS_EVE:
       title = "Eve";
       break;
@@ -1149,6 +1154,46 @@ do_effect (gint32 image, BeautifyEffectType effect)
       gimp_curves_spline (effect_layer, GIMP_HISTOGRAM_BLUE, 18, blue_pts);
     }
       break;
+    case BEAUTIFY_EFFECT_BLUES:
+    {
+      guint8 red_pts[] = {
+        0.000000 * 255, 0.003922 * 255,
+        0.121569 * 255, 0.321569 * 255,
+        0.247059 * 255, 0.541176 * 255,
+        0.372549 * 255, 0.713725 * 255,
+        0.498039 * 255, 0.831373 * 255,
+        0.623529 * 255, 0.905882 * 255,
+        0.749020 * 255, 0.952941 * 255,
+        0.874510 * 255, 0.980392 * 255,
+        1.000000 * 255, 1.000000 * 255,
+      };
+      guint8 green_pts[] = {
+        0.000000 * 255, 0.003922 * 255,
+        0.121569 * 255, 0.266667 * 255,
+        0.247059 * 255, 0.466667 * 255,
+        0.372549 * 255, 0.627451 * 255,
+        0.498039 * 255, 0.756863 * 255,
+        0.623529 * 255, 0.847059 * 255,
+        0.749020 * 255, 0.917647 * 255,
+        0.874510 * 255, 0.964706 * 255,
+        1.000000 * 255, 1.000000 * 255,
+      };
+      guint8 blue_pts[] = {
+        0.000000 * 255, 0.007843 * 255,
+        0.121569 * 255, 0.286275 * 255,
+        0.247059 * 255, 0.505882 * 255,
+        0.372549 * 255, 0.682353 * 255,
+        0.498039 * 255, 0.811765 * 255,
+        0.623529 * 255, 0.901961 * 255,
+        0.749020 * 255, 0.960784 * 255,
+        0.874510 * 255, 0.988235 * 255,
+        1.000000 * 255, 0.996078 * 255,
+      };
+      gimp_curves_spline (effect_layer, GIMP_HISTOGRAM_RED, 18, red_pts);
+      gimp_curves_spline (effect_layer, GIMP_HISTOGRAM_GREEN, 18, green_pts);
+      gimp_curves_spline (effect_layer, GIMP_HISTOGRAM_BLUE, 18, blue_pts);
+      break;
+    }
     case BEAUTIFY_EFFECT_CHRISTMAS_EVE:
     {
       gint32 layer = gimp_layer_new (image, "color", width, height, GIMP_RGB_IMAGE, 100, GIMP_OVERLAY_MODE);
