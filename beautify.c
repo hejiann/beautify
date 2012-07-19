@@ -141,6 +141,7 @@ static void       effect_opacity_update (GtkRange *range, gpointer data);
 
 static void create_effect_pages (GtkNotebook *notebook);
 static void create_effect_page  (GtkNotebook *notebook, gchar *str, const BeautifyEffectType* effects, guint n_effects);
+static void effects_switch_page (GtkNotebook *notebook, GtkWidget *page, guint page_num, gpointer user_data);
 
 static GtkWidget* effect_icon_new (BeautifyEffectType effect);
 
@@ -368,6 +369,8 @@ beautify_dialog (gint32        image_ID,
   gtk_widget_show (notebook);
 
   create_effect_pages (GTK_NOTEBOOK (notebook));
+
+  g_signal_connect (notebook, "switch-page", G_CALLBACK (effects_switch_page), NULL);
 
   gboolean run = (gimp_dialog_run (GIMP_DIALOG (dialog)) == GTK_RESPONSE_OK);
 
@@ -724,6 +727,9 @@ create_effect_pages (GtkNotebook *notebook) {
   create_effect_page (notebook, "LOMO", lomo_effects, G_N_ELEMENTS (lomo_effects));
   create_effect_page (notebook, "Studio", studio_effects, G_N_ELEMENTS (studio_effects));
   create_effect_page (notebook, "Fashion", fashion_effects, G_N_ELEMENTS (fashion_effects));
+
+  GtkWidget *page = gtk_notebook_get_nth_page (notebook, 0);
+  effects_switch_page(notebook, page, 0, NULL);
 }
 
 static void
@@ -734,13 +740,58 @@ create_effect_page (GtkNotebook *notebook, gchar *str, const BeautifyEffectType*
   gtk_container_set_border_width (GTK_CONTAINER (thispage), 12);
   gtk_widget_show (thispage);
 
+
+  gtk_notebook_append_page_menu (notebook, thispage, pagelabel, NULL);
+}
+
+static void
+effects_switch_page (GtkNotebook *notebook, GtkWidget *page, guint page_num, gpointer user_data)
+{
+  static time_t effects_timestamp [] = {0, 0, 0, 0};
+
+  if (effects_timestamp[page_num] > 0)
+  {
+    return;
+  }
+
+  const BeautifyEffectType* effects;
+  guint n_effects;
+
+  switch (page_num)
+  {
+    case 0:
+    {
+      effects = basic_effects;
+      n_effects = G_N_ELEMENTS (basic_effects);
+      break;
+    }
+    case 1:
+    {
+      effects = lomo_effects;
+      n_effects = G_N_ELEMENTS (lomo_effects);
+      break;
+    }
+    case 2:
+    {
+      effects = studio_effects;
+      n_effects = G_N_ELEMENTS (studio_effects);
+      break;
+    }
+    case 3:
+    {
+      effects = fashion_effects;
+      n_effects = G_N_ELEMENTS (fashion_effects);
+      break;
+    }
+  }
+
   /* table */
   gint rows = 5;
   gint cols = 3;
   GtkWidget *table = gtk_table_new (rows, cols, FALSE);
   gtk_table_set_col_spacings (GTK_TABLE (table), 6);
   gtk_table_set_row_spacings (GTK_TABLE (table), 6);
-  gtk_box_pack_start (GTK_BOX (thispage), table, FALSE, FALSE, 0);
+  gtk_box_pack_start (GTK_BOX (page), table, FALSE, FALSE, 0);
   gtk_widget_show (table);
 
   gint row = 1;
@@ -761,7 +812,7 @@ create_effect_page (GtkNotebook *notebook, gchar *str, const BeautifyEffectType*
     }
   }
 
-  gtk_notebook_append_page_menu (notebook, thispage, pagelabel, NULL);
+  effects_timestamp[page_num] = time (NULL);
 }
 
 static GtkWidget *
@@ -883,6 +934,8 @@ select_effect (GtkWidget *widget, GdkEvent *event, gpointer user_data)
 static void
 do_effect (gint32 image, BeautifyEffectType effect)
 {
+  gimp_context_push ();
+
   gint32 layer = gimp_image_get_active_layer (image);
   gint32 effect_layer = gimp_layer_copy (layer);
   gimp_image_add_layer (image, effect_layer, -1);
@@ -1465,6 +1518,7 @@ do_effect (gint32 image, BeautifyEffectType effect)
     }
   }
 
+  gimp_context_pop ();
 }
 
 static void
