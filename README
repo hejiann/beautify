@@ -6,7 +6,8 @@ Beautify is a set of GIMP plugins for easiest and quickly photo beautify.
 INSTALL
 ===================
 
-make && make install
+make
+sudo make install
 
 Note:
 Be sure that you have installed the gimp-devel-tools package before install.

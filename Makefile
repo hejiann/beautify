@@ -28,9 +28,9 @@ GDK_PIXBUF_CSOURCE = gdk-pixbuf-csource
 all: beautify rip-border skin-whitening
 
 install: beautify rip-border skin-whitening
-	$(GIMPTOOL) --install-bin beautify
-	$(GIMPTOOL) --install-bin rip-border
-	$(GIMPTOOL) --install-bin skin-whitening
+	$(GIMPTOOL) --install-admin-bin beautify
+	$(GIMPTOOL) --install-admin-bin rip-border
+	$(GIMPTOOL) --install-admin-bin skin-whitening
 
 beautify: beautify.o
 	$(CC) $(CFLAGS) -o $@ $^ $(LIBS)
