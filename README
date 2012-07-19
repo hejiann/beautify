@@ -24,6 +24,9 @@ Support: #beautify on FreeNode
 CHANGELOG
 ===================
 
+2012-07-19
+beautify: fix memory leak
+
 2012-07-18
 beautify: add blues effect
 beautify: add pink lady effect

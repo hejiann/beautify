@@ -857,6 +857,8 @@ effect_icon_new (BeautifyEffectType effect)
 
   g_signal_connect (event_box, "button_press_event", G_CALLBACK (select_effect), (gpointer) effect);
 
+  gimp_image_delete (image);
+
   return box;
 }
 
