@@ -38,10 +38,23 @@ install: beautify rip-border skin-whitening
 	ln -sf /usr/lib/gimp/2.0/plug-ins/rip-border /usr/lib64/gimp/2.0/plug-ins/rip-border
 	ln -sf /usr/lib/gimp/2.0/plug-ins/skin-whitening /usr/lib64/gimp/2.0/plug-ins/skin-whitening
 
+uninstall:
+	$(GIMPTOOL) --uninstall-admin-bin beautify
+	$(GIMPTOOL) --uninstall-admin-bin rip-border
+	$(GIMPTOOL) --uninstall-admin-bin skin-whitening
+	rm -f /usr/lib64/gimp/2.0/plug-ins/beautify
+	rm -f /usr/lib64/gimp/2.0/plug-ins/rip-border
+	rm -f /usr/lib64/gimp/2.0/plug-ins/skin-whitening
+
 userinstall: beautify rip-border skin-whitening
 	$(GIMPTOOL) --install-bin beautify
 	$(GIMPTOOL) --install-bin rip-border
 	$(GIMPTOOL) --install-bin skin-whitening
+
+useruninstall: beautify rip-border skin-whitening
+	$(GIMPTOOL) --uninstall-bin beautify
+	$(GIMPTOOL) --uninstall-bin rip-border
+	$(GIMPTOOL) --uninstall-bin skin-whitening
 
 beautify: beautify.o beautify-effect.o
 	$(CC) -o $@ $^ $(LIBS)

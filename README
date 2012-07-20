@@ -36,6 +36,7 @@ fix make install in x86_64
 beautify refactor: split the effect code into beautify-feature.c
 beautify: add HDR effect
 provide make userinstall to install the plugin into user directory
+add make uninstall and make useruninstall
 
 2012-07-19
 beautify: fix memory leak
