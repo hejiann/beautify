@@ -1,7 +1,9 @@
 *.o
 beautify
 beautify-textures.h
-rip-border
-rip-border-textures.h
 skin-whitening
 skin-whitening-images.h
+rip-border
+rip-border-textures.h
+texture-border
+texture-border-textures.h

@@ -23,8 +23,9 @@ USING
 
 GIMP menu:
 Tools -> Beautify -> Beautify
-Tools -> Beautify -> Rip Border
 Tools -> Beautify -> Skin whitening
+Tools -> Beautify -> Rip Border
+Tools -> Beautify -> Texture Border
 
 Support: #beautify on FreeNode
 
@@ -41,6 +42,7 @@ beautify: add black and white effect
 beautify: add retro LOMO effect
 beautify: add cold purple effect
 beautify: add old photos effect
+add texture border plugin
 
 2012-07-19
 beautify: fix memory leak
@@ -62,7 +64,7 @@ beautify: add christmas eve effect
 
 2012-07-16
 add Makefile
-add skin whitening tool
+add skin whitening plugin
 
 2012-07-15
 beautify: add warm yellow effect

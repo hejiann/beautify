@@ -25,36 +25,42 @@ CFLAGS = $(GIMP_CFLAGS)
 
 GDK_PIXBUF_CSOURCE = gdk-pixbuf-csource
 
-all: beautify rip-border skin-whitening
+all: beautify skin-whitening rip-border texture-border
 
-install: beautify rip-border skin-whitening
+install: beautify skin-whitening rip-border texture-border
 	# need fix: --install-admin-bin has issue in x86_64,
 	# it install the plug-in into /usr/lib/gimp/2.0/plug-ins/
 	# but the correct directory is /usr/lib64/gimp/2.0/plug-ins/
 	$(GIMPTOOL) --install-admin-bin beautify
-	$(GIMPTOOL) --install-admin-bin rip-border
 	$(GIMPTOOL) --install-admin-bin skin-whitening
+	$(GIMPTOOL) --install-admin-bin rip-border
+	$(GIMPTOOL) --install-admin-bin texture-border
 	ln -sf /usr/lib/gimp/2.0/plug-ins/beautify /usr/lib64/gimp/2.0/plug-ins/beautify
-	ln -sf /usr/lib/gimp/2.0/plug-ins/rip-border /usr/lib64/gimp/2.0/plug-ins/rip-border
 	ln -sf /usr/lib/gimp/2.0/plug-ins/skin-whitening /usr/lib64/gimp/2.0/plug-ins/skin-whitening
+	ln -sf /usr/lib/gimp/2.0/plug-ins/rip-border /usr/lib64/gimp/2.0/plug-ins/rip-border
+	ln -sf /usr/lib/gimp/2.0/plug-ins/texture-border /usr/lib64/gimp/2.0/plug-ins/texture-border
 
 uninstall:
 	$(GIMPTOOL) --uninstall-admin-bin beautify
-	$(GIMPTOOL) --uninstall-admin-bin rip-border
 	$(GIMPTOOL) --uninstall-admin-bin skin-whitening
+	$(GIMPTOOL) --uninstall-admin-bin rip-border
+	$(GIMPTOOL) --uninstall-admin-bin texture-border
 	rm -f /usr/lib64/gimp/2.0/plug-ins/beautify
-	rm -f /usr/lib64/gimp/2.0/plug-ins/rip-border
 	rm -f /usr/lib64/gimp/2.0/plug-ins/skin-whitening
+	rm -f /usr/lib64/gimp/2.0/plug-ins/rip-border
+	rm -f /usr/lib64/gimp/2.0/plug-ins/texture-border
 
-userinstall: beautify rip-border skin-whitening
+userinstall: beautify skin-whitening rip-border texture-border
 	$(GIMPTOOL) --install-bin beautify
-	$(GIMPTOOL) --install-bin rip-border
 	$(GIMPTOOL) --install-bin skin-whitening
+	$(GIMPTOOL) --install-bin rip-border
+	$(GIMPTOOL) --install-bin texture-border
 
-useruninstall: beautify rip-border skin-whitening
+useruninstall:
 	$(GIMPTOOL) --uninstall-bin beautify
-	$(GIMPTOOL) --uninstall-bin rip-border
 	$(GIMPTOOL) --uninstall-bin skin-whitening
+	$(GIMPTOOL) --uninstall-bin rip-border
+	$(GIMPTOOL) --uninstall-bin texture-border
 
 beautify: beautify.o beautify-effect.o
 	$(CC) -o $@ $^ $(LIBS)
@@ -68,15 +74,6 @@ beautify-effect.o: beautify-effect.c beautify-textures.h
 beautify-textures.h: beautify-textures.list
 	$(GDK_PIXBUF_CSOURCE) --raw --build-list `cat beautify-textures.list` > $(@F)
 
-rip-border: rip-border.o
-	$(CC) $(CFLAGS) -o $@ $^ $(LIBS)
-
-rip-border.o: rip-border.c rip-border-textures.h
-	$(CC) $(CFLAGS) -c rip-border.c -o rip-border.o
-
-rip-border-textures.h: rip-border-textures.list
-	$(GDK_PIXBUF_CSOURCE) --raw --build-list `cat rip-border-textures.list` > $(@F)
-
 skin-whitening: skin-whitening.o
 	$(CC) -o $@ $^ $(LIBS)
 
@@ -86,6 +83,24 @@ skin-whitening.o: skin-whitening.c skin-whitening-images.h
 skin-whitening-images.h: skin-whitening-images.list
 	$(GDK_PIXBUF_CSOURCE) --raw --build-list `cat skin-whitening-images.list` > $(@F)
 
+rip-border: rip-border.o
+	$(CC) -o $@ $^ $(LIBS)
+
+rip-border.o: rip-border.c rip-border-textures.h
+	$(CC) $(CFLAGS) -c rip-border.c -o rip-border.o
+
+rip-border-textures.h: rip-border-textures.list
+	$(GDK_PIXBUF_CSOURCE) --raw --build-list `cat rip-border-textures.list` > $(@F)
+
+texture-border: texture-border.o
+	$(CC) -o $@ $^ $(LIBS)
+
+texture-border.o: texture-border.c texture-border-textures.h
+	$(CC) $(CFLAGS) -c texture-border.c -o texture-border.o
+
+texture-border-textures.h: texture-border-textures.list
+	$(GDK_PIXBUF_CSOURCE) --raw --build-list `cat texture-border-textures.list` > $(@F)
+
 clean:
-	rm -f *.o beautify rip-border skin-whitening
+	rm -f *.o beautify skin-whitening rip-border texture-border
 

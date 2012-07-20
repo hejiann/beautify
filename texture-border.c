@@ -18,11 +18,11 @@
 #include <libgimp/gimp.h>
 #include <libgimp/gimpui.h>
 
-#include "rip-border-textures.h"
+#include "texture-border-textures.h"
 
-#define PLUG_IN_PROC   "plug-in-rip-border"
-#define PLUG_IN_BINARY "rip-border"
-#define PLUG_IN_ROLE   "gimp-rip-border"
+#define PLUG_IN_PROC   "plug-in-texture-border"
+#define PLUG_IN_BINARY "texture-border"
+#define PLUG_IN_ROLE   "gimp-texture-border"
 
 #define PREVIEW_SIZE  480
 #define THUMBNAIL_SIZE  80
@@ -32,7 +32,7 @@ typedef struct
   const guint8* texture;
   GimpRGB  color;
   gdouble  opacity;
-} RipBorderValues;
+} TextureBorderValues;
 
 static void     query    (void);
 static void     run      (const gchar      *name,
@@ -41,9 +41,9 @@ static void     run      (const gchar      *name,
                           gint             *nreturn_vals,
                           GimpParam       **return_vals);
 
-static void     rip_border (gint32     image_ID);
+static void     texture_border (gint32     image_ID);
 
-static gboolean rip_border_dialog ();
+static gboolean texture_border_dialog ();
 
 static void create_texture_page (GtkNotebook *notebook, const gchar* category, const guint8** textures, guint n_textures);
 
@@ -55,7 +55,7 @@ const GimpPlugInInfo PLUG_IN_INFO =
   run,   /* run_proc   */
 };
 
-static RipBorderValues rbvals =
+static TextureBorderValues tbvals =
 {
   NULL,                 /* texture */
   {1.0, 1.0, 1.0, 1.0}, /* color */
@@ -71,96 +71,117 @@ static gint32     preview_image    = 0;
 static gint32     color_layer      = 0;
 static gint32     texture_mask     = 0;
 
-static const guint8* stars_textures[] =
-{
-  texture_12792,
-  texture_12799,
-  texture_12842,
-  texture_12843,
-  texture_12845,
-  texture_12847,
-  texture_12849,
-  texture_12851,
-  texture_12857,
-  texture_12858,
-  texture_14965,
-  texture_15617,
-  texture_15618,
-  texture_15619,
-  texture_15620,
-};
-
-static const guint8* border_textures[] =
-{
-  texture_12053,
-  texture_12054,
-  texture_12093,
-  texture_12403,
-  texture_12782,
-  texture_15364,
-  texture_15365,
-  texture_15366,
-  texture_15599,
-  texture_15605,
-  texture_15605,
-  texture_15608,
-  texture_15609,
-  texture_15610,
-  texture_15611,
-};
-
 static const guint8* art_textures[] =
 {
-  texture_14757,
-  texture_14963,
-  texture_15614,
-  texture_15616,
-  texture_200442,
-  texture_200549,
-  texture_200623,
-  texture_200836,
+  texture_12841,
+  texture_12852,
+  texture_12854,
+  texture_12855,
+  texture_12856,
+  texture_14662,
+  texture_14913,
+  texture_14914,
+  texture_15322,
+  texture_15323,
+  texture_15324,
+  texture_200543,
+  texture_200650,
+  texture_200763,
+  texture_200835,
 };
 
-static const guint8* flowers_textures[] =
+static const guint8* wall_textures[] =
 {
-  texture_12094,
-  texture_12406,
-  texture_12817,
-  texture_12840,
-  texture_14754,
-  texture_14755,
-  texture_14761,
-  texture_14779,
-  texture_14964,
-  texture_15621,
-  texture_15622,
-  texture_15624,
-  texture_15625,
+  texture_13049,
+  texture_13050,
+  texture_13051,
+  texture_13053,
+  texture_13054,
+  texture_13056,
+  texture_13058,
+  texture_13059,
+  texture_13060,
+  texture_200542,
 };
 
-static const guint8* lights_textures[] =
+static const guint8* texture_textures[] =
 {
-  texture_14776,
-  texture_14777,
-  texture_14778,
+  texture_13032,
+  texture_13038,
+  texture_13039,
+  texture_13040,
+  texture_13042,
+  texture_13046,
+  texture_15311,
+  texture_15316,
+  texture_15317,
+  texture_15319,
+  texture_15325,
+  texture_15326,
+  texture_114860,
+  texture_200034,
+  texture_200153,
 };
 
-static const guint8* others_textures[] =
+static const guint8* cloth_textures[] =
 {
-  texture_12356,
-  texture_12357,
-  texture_12402,
-  texture_12811,
-  texture_12813,
-  texture_12815,
-  texture_12859,
-  texture_14772,
-  texture_14774,
-  texture_14911,
-  texture_15612,
-  texture_15613,
-  texture_15623,
-  texture_200287,
+  texture_13027,
+  texture_13029,
+  texture_13030,
+  texture_13031,
+  texture_13041,
+  texture_13043,
+  texture_15312,
+  texture_15321,
+  texture_201367,
+};
+
+static const guint8* paper_textures[] =
+{
+  texture_14663,
+  texture_15313,
+  texture_114548,
+  texture_114549,
+  texture_114550,
+  texture_114551,
+  texture_114552,
+  texture_114553,
+  texture_114554,
+  texture_114823,
+  texture_114861,
+  texture_200230,
+  texture_201122,
+};
+
+static const guint8* grid_textures[] =
+{
+  texture_13034,
+  texture_13036,
+  texture_13055,
+  texture_14661,
+  texture_14664,
+  texture_14912,
+  texture_15314,
+  texture_15320,
+  texture_114547,
+  texture_200622,
+};
+
+static const guint8* other_textures[] =
+{
+  texture_12846,
+  texture_13028,
+  texture_13035,
+  texture_13037,
+  texture_13044,
+  texture_13045,
+  texture_13047,
+  texture_13048,
+  texture_13057,
+  texture_15315,
+  texture_200022,
+  texture_200285,
+  texture_200286,
 };
 
 MAIN ()
@@ -176,12 +197,12 @@ query (void)
   };
 
   gimp_install_procedure (PLUG_IN_PROC,
-                          "Create an rip border effect",
-                          "Rip border is one of the beautify serial plugin.",
+                          "Create an texture border effect",
+                          "Texture border is one of the beautify serial plugin.",
                           "Hejian <hejian.he@gmail.com>",
                           "Hejian <hejian.he@gmail.com>",
                           "2012",
-                          "_Rip Border...",
+                          "_Texture Border...",
                           "RGB*, GRAY*",
                           GIMP_PLUGIN,
                           G_N_ELEMENTS (args), 0,
@@ -219,7 +240,7 @@ run (const gchar      *name,
   switch (run_mode)
   {
     case GIMP_RUN_INTERACTIVE:
-      if (! rip_border_dialog ())
+      if (! texture_border_dialog ())
         return;
       break;
 
@@ -239,7 +260,7 @@ run (const gchar      *name,
     {
       /* Run! */
       gimp_image_undo_group_start (image_ID);
-      rip_border (image_ID);
+      texture_border (image_ID);
       gimp_image_undo_group_end (image_ID);
 
       /* If run mode is interactive, flush displays */
@@ -248,7 +269,7 @@ run (const gchar      *name,
 
       /* Store data */
       if (run_mode == GIMP_RUN_INTERACTIVE)
-        gimp_set_data (PLUG_IN_PROC, &rbvals, sizeof (RipBorderValues));
+        gimp_set_data (PLUG_IN_PROC, &tbvals, sizeof (TextureBorderValues));
 
     }
 
@@ -256,26 +277,26 @@ run (const gchar      *name,
 }
 
 static void
-rip_border (gint32 image_ID)
+texture_border (gint32 image_ID)
 {
-  if (rbvals.texture != NULL)
+  if (tbvals.texture != NULL)
   {
     gint32 color_layer = gimp_layer_new (image_ID, "color",
                                          width, height,
                                          GIMP_RGBA_IMAGE,
-                                         rbvals.opacity,
+                                         tbvals.opacity,
                                          GIMP_NORMAL_MODE);
     gimp_image_insert_layer (image_ID, color_layer, -1, 0);
 
-    gimp_context_set_foreground (&rbvals.color);
+    gimp_context_set_foreground (&tbvals.color);
     gimp_edit_fill (color_layer, GIMP_FOREGROUND_FILL);
 
     gint32 texture_mask = gimp_layer_create_mask (color_layer,
                                                   GIMP_ADD_WHITE_MASK);
     gimp_layer_add_mask (color_layer, texture_mask);
 
-    GdkPixbuf *pixbuf = gdk_pixbuf_new_from_inline (-1, rbvals.texture, FALSE, NULL);
-    gint32 texture = gimp_layer_new_from_pixbuf (image_ID, "texture", pixbuf, rbvals.opacity, GIMP_NORMAL_MODE, 0, 0);
+    GdkPixbuf *pixbuf = gdk_pixbuf_new_from_inline (-1, tbvals.texture, FALSE, NULL);
+    gint32 texture = gimp_layer_new_from_pixbuf (image_ID, "texture", pixbuf, tbvals.opacity, GIMP_NORMAL_MODE, 0, 0);
     gimp_image_insert_layer (image_ID, texture, -1, 0);
     gimp_layer_scale (texture, width, height, FALSE);
     gimp_invert (texture);
@@ -305,13 +326,13 @@ preview_update (GtkWidget *preview)
 static gboolean
 select_texture (GtkWidget *event_box, GdkEventButton *event, const guint8* texture)
 {
-  rbvals.texture = texture;
+  tbvals.texture = texture;
 
-  GdkPixbuf *pixbuf = gdk_pixbuf_new_from_inline (-1, rbvals.texture, FALSE, NULL);
+  GdkPixbuf *pixbuf = gdk_pixbuf_new_from_inline (-1, tbvals.texture, FALSE, NULL);
   gint32 texture_layer = gimp_layer_new_from_pixbuf (preview_image,
                                               "texture",
                                               pixbuf,
-                                              rbvals.opacity,
+                                              tbvals.opacity,
                                               GIMP_NORMAL_MODE, 0, 0);
   gimp_image_insert_layer (preview_image, texture_layer, -1, 0);
   gimp_layer_scale (texture_layer, width, height, FALSE);
@@ -326,7 +347,7 @@ select_texture (GtkWidget *event_box, GdkEventButton *event, const guint8* textu
 static void
 color_update (GtkWidget *preview)
 {
-  gimp_context_set_foreground (&rbvals.color);
+  gimp_context_set_foreground (&tbvals.color);
   gimp_edit_fill (color_layer, GIMP_FOREGROUND_FILL);
   
   preview_update (preview);
@@ -334,14 +355,13 @@ color_update (GtkWidget *preview)
 
 static void
 opacity_update (GtkRange *range, gpointer data) {
-  rbvals.opacity = gtk_range_get_value (range);
-  gimp_layer_set_opacity (color_layer, rbvals.opacity);
+  tbvals.opacity = gtk_range_get_value (range);
+  gimp_layer_set_opacity (color_layer, tbvals.opacity);
   preview_update (preview);
 }
 
-
 static gboolean
-rip_border_dialog ()
+texture_border_dialog ()
 {
   GtkWidget *dialog;
   GtkWidget *main_hbox;
@@ -394,14 +414,14 @@ rip_border_dialog ()
   gtk_box_pack_start (GTK_BOX (left_vbox), label, FALSE, FALSE, 0);
   gtk_widget_show (label);
 
-  GtkWidget *button = gimp_color_button_new ("Border color", 40, 20, &rbvals.color, GIMP_COLOR_AREA_FLAT);
+  GtkWidget *button = gimp_color_button_new ("Border color", 40, 20, &tbvals.color, GIMP_COLOR_AREA_FLAT);
   gimp_color_button_set_update (GIMP_COLOR_BUTTON (button), TRUE);
   gtk_box_pack_start (GTK_BOX (left_vbox), button, FALSE, FALSE, 0);
   gtk_widget_show (button);
 
   g_signal_connect (button, "color-changed",
                    G_CALLBACK (gimp_color_button_get_color),
-                   &rbvals.color);
+                   &tbvals.color);
 
   /* opacity */
   label = gtk_label_new ("Border opacity");
@@ -409,7 +429,7 @@ rip_border_dialog ()
   gtk_widget_show (label);
 
   GtkWidget *hscale = gtk_hscale_new_with_range (0, 100, 1);
-  gtk_range_set_value (GTK_RANGE (hscale), rbvals.opacity);
+  gtk_range_set_value (GTK_RANGE (hscale), tbvals.opacity);
   gtk_scale_set_value_pos (GTK_SCALE (hscale), GTK_POS_BOTTOM);
   gtk_box_pack_start (GTK_BOX (left_vbox), hscale, FALSE, FALSE, 0);
   gtk_widget_show (hscale);
@@ -427,11 +447,11 @@ rip_border_dialog ()
   color_layer = gimp_layer_new (preview_image, "color",
                                          width, height,
                                          GIMP_RGBA_IMAGE,
-                                         rbvals.opacity,
+                                         tbvals.opacity,
                                          GIMP_NORMAL_MODE);
   gimp_image_insert_layer (preview_image, color_layer, -1, 0);
 
-  gimp_context_set_foreground (&rbvals.color);
+  gimp_context_set_foreground (&tbvals.color);
   gimp_edit_fill (color_layer, GIMP_FOREGROUND_FILL);
 
   texture_mask = gimp_layer_create_mask (color_layer,
@@ -457,12 +477,13 @@ rip_border_dialog ()
   gtk_box_pack_start (GTK_BOX (right_vbox), notebook, FALSE, FALSE, 0);
   gtk_widget_show (notebook);
 
-  create_texture_page (GTK_NOTEBOOK (notebook), "Stars", stars_textures, G_N_ELEMENTS (stars_textures));
-  create_texture_page (GTK_NOTEBOOK (notebook), "Border", border_textures, G_N_ELEMENTS (border_textures));
-  create_texture_page (GTK_NOTEBOOK (notebook), "Art", art_textures, G_N_ELEMENTS (art_textures));
-  create_texture_page (GTK_NOTEBOOK (notebook), "Flowers", flowers_textures, G_N_ELEMENTS (flowers_textures));
-  create_texture_page (GTK_NOTEBOOK (notebook), "Lights", lights_textures, G_N_ELEMENTS (lights_textures));
-  create_texture_page (GTK_NOTEBOOK (notebook), "Others", others_textures, G_N_ELEMENTS (others_textures));
+  create_texture_page (GTK_NOTEBOOK (notebook), "Art",      art_textures,     G_N_ELEMENTS (art_textures));
+  create_texture_page (GTK_NOTEBOOK (notebook), "Wall",     wall_textures,    G_N_ELEMENTS (wall_textures));
+  create_texture_page (GTK_NOTEBOOK (notebook), "Texture",  texture_textures, G_N_ELEMENTS (texture_textures));
+  create_texture_page (GTK_NOTEBOOK (notebook), "Cloth",    cloth_textures,   G_N_ELEMENTS (cloth_textures));
+  create_texture_page (GTK_NOTEBOOK (notebook), "Paper",    paper_textures,   G_N_ELEMENTS (paper_textures));
+  create_texture_page (GTK_NOTEBOOK (notebook), "Grid",     grid_textures,    G_N_ELEMENTS (grid_textures));
+  create_texture_page (GTK_NOTEBOOK (notebook), "Others",   other_textures,   G_N_ELEMENTS (other_textures));
 
   run = (gimp_dialog_run (GIMP_DIALOG (dialog)) == GTK_RESPONSE_OK);
 
