@@ -6,8 +6,14 @@ Beautify is a set of GIMP plugins for easiest and quickly photo beautify.
 INSTALL
 ===================
 
+method 1 - install into mathine directory:
+
 make
 sudo make install
+
+method 2 - install into user directory:
+make
+make userinstall
 
 Note:
 Be sure that you have installed the gimp-devel-tools package before install.
@@ -29,6 +35,7 @@ CHANGELOG
 fix make install in x86_64
 beautify refactor: split the effect code into beautify-feature.c
 beautify: add HDR effect
+provide make userinstall to install the plugin into user directory
 
 2012-07-19
 beautify: fix memory leak

@@ -31,15 +31,17 @@ install: beautify rip-border skin-whitening
 	# need fix: --install-admin-bin has issue in x86_64,
 	# it install the plug-in into /usr/lib/gimp/2.0/plug-ins/
 	# but the correct directory is /usr/lib64/gimp/2.0/plug-ins/
-	# $(GIMPTOOL) --install-admin-bin beautify
-	# $(GIMPTOOL) --install-admin-bin rip-border
-	# $(GIMPTOOL) --install-admin-bin skin-whitening
-	cp beautify /usr/lib64/gimp/2.0/plug-ins/
-	cp rip-border /usr/lib64/gimp/2.0/plug-ins/
-	cp skin-whitening /usr/lib64/gimp/2.0/plug-ins/
-	ln -sf /usr/lib64/gimp/2.0/plug-ins/beautify /usr/lib/gimp/2.0/plug-ins/beautify
-	ln -sf /usr/lib64/gimp/2.0/plug-ins/rip-border /usr/lib/gimp/2.0/plug-ins/rip-border
-	ln -sf /usr/lib64/gimp/2.0/plug-ins/skin-whitening /usr/lib/gimp/2.0/plug-ins/skin-whitening
+	$(GIMPTOOL) --install-admin-bin beautify
+	$(GIMPTOOL) --install-admin-bin rip-border
+	$(GIMPTOOL) --install-admin-bin skin-whitening
+	ln -sf /usr/lib/gimp/2.0/plug-ins/beautify /usr/lib64/gimp/2.0/plug-ins/beautify
+	ln -sf /usr/lib/gimp/2.0/plug-ins/rip-border /usr/lib64/gimp/2.0/plug-ins/rip-border
+	ln -sf /usr/lib/gimp/2.0/plug-ins/skin-whitening /usr/lib64/gimp/2.0/plug-ins/skin-whitening
+
+userinstall: beautify rip-border skin-whitening
+	$(GIMPTOOL) --install-bin beautify
+	$(GIMPTOOL) --install-bin rip-border
+	$(GIMPTOOL) --install-bin skin-whitening
 
 beautify: beautify.o beautify-effect.o
 	$(CC) -o $@ $^ $(LIBS)
