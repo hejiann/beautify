@@ -28,6 +28,7 @@ CHANGELOG
 2012-07-20
 fix make install in x86_64
 beautify refactor: split the effect code into beautify-feature.c
+beautify: add HDR effect
 
 2012-07-19
 beautify: fix memory leak
