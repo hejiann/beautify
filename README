@@ -37,6 +37,7 @@ beautify refactor: split the effect code into beautify-feature.c
 beautify: add HDR effect
 provide make userinstall to install the plugin into user directory
 add make uninstall and make useruninstall
+beautify: add black and white effect
 
 2012-07-19
 beautify: fix memory leak

@@ -136,6 +136,9 @@ run_effect (gint32 image_ID, BeautifyEffectType effect)
       gimp_curves_spline (effect_layer, GIMP_HISTOGRAM_BLUE, 18, blue_pts);
     }
       break;
+    case BEAUTIFY_EFFECT_BLACK_AND_WHITE:
+      gimp_desaturate_full (effect_layer, GIMP_DESATURATE_LUMINOSITY);
+      break;
     case BEAUTIFY_EFFECT_INVERT:
       gimp_invert (effect_layer);
       break;

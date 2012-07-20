@@ -46,6 +46,7 @@ static const BeautifyEffectType basic_effects[] =
   BEAUTIFY_EFFECT_SHARPEN,
   BEAUTIFY_EFFECT_STRONG_CONTRAST,
   BEAUTIFY_EFFECT_SMART_COLOR,
+  BEAUTIFY_EFFECT_BLACK_AND_WHITE,
   BEAUTIFY_EFFECT_INVERT,
 };
 
@@ -803,6 +804,9 @@ effect_icon_new (BeautifyEffectType effect)
       break;
     case BEAUTIFY_EFFECT_SMART_COLOR:
       title = "Smart Color";
+      break;
+    case BEAUTIFY_EFFECT_BLACK_AND_WHITE:
+      title = "Black & White";
       break;
     case BEAUTIFY_EFFECT_INVERT:
       title = "Invert";
