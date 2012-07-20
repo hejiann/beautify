@@ -37,6 +37,9 @@ install: beautify rip-border skin-whitening
 	cp beautify /usr/lib64/gimp/2.0/plug-ins/
 	cp rip-border /usr/lib64/gimp/2.0/plug-ins/
 	cp skin-whitening /usr/lib64/gimp/2.0/plug-ins/
+	ln -sf /usr/lib64/gimp/2.0/plug-ins/beautify /usr/lib/gimp/2.0/plug-ins/beautify
+	ln -sf /usr/lib64/gimp/2.0/plug-ins/rip-border /usr/lib/gimp/2.0/plug-ins/rip-border
+	ln -sf /usr/lib64/gimp/2.0/plug-ins/skin-whitening /usr/lib/gimp/2.0/plug-ins/skin-whitening
 
 beautify: beautify.o beautify-effect.o
 	$(CC) -o $@ $^ $(LIBS)
