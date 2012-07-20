@@ -62,6 +62,7 @@ static const BeautifyEffectType lomo_effects[] =
 static const BeautifyEffectType studio_effects[] =
 {
   BEAUTIFY_EFFECT_LITTLE_FRESH,
+  BEAUTIFY_EFFECT_RETRO,
   BEAUTIFY_EFFECT_PINK_LADY,
   BEAUTIFY_EFFECT_ABAO,
   BEAUTIFY_EFFECT_ICE_SPIRIT,
@@ -831,6 +832,9 @@ effect_icon_new (BeautifyEffectType effect)
       break;
     case BEAUTIFY_EFFECT_LITTLE_FRESH:
       title = "Little Fresh";
+      break;
+    case BEAUTIFY_EFFECT_RETRO:
+      title = "Retro";
       break;
     case BEAUTIFY_EFFECT_PINK_LADY:
       title = "Pink Lady";

@@ -32,6 +32,9 @@ Support: #beautify on FreeNode
 CHANGELOG
 ===================
 
+2012-07-21
+beautify: add retro effect
+
 2012-07-20
 fix make install in x86_64
 beautify refactor: split the effect code into beautify-feature.c
