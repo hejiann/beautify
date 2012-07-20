@@ -28,15 +28,24 @@ GDK_PIXBUF_CSOURCE = gdk-pixbuf-csource
 all: beautify rip-border skin-whitening
 
 install: beautify rip-border skin-whitening
-	$(GIMPTOOL) --install-admin-bin beautify
-	$(GIMPTOOL) --install-admin-bin rip-border
-	$(GIMPTOOL) --install-admin-bin skin-whitening
+	# need fix: --install-admin-bin has issue in x86_64,
+	# it install the plug-in into /usr/lib/gimp/2.0/plug-ins/
+	# but the correct directory is /usr/lib64/gimp/2.0/plug-ins/
+	# $(GIMPTOOL) --install-admin-bin beautify
+	# $(GIMPTOOL) --install-admin-bin rip-border
+	# $(GIMPTOOL) --install-admin-bin skin-whitening
+	cp beautify /usr/lib64/gimp/2.0/plug-ins/
+	cp rip-border /usr/lib64/gimp/2.0/plug-ins/
+	cp skin-whitening /usr/lib64/gimp/2.0/plug-ins/
 
-beautify: beautify.o
-	$(CC) $(CFLAGS) -o $@ $^ $(LIBS)
+beautify: beautify.o beautify-effect.o
+	$(CC) -o $@ $^ $(LIBS)
 
-beautify.o: beautify.c beautify-textures.h
+beautify.o: beautify.c
 	$(CC) $(CFLAGS) -c beautify.c -o beautify.o
+
+beautify-effect.o: beautify-effect.c beautify-textures.h
+	$(CC) $(CFLAGS) -c beautify-effect.c -o beautify-effect.o
 
 beautify-textures.h: beautify-textures.list
 	$(GDK_PIXBUF_CSOURCE) --raw --build-list `cat beautify-textures.list` > $(@F)

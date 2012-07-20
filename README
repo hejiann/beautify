@@ -25,9 +25,14 @@ Support: #beautify on FreeNode
 CHANGELOG
 ===================
 
+2012-07-20
+fix make install in x86_64
+beautify refactor: split the effect code into beautify-feature.c
+
 2012-07-19
 beautify: fix memory leak
 beautify: speed up dialog display
+fix Makefile: install plugin into mathine directory instead of user directory
 
 2012-07-18
 beautify: add blues effect
