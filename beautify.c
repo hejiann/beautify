@@ -67,6 +67,7 @@ static const BeautifyEffectType studio_effects[] =
   BEAUTIFY_EFFECT_ICE_SPIRIT,
   BEAUTIFY_EFFECT_JAPANESE,
   BEAUTIFY_EFFECT_NEW_JAPANESE,
+  BEAUTIFY_EFFECT_OLD_PHOTOS,
   BEAUTIFY_EFFECT_WARM_YELLOW,
   BEAUTIFY_EFFECT_BLUES,
   BEAUTIFY_EFFECT_PURPLE_FANTASY,
@@ -845,6 +846,9 @@ effect_icon_new (BeautifyEffectType effect)
       break;
     case BEAUTIFY_EFFECT_NEW_JAPANESE:
       title = "New Japanese";
+      break;
+    case BEAUTIFY_EFFECT_OLD_PHOTOS:
+      title = "Old Photos";
       break;
     case BEAUTIFY_EFFECT_WARM_YELLOW:
       title = "Warm Yellow";

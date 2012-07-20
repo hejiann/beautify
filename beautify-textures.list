@@ -1,3 +1,7 @@
+texture_old_photos
+  ./textures/effects/old-photos.jpg
+texture_bright_red
+  ./textures/effects/bright-red.jpg
 texture_christmas_eve
   ./textures/effects/christmas-eve.jpg
 texture_astral
@@ -6,5 +10,3 @@ texture_pick_light_1
   ./textures/effects/pick-light-1.jpg
 texture_pick_light_2
   ./textures/effects/pick-light-2.jpg
-texture_bright_red
-  ./textures/effects/bright-red.jpg

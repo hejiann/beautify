@@ -471,6 +471,56 @@ run_effect (gint32 image_ID, BeautifyEffectType effect)
       gimp_curves_spline (effect_layer, GIMP_HISTOGRAM_BLUE, 6, blue_pts);
     }
       break;
+    case BEAUTIFY_EFFECT_OLD_PHOTOS:
+    {
+      guint8 red_pts[] = {
+        0.000000 * 255, 0.030719 * 255,
+        0.121569 * 255, 0.094286 * 255,
+        0.247059 * 255, 0.215434 * 255,
+        0.372549 * 255, 0.446688 * 255,
+        0.498039 * 255, 0.744585 * 255,
+        0.623529 * 255, 0.854446 * 255,
+        0.749020 * 255, 0.909348 * 255,
+        0.874510 * 255, 0.948601 * 255,
+        1.000000 * 255, 0.975656 * 255,
+      };
+      guint8 green_pts[] = {
+        0.000000 * 255, 0.111275 * 255,
+        0.121569 * 255, 0.172338 * 255,
+        0.247059 * 255, 0.301636 * 255,
+        0.372549 * 255, 0.462942 * 255,
+        0.498039 * 255, 0.615155 * 255,
+        0.623529 * 255, 0.736568 * 255,
+        0.749020 * 255, 0.807584 * 255,
+        0.874510 * 255, 0.874171 * 255,
+        1.000000 * 255, 0.892938 * 255,
+      };
+      guint8 blue_pts[] = {
+        0.000000 * 255, 0.333451 * 255,
+        0.121569 * 255, 0.423250 * 255,
+        0.247059 * 255, 0.517089 * 255,
+        0.372549 * 255, 0.591683 * 255,
+        0.498039 * 255, 0.631057 * 255,
+        0.623529 * 255, 0.658333 * 255,
+        0.749020 * 255, 0.678149 * 255,
+        0.874510 * 255, 0.678550 * 255,
+        1.000000 * 255, 0.677872 * 255,
+      };
+      gimp_curves_spline (effect_layer, GIMP_HISTOGRAM_RED, 18, red_pts);
+      gimp_curves_spline (effect_layer, GIMP_HISTOGRAM_GREEN, 18, green_pts);
+      gimp_curves_spline (effect_layer, GIMP_HISTOGRAM_BLUE, 18, blue_pts);
+
+      gint32     layer;
+      GdkPixbuf *pixbuf;
+
+      pixbuf = gdk_pixbuf_new_from_inline (-1, texture_old_photos, FALSE, NULL);
+      layer = gimp_layer_new_from_pixbuf (image_ID, "texture", pixbuf, 100, GIMP_SCREEN_MODE, 0, 0);
+      gimp_image_insert_layer (image_ID, layer, -1, 0);
+      gimp_layer_scale (layer, width, height, FALSE);
+      gimp_image_merge_down (image_ID, layer, GIMP_CLIP_TO_BOTTOM_LAYER);
+
+      break;
+    }
     case BEAUTIFY_EFFECT_WARM_YELLOW:
     {
       guint8 red_pts[] = {

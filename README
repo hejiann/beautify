@@ -1,7 +1,7 @@
 README
 ===================
 
-Beautify is a set of GIMP plugins for easiest and quickly photo beautify.
+GIMP Beautify is a set of GIMP plug-ins for quick and easy beautify photo.
 
 INSTALL
 ===================
@@ -40,6 +40,7 @@ add make uninstall and make useruninstall
 beautify: add black and white effect
 beautify: add retro LOMO effect
 beautify: add cold purple effect
+beautify: add old photos effect
 
 2012-07-19
 beautify: fix memory leak
