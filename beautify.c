@@ -52,6 +52,7 @@ static const BeautifyEffectType basic_effects[] =
 
 static const BeautifyEffectType lomo_effects[] =
 {
+  BEAUTIFY_EFFECT_RETRO_LOMO,
   BEAUTIFY_EFFECT_GOTHIC_STYLE,
   BEAUTIFY_EFFECT_HDR,
   BEAUTIFY_EFFECT_CLASSIC_HDR,
@@ -810,6 +811,9 @@ effect_icon_new (BeautifyEffectType effect)
       break;
     case BEAUTIFY_EFFECT_INVERT:
       title = "Invert";
+      break;
+    case BEAUTIFY_EFFECT_RETRO_LOMO:
+      title = "Retro LOMO";
       break;
     case BEAUTIFY_EFFECT_GOTHIC_STYLE:
       title = "Gothic Style";

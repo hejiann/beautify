@@ -38,6 +38,7 @@ beautify: add HDR effect
 provide make userinstall to install the plugin into user directory
 add make uninstall and make useruninstall
 beautify: add black and white effect
+beautify: add retro LOMO effect
 
 2012-07-19
 beautify: fix memory leak
