@@ -72,6 +72,7 @@ static const BeautifyEffectType studio_effects[] =
   BEAUTIFY_EFFECT_OLD_PHOTOS,
   BEAUTIFY_EFFECT_WARM_YELLOW,
   BEAUTIFY_EFFECT_BLUES,
+  BEAUTIFY_EFFECT_COLD_GREEN,
   BEAUTIFY_EFFECT_PURPLE_FANTASY,
   BEAUTIFY_EFFECT_COLD_PURPLE,
 };
@@ -863,6 +864,9 @@ effect_icon_new (BeautifyEffectType effect)
       break;
     case BEAUTIFY_EFFECT_BLUES:
       title = "Blues";
+      break;
+    case BEAUTIFY_EFFECT_COLD_GREEN:
+      title = "Cold Green";
       break;
     case BEAUTIFY_EFFECT_PURPLE_FANTASY:
       title = "Purple Fantasy";
