@@ -102,5 +102,5 @@ texture-border-textures.h: texture-border-textures.list
 	$(GDK_PIXBUF_CSOURCE) --raw --build-list `cat texture-border-textures.list` > $(@F)
 
 clean:
-	rm -f *.o beautify skin-whitening rip-border texture-border
+	rm -f *.o beautify beautify-textures.h skin-whitening skin-whitening-images.h rip-border rip-border-textures.h texture-border texture-border-textures.h
 

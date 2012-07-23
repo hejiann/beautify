@@ -74,6 +74,19 @@ static gint       height;
 static GtkWidget *preview          = NULL;
 static gint32     preview_image    = 0;
 
+/* compatable with gtk2 */
+#if GTK_MAJOR_VERSION < 3
+GtkWidget *
+gtk_box_new (GtkOrientation  orientation,
+             gint            spacing)
+{
+  if (orientation == GTK_ORIENTATION_HORIZONTAL)
+    return gtk_hbox_new (FALSE, spacing);
+  else
+    return gtk_vbox_new (FALSE, spacing);
+}
+#endif
+
 MAIN ()
 
 static void

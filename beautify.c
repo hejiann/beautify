@@ -174,6 +174,19 @@ static GtkWidget *effect_opacity   = NULL;
 static BeautifyEffectType current_effect = BEAUTIFY_EFFECT_NONE;
 gint32 preview_effect_layer = 0;
 
+/* compatable with gtk2 */
+#if GTK_MAJOR_VERSION < 3
+GtkWidget *
+gtk_box_new (GtkOrientation  orientation,
+             gint            spacing)
+{
+  if (orientation == GTK_ORIENTATION_HORIZONTAL)
+    return gtk_hbox_new (FALSE, spacing);
+  else
+    return gtk_vbox_new (FALSE, spacing);
+}
+#endif
+
 MAIN ()
 
 static void

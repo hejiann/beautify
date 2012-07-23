@@ -17,6 +17,10 @@
 
 #include <libgimp/gimp.h>
 
+#if GTK_MAJOR_VERSION < 3
+#include <gdk-pixbuf/gdk-pixbuf.h>
+#endif
+
 #include "beautify-effect.h"
 #include "beautify-textures.h"
 
@@ -632,7 +636,7 @@ run_effect (gint32 image_ID, BeautifyEffectType effect)
 
       pixbuf = gdk_pixbuf_new_from_inline (-1, texture_old_photos, FALSE, NULL);
       layer = gimp_layer_new_from_pixbuf (image_ID, "texture", pixbuf, 100, GIMP_SCREEN_MODE, 0, 0);
-      gimp_image_insert_layer (image_ID, layer, -1, 0);
+      gimp_image_add_layer (image_ID, layer, -1);
       gimp_layer_scale (layer, width, height, FALSE);
       gimp_image_merge_down (image_ID, layer, GIMP_CLIP_TO_BOTTOM_LAYER);
 
@@ -833,7 +837,7 @@ run_effect (gint32 image_ID, BeautifyEffectType effect)
 
       pixbuf = gdk_pixbuf_new_from_inline (-1, texture_bright_red, FALSE, NULL);
       layer = gimp_layer_new_from_pixbuf (image_ID, "texture", pixbuf, 100, GIMP_SCREEN_MODE, 0, 0);
-      gimp_image_insert_layer (image_ID, layer, -1, 0);
+      gimp_image_add_layer (image_ID, layer, -1);
       gimp_layer_scale (layer, width, height, FALSE);
       gimp_image_merge_down (image_ID, layer, GIMP_CLIP_TO_BOTTOM_LAYER);
 
@@ -879,7 +883,7 @@ run_effect (gint32 image_ID, BeautifyEffectType effect)
     case BEAUTIFY_EFFECT_CHRISTMAS_EVE:
     {
       gint32 layer = gimp_layer_new (image_ID, "color", width, height, GIMP_RGB_IMAGE, 100, GIMP_OVERLAY_MODE);
-      gimp_image_insert_layer (image_ID, layer, -1, 0);
+      gimp_image_add_layer (image_ID, layer, -1);
       GimpRGB color =
       {
         (gdouble) 156.0 / 255.0,
@@ -893,7 +897,7 @@ run_effect (gint32 image_ID, BeautifyEffectType effect)
 
       GdkPixbuf *pixbuf = gdk_pixbuf_new_from_inline (-1, texture_christmas_eve, FALSE, NULL);
       gint32 texture_layer = gimp_layer_new_from_pixbuf (image_ID, "texture", pixbuf, 100, GIMP_SCREEN_MODE, 0, 0);
-      gimp_image_insert_layer (image_ID, texture_layer, -1, 0);
+      gimp_image_add_layer (image_ID, texture_layer, -1);
       gimp_layer_scale (texture_layer, width, height, FALSE);
       gimp_image_merge_down (image_ID, texture_layer, GIMP_CLIP_TO_BOTTOM_LAYER);
       break;
@@ -902,7 +906,7 @@ run_effect (gint32 image_ID, BeautifyEffectType effect)
     {
       GdkPixbuf *pixbuf = gdk_pixbuf_new_from_inline (-1, texture_astral, FALSE, NULL);
       gint32 texture_layer = gimp_layer_new_from_pixbuf (image_ID, "texture", pixbuf, 100, GIMP_SOFTLIGHT_MODE, 0, 0);
-      gimp_image_insert_layer (image_ID, texture_layer, -1, 0);
+      gimp_image_add_layer (image_ID, texture_layer, -1);
       gimp_layer_scale (texture_layer, width, height, FALSE);
       gimp_image_merge_down (image_ID, texture_layer, GIMP_CLIP_TO_BOTTOM_LAYER);
     }
@@ -913,7 +917,7 @@ run_effect (gint32 image_ID, BeautifyEffectType effect)
       GdkPixbuf *pixbuf;
 
       layer = gimp_layer_new (image_ID, "color", width, height, GIMP_RGB_IMAGE, 100, GIMP_SCREEN_MODE);
-      gimp_image_insert_layer (image_ID, layer, -1, 0);
+      gimp_image_add_layer (image_ID, layer, -1);
       GimpRGB color =
       {
         (gdouble) 62.0 / 255.0,
@@ -927,13 +931,13 @@ run_effect (gint32 image_ID, BeautifyEffectType effect)
 
       pixbuf = gdk_pixbuf_new_from_inline (-1, texture_pick_light_1, FALSE, NULL);
       layer = gimp_layer_new_from_pixbuf (image_ID, "texture 1", pixbuf, 100, GIMP_SCREEN_MODE, 0, 0);
-      gimp_image_insert_layer (image_ID, layer, -1, 0);
+      gimp_image_add_layer (image_ID, layer, -1);
       gimp_layer_scale (layer, width, height, FALSE);
       gimp_image_merge_down (image_ID, layer, GIMP_CLIP_TO_BOTTOM_LAYER);
 
       pixbuf = gdk_pixbuf_new_from_inline (-1, texture_pick_light_2, FALSE, NULL);
       layer = gimp_layer_new_from_pixbuf (image_ID, "texture 2", pixbuf, 100, GIMP_SCREEN_MODE, 0, 0);
-      gimp_image_insert_layer (image_ID, layer, -1, 0);
+      gimp_image_add_layer (image_ID, layer, -1);
       gimp_layer_scale (layer, width, height, FALSE);
       gimp_image_merge_down (image_ID, layer, GIMP_CLIP_TO_BOTTOM_LAYER);
       break;
@@ -945,7 +949,7 @@ run_effect (gint32 image_ID, BeautifyEffectType effect)
 
       pixbuf = gdk_pixbuf_new_from_inline (-1, texture_pink_blue_gradient, FALSE, NULL);
       layer = gimp_layer_new_from_pixbuf (image_ID, "texture", pixbuf, 100, GIMP_SCREEN_MODE, 0, 0);
-      gimp_image_insert_layer (image_ID, layer, -1, 0);
+      gimp_image_add_layer (image_ID, layer, -1);
       gimp_layer_scale (layer, width, height, FALSE);
       gimp_image_merge_down (image_ID, layer, GIMP_CLIP_TO_BOTTOM_LAYER);
 

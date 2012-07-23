@@ -35,6 +35,7 @@ CHANGELOG
 2012-07-23
 beautify: fix soft light effect
 beautify: add pink blue gradient effect
+fix compatable with gtk2
 
 2012-07-22
 beautify: add film effect

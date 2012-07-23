@@ -184,6 +184,19 @@ static const guint8* other_textures[] =
   texture_200286,
 };
 
+/* compatable with gtk2 */
+#if GTK_MAJOR_VERSION < 3
+GtkWidget *
+gtk_box_new (GtkOrientation  orientation,
+             gint            spacing)
+{
+  if (orientation == GTK_ORIENTATION_HORIZONTAL)
+    return gtk_hbox_new (FALSE, spacing);
+  else
+    return gtk_vbox_new (FALSE, spacing);
+}
+#endif
+
 MAIN ()
 
 static void
@@ -286,7 +299,7 @@ texture_border (gint32 image_ID)
                                          GIMP_RGBA_IMAGE,
                                          tbvals.opacity,
                                          GIMP_NORMAL_MODE);
-    gimp_image_insert_layer (image_ID, color_layer, -1, 0);
+    gimp_image_add_layer (image_ID, color_layer, -1);
 
     gimp_context_set_foreground (&tbvals.color);
     gimp_edit_fill (color_layer, GIMP_FOREGROUND_FILL);
@@ -297,7 +310,7 @@ texture_border (gint32 image_ID)
 
     GdkPixbuf *pixbuf = gdk_pixbuf_new_from_inline (-1, tbvals.texture, FALSE, NULL);
     gint32 texture = gimp_layer_new_from_pixbuf (image_ID, "texture", pixbuf, tbvals.opacity, GIMP_NORMAL_MODE, 0, 0);
-    gimp_image_insert_layer (image_ID, texture, -1, 0);
+    gimp_image_add_layer (image_ID, texture, -1);
     gimp_layer_scale (texture, width, height, FALSE);
     gimp_invert (texture);
     gimp_edit_copy (texture);
@@ -334,7 +347,7 @@ select_texture (GtkWidget *event_box, GdkEventButton *event, const guint8* textu
                                               pixbuf,
                                               tbvals.opacity,
                                               GIMP_NORMAL_MODE, 0, 0);
-  gimp_image_insert_layer (preview_image, texture_layer, -1, 0);
+  gimp_image_add_layer (preview_image, texture_layer, -1);
   gimp_layer_scale (texture_layer, width, height, FALSE);
   gimp_invert (texture_layer);
   gimp_edit_copy (texture_layer);
@@ -449,7 +462,7 @@ texture_border_dialog ()
                                          GIMP_RGBA_IMAGE,
                                          tbvals.opacity,
                                          GIMP_NORMAL_MODE);
-  gimp_image_insert_layer (preview_image, color_layer, -1, 0);
+  gimp_image_add_layer (preview_image, color_layer, -1);
 
   gimp_context_set_foreground (&tbvals.color);
   gimp_edit_fill (color_layer, GIMP_FOREGROUND_FILL);
