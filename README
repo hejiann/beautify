@@ -32,6 +32,10 @@ Support: #beautify on FreeNode
 CHANGELOG
 ===================
 
+2012-07-23
+beautify: fix soft light effect
+beautify: add pink blue gradient effect
+
 2012-07-22
 beautify: add film effect
 beautify: add cold green effect

@@ -51,6 +51,8 @@ typedef enum
   BEAUTIFY_EFFECT_CHRISTMAS_EVE,
   BEAUTIFY_EFFECT_ASTRAL,
   BEAUTIFY_EFFECT_PICK_LIGHT,
+
+  BEAUTIFY_EFFECT_PINK_BLUE_GRADIENT,
 } BeautifyEffectType;
 
 void run_effect (gint32 image_ID, BeautifyEffectType effect);

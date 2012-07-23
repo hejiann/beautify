@@ -35,9 +35,46 @@ run_effect (gint32 image_ID, BeautifyEffectType effect)
   switch (effect)
   {
     case BEAUTIFY_EFFECT_SOFT_LIGHT:
-      gimp_layer_set_mode (effect_layer, GIMP_SOFTLIGHT_MODE);
+      //gimp_layer_set_mode (effect_layer, GIMP_SOFTLIGHT_MODE);
+    {
+      guint8 red_pts[] = {
+        0.000000 * 255, 0.018301 * 255,
+        0.121569 * 255, 0.140340 * 255,
+        0.247059 * 255, 0.293839 * 255,
+        0.372549 * 255, 0.436997 * 255,
+        0.498039 * 255, 0.572834 * 255,
+        0.623529 * 255, 0.704905 * 255,
+        0.749020 * 255, 0.822627 * 255,
+        0.874510 * 255, 0.918599 * 255,
+        1.000000 * 255, 1.000000 * 255,
+      };
+      guint8 green_pts[] = {
+        0.000000 * 255, 0.039216 * 255,
+        0.121569 * 255, 0.137287 * 255,
+        0.247059 * 255, 0.287181 * 255,
+        0.372549 * 255, 0.432968 * 255,
+        0.498039 * 255, 0.572484 * 255,
+        0.623529 * 255, 0.698476 * 255,
+        0.749020 * 255, 0.825490 * 255,
+        0.874510 * 255, 0.920394 * 255,
+        1.000000 * 255, 1.000000 * 255,
+      };
+      guint8 blue_pts[] = {
+        0.000000 * 255, 0.005744 * 255,
+        0.121569 * 255, 0.135120 * 255,
+        0.247059 * 255, 0.287459 * 255,
+        0.372549 * 255, 0.429606 * 255,
+        0.498039 * 255, 0.575840 * 255,
+        0.623529 * 255, 0.697813 * 255,
+        0.749020 * 255, 0.823317 * 255,
+        0.874510 * 255, 0.918301 * 255,
+        1.000000 * 255, 1.000000 * 255,
+      };
+      gimp_curves_spline (effect_layer, GIMP_HISTOGRAM_RED, 18, red_pts);
+      gimp_curves_spline (effect_layer, GIMP_HISTOGRAM_GREEN, 18, green_pts);
+      gimp_curves_spline (effect_layer, GIMP_HISTOGRAM_BLUE, 18, blue_pts);
       break;
-
+    }
     case BEAUTIFY_EFFECT_WARM:
     {
       guint8 red_pts[] = {
@@ -899,6 +936,56 @@ run_effect (gint32 image_ID, BeautifyEffectType effect)
       gimp_image_insert_layer (image_ID, layer, -1, 0);
       gimp_layer_scale (layer, width, height, FALSE);
       gimp_image_merge_down (image_ID, layer, GIMP_CLIP_TO_BOTTOM_LAYER);
+      break;
+    }
+    case BEAUTIFY_EFFECT_PINK_BLUE_GRADIENT:
+    {
+      gint32     layer;
+      GdkPixbuf *pixbuf;
+
+      pixbuf = gdk_pixbuf_new_from_inline (-1, texture_pink_blue_gradient, FALSE, NULL);
+      layer = gimp_layer_new_from_pixbuf (image_ID, "texture", pixbuf, 100, GIMP_SCREEN_MODE, 0, 0);
+      gimp_image_insert_layer (image_ID, layer, -1, 0);
+      gimp_layer_scale (layer, width, height, FALSE);
+      gimp_image_merge_down (image_ID, layer, GIMP_CLIP_TO_BOTTOM_LAYER);
+
+      guint8 red_pts[] = {
+        0.000000 * 255, 0.000392 * 255,
+        0.121569 * 255, 0.038765 * 255,
+        0.247059 * 255, 0.163053 * 255,
+        0.372549 * 255, 0.298924 * 255,
+        0.498039 * 255, 0.443050 * 255,
+        0.623529 * 255, 0.612325 * 255,
+        0.749020 * 255, 0.790453 * 255,
+        0.874510 * 255, 0.939548 * 255,
+        1.000000 * 255, 1.000000 * 255,
+      };
+      guint8 green_pts[] = {
+        0.000000 * 255, 0.001569 * 255,
+        0.121569 * 255, 0.044421 * 255,
+        0.247059 * 255, 0.161120 * 255,
+        0.372549 * 255, 0.300417 * 255,
+        0.498039 * 255, 0.478406 * 255,
+        0.623529 * 255, 0.664685 * 255,
+        0.749020 * 255, 0.828593 * 255,
+        0.874510 * 255, 0.954235 * 255,
+        1.000000 * 255, 1.000000 * 255,
+      };
+      guint8 blue_pts[] = {
+        0.000000 * 255, 0.260784 * 255,
+        0.121569 * 255, 0.260784 * 255,
+        0.247059 * 255, 0.260784 * 255,
+        0.372549 * 255, 0.327074 * 255,
+        0.498039 * 255, 0.447592 * 255,
+        0.623529 * 255, 0.589356 * 255,
+        0.749020 * 255, 0.776297 * 255,
+        0.874510 * 255, 0.939428 * 255,
+        1.000000 * 255, 1.000000 * 255,
+      };
+      layer = gimp_image_get_active_layer (image_ID);
+      gimp_curves_spline (layer, GIMP_HISTOGRAM_RED, 18, red_pts);
+      gimp_curves_spline (layer, GIMP_HISTOGRAM_GREEN, 18, green_pts);
+      gimp_curves_spline (layer, GIMP_HISTOGRAM_BLUE, 18, blue_pts);
       break;
     }
   }
