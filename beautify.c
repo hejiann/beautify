@@ -60,6 +60,7 @@ static const BeautifyEffectType lomo_effects[] =
   BEAUTIFY_EFFECT_YELLOWING_DARK_CORNERS,
   BEAUTIFY_EFFECT_IMPRESSION,
   BEAUTIFY_EFFECT_DEEP_BLUE,
+  BEAUTIFY_EFFECT_PURPLE_SENSATION,
   BEAUTIFY_EFFECT_BRONZE,
 };
 
@@ -869,6 +870,9 @@ effect_icon_new (BeautifyEffectType effect)
       break;
     case BEAUTIFY_EFFECT_DEEP_BLUE:
       title = "Deep Blue";
+      break;
+    case BEAUTIFY_EFFECT_PURPLE_SENSATION:
+      title = "Purple Sensation";
       break;
     case BEAUTIFY_EFFECT_BRONZE:
       title = "Bronze";
