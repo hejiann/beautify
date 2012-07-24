@@ -672,6 +672,56 @@ run_effect (gint32 image_ID, BeautifyEffectType effect)
       gimp_curves_spline (effect_layer, GIMP_HISTOGRAM_BLUE, 6, blue_pts);
     }
       break;
+    case BEAUTIFY_EFFECT_MILK:
+    {
+      gint32     layer;
+      GdkPixbuf *pixbuf;
+
+      pixbuf = gdk_pixbuf_new_from_inline (-1, texture_milk, FALSE, NULL);
+      layer = gimp_layer_new_from_pixbuf (image_ID, "texture", pixbuf, 20, GIMP_SCREEN_MODE, 0, 0);
+      gimp_image_add_layer (image_ID, layer, -1);
+      gimp_layer_scale (layer, width, height, FALSE);
+      gimp_image_merge_down (image_ID, layer, GIMP_CLIP_TO_BOTTOM_LAYER);
+
+      guint8 red_pts[] = {
+        0.000000 * 255, 0.309804 * 255,
+        0.121569 * 255, 0.392252 * 255,
+        0.247059 * 255, 0.496494 * 255,
+        0.372549 * 255, 0.597570 * 255,
+        0.498039 * 255, 0.684511 * 255,
+        0.623529 * 255, 0.768060 * 255,
+        0.749020 * 255, 0.843330 * 255,
+        0.874510 * 255, 0.917231 * 255,
+        1.000000 * 255, 0.992213 * 255,
+      };
+      guint8 green_pts[] = {
+        0.000000 * 255, 0.299346 * 255,
+        0.121569 * 255, 0.395641 * 255,
+        0.247059 * 255, 0.498204 * 255,
+        0.372549 * 255, 0.597187 * 255,
+        0.498039 * 255, 0.680991 * 255,
+        0.623529 * 255, 0.762936 * 255,
+        0.749020 * 255, 0.841731 * 255,
+        0.874510 * 255, 0.910444 * 255,
+        1.000000 * 255, 0.980896 * 255,
+      };
+      guint8 blue_pts[] = {
+        0.000000 * 255, 0.296899 * 255,
+        0.121569 * 255, 0.400465 * 255,
+        0.247059 * 255, 0.501991 * 255,
+        0.372549 * 255, 0.598690 * 255,
+        0.498039 * 255, 0.685437 * 255,
+        0.623529 * 255, 0.766052 * 255,
+        0.749020 * 255, 0.842140 * 255,
+        0.874510 * 255, 0.913442 * 255,
+        1.000000 * 255, 0.981385 * 255,
+      };
+      layer = gimp_image_get_active_layer (image_ID);
+      gimp_curves_spline (layer, GIMP_HISTOGRAM_RED, 18, red_pts);
+      gimp_curves_spline (layer, GIMP_HISTOGRAM_GREEN, 18, green_pts);
+      gimp_curves_spline (layer, GIMP_HISTOGRAM_BLUE, 18, blue_pts);
+      break;
+    }
     case BEAUTIFY_EFFECT_OLD_PHOTOS:
     {
       guint8 red_pts[] = {

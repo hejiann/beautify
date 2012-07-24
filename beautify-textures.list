@@ -1,3 +1,5 @@
+texture_milk
+  ./textures/effects/milk.jpg
 texture_old_photos
   ./textures/effects/old-photos.jpg
 texture_bright_red
