@@ -1,3 +1,5 @@
+texture_yellowing_dark_corners
+  ./textures/effects/yellowing-dark-corners.png
 texture_milk
   ./textures/effects/milk.jpg
 texture_old_photos

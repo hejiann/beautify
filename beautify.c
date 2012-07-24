@@ -57,6 +57,7 @@ static const BeautifyEffectType lomo_effects[] =
   BEAUTIFY_EFFECT_FILM,
   BEAUTIFY_EFFECT_HDR,
   BEAUTIFY_EFFECT_CLASSIC_HDR,
+  BEAUTIFY_EFFECT_YELLOWING_DARK_CORNERS,
   BEAUTIFY_EFFECT_IMPRESSION,
   BEAUTIFY_EFFECT_DEEP_BLUE,
   BEAUTIFY_EFFECT_BRONZE,
@@ -859,6 +860,9 @@ effect_icon_new (BeautifyEffectType effect)
       break;
     case BEAUTIFY_EFFECT_CLASSIC_HDR:
       title = "Classic HDR";
+      break;
+    case BEAUTIFY_EFFECT_YELLOWING_DARK_CORNERS:
+      title = "Yellow Dark Corner";
       break;
     case BEAUTIFY_EFFECT_IMPRESSION:
       title = "Impression";
