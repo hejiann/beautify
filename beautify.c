@@ -78,6 +78,7 @@ static const BeautifyEffectType studio_effects[] =
   BEAUTIFY_EFFECT_OLD_PHOTOS,
   BEAUTIFY_EFFECT_WARM_YELLOW,
   BEAUTIFY_EFFECT_BLUES,
+  BEAUTIFY_EFFECT_COLD_BLUE,
   BEAUTIFY_EFFECT_COLD_GREEN,
   BEAUTIFY_EFFECT_PURPLE_FANTASY,
   BEAUTIFY_EFFECT_COLD_PURPLE,
@@ -790,13 +791,24 @@ effects_switch_page (GtkNotebook *notebook, GtkWidget *page, guint page_num, gpo
     }
   }
 
+  gtk_container_set_border_width (GTK_CONTAINER (page), 0);
+  gtk_widget_set_size_request (page, -1, 480);
+
+  /* scrolled window */
+  GtkWidget *scrolled_window = gtk_scrolled_window_new (NULL, NULL);
+  gtk_container_set_border_width (GTK_CONTAINER (scrolled_window), 10);
+  gtk_scrolled_window_set_policy (GTK_SCROLLED_WINDOW (scrolled_window), GTK_POLICY_NEVER, GTK_POLICY_AUTOMATIC);
+  gtk_box_pack_start (GTK_BOX (page), scrolled_window, TRUE, TRUE, 0);
+  gtk_widget_show (scrolled_window);
+
   /* table */
   gint rows = 5;
   gint cols = 3;
   GtkWidget *table = gtk_table_new (rows, cols, FALSE);
   gtk_table_set_col_spacings (GTK_TABLE (table), 6);
   gtk_table_set_row_spacings (GTK_TABLE (table), 6);
-  gtk_box_pack_start (GTK_BOX (page), table, FALSE, FALSE, 0);
+  //gtk_box_pack_start (GTK_BOX (page), table, FALSE, FALSE, 0);
+  gtk_scrolled_window_add_with_viewport (GTK_SCROLLED_WINDOW (scrolled_window), table);
   gtk_widget_show (table);
 
   gint row = 1;
@@ -912,6 +924,9 @@ effect_icon_new (BeautifyEffectType effect)
       break;
     case BEAUTIFY_EFFECT_BLUES:
       title = "Blues";
+      break;
+    case BEAUTIFY_EFFECT_COLD_BLUE:
+      title = "Cold Blue";
       break;
     case BEAUTIFY_EFFECT_COLD_GREEN:
       title = "Cold Green";
