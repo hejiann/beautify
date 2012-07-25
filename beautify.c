@@ -110,7 +110,6 @@ static void     beautify (GimpDrawable *drawable);
 static gboolean beautify_dialog (gint32        image_ID,
                                  GimpDrawable *drawable);
 
-static void     preview_update (GtkWidget *preview);
 
 static void     create_base_page (GtkNotebook *notebook);
 static void     create_color_page (GtkNotebook *notebook);
@@ -125,6 +124,10 @@ static void     yellow_blue_update   (GtkRange *range, gpointer data);
 
 static void     adjustment();
 
+static void     reset_pressed (GtkButton *button, gpointer user_date);
+
+static void     preview_update (GtkWidget *preview);
+
 static GtkWidget* effect_option_new ();
 static void       effect_opacity_update (GtkRange *range, gpointer data);
 
@@ -137,7 +140,9 @@ static GtkWidget* effect_icon_new (BeautifyEffectType effect);
 static gboolean select_effect (GtkWidget *widget, GdkEvent *event, gpointer user_data);
 
 static void reset_adjustment ();
+
 static void apply_effect ();
+static void cancel_effect ();
 
 const GimpPlugInInfo PLUG_IN_INFO =
 {
@@ -351,13 +356,23 @@ beautify_dialog (gint32        image_ID,
   create_base_page (GTK_NOTEBOOK (notebook));
   create_color_page (GTK_NOTEBOOK (notebook));
 
+  /* buttons */
+  GtkWidget *buttons = gtk_box_new (GTK_ORIENTATION_HORIZONTAL, 12);
+  gtk_box_pack_start (GTK_BOX (middle_vbox), buttons, FALSE, FALSE, 0);
+  gtk_widget_show (buttons);
+
+  GtkWidget *reset = gtk_button_new_with_label ("Reset");
+  gtk_box_pack_start (GTK_BOX (buttons), reset, FALSE, FALSE, 0);
+  gtk_widget_show (reset);
+  g_signal_connect (reset, "pressed", G_CALLBACK (reset_pressed), NULL);
+
   /* preview */
   preview_image = gimp_image_duplicate (image_ID);
 
   preview = gtk_image_new();
   preview_update (preview);
 
-  gtk_box_pack_start (GTK_BOX (middle_vbox), preview, TRUE, TRUE, 0);
+  gtk_box_pack_start (GTK_BOX (middle_vbox), preview, FALSE, FALSE, 0);
   gtk_widget_show (preview);
 
   /* effect option */
@@ -376,19 +391,6 @@ beautify_dialog (gint32        image_ID,
   gtk_widget_destroy (dialog);
 
   return run;
-}
-
-static void
-preview_update (GtkWidget *preview)
-{
-  gint preview_size = PREVIEW_SIZE;
-  gint max_size = height;
-  if (height < width)
-    max_size = width;
-  if (preview_size > max_size)
-    preview_size = max_size;
-  GdkPixbuf *pixbuf = gimp_image_get_thumbnail (preview_image, preview_size, preview_size, GIMP_PIXBUF_SMALL_CHECKS);
-  gtk_image_set_from_pixbuf (GTK_IMAGE(preview), pixbuf);
 }
 
 static void
@@ -684,6 +686,30 @@ adjustment () {
     gimp_color_balance (layer, GIMP_HIGHLIGHTS, TRUE,
                         bvals.cyan_red, bvals.magenta_green, bvals.yellow_blue);
   }
+}
+
+static void
+reset_pressed (GtkButton *button, gpointer user_date)
+{
+  reset_adjustment ();
+  cancel_effect ();
+
+  gimp_image_delete (preview_image);
+  preview_image = gimp_image_duplicate (image_ID);
+  preview_update (preview);
+}
+
+static void
+preview_update (GtkWidget *preview)
+{
+  gint preview_size = PREVIEW_SIZE;
+  gint max_size = height;
+  if (height < width)
+    max_size = width;
+  if (preview_size > max_size)
+    preview_size = max_size;
+  GdkPixbuf *pixbuf = gimp_image_get_thumbnail (preview_image, preview_size, preview_size, GIMP_PIXBUF_SMALL_CHECKS);
+  gtk_image_set_from_pixbuf (GTK_IMAGE(preview), pixbuf);
 }
 
 static GtkWidget*
@@ -1046,6 +1072,26 @@ apply_effect ()
 
   gint32 current_layer = gimp_image_get_active_layer (preview_image);
   gimp_image_merge_down (preview_image, current_layer, GIMP_EXPAND_AS_NECESSARY);
+
+  current_effect = BEAUTIFY_EFFECT_NONE;
+
+  gtk_widget_hide (effect_option);
+
+  if (saved_image) {
+    gimp_image_delete (saved_image);
+    saved_image = 0;
+  }
+}
+
+static void
+cancel_effect ()
+{
+  if (current_effect == BEAUTIFY_EFFECT_NONE) {
+    return;
+  }
+
+  gint32 current_layer = gimp_image_get_active_layer (preview_image);
+  gimp_item_delete (current_layer);
 
   current_effect = BEAUTIFY_EFFECT_NONE;
 
