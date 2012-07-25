@@ -1245,6 +1245,55 @@ run_effect (gint32 image_ID, BeautifyEffectType effect)
       gimp_image_merge_down (image_ID, layer, GIMP_CLIP_TO_BOTTOM_LAYER);
       break;
     }
+    case BEAUTIFY_EFFECT_BEAM_GRADIENT:
+    {
+      guint8 red_pts[] = {
+        0.000000 * 255, 0.003922 * 255,
+        0.121569 * 255, 0.041976 * 255,
+        0.247059 * 255, 0.156522 * 255,
+        0.372549 * 255, 0.317488 * 255,
+        0.498039 * 255, 0.499707 * 255,
+        0.623529 * 255, 0.684590 * 255,
+        0.749020 * 255, 0.845234 * 255,
+        0.874510 * 255, 0.957891 * 255,
+        1.000000 * 255, 1.000000 * 255,
+      };
+      guint8 green_pts[] = {
+        0.000000 * 255, 0.005882 * 255,
+        0.121569 * 255, 0.041838 * 255,
+        0.247059 * 255, 0.156351 * 255,
+        0.372549 * 255, 0.317066 * 255,
+        0.498039 * 255, 0.499800 * 255,
+        0.623529 * 255, 0.684389 * 255,
+        0.749020 * 255, 0.843945 * 255,
+        0.874510 * 255, 0.958236 * 255,
+        1.000000 * 255, 1.000000 * 255,
+      };
+      guint8 blue_pts[] = {
+        0.000000 * 255, 0.005064 * 255,
+        0.121569 * 255, 0.043674 * 255,
+        0.247059 * 255, 0.157355 * 255,
+        0.372549 * 255, 0.318250 * 255,
+        0.498039 * 255, 0.499405 * 255,
+        0.623529 * 255, 0.683918 * 255,
+        0.749020 * 255, 0.844833 * 255,
+        0.874510 * 255, 0.957540 * 255,
+        1.000000 * 255, 1.000000 * 255,
+      };
+      gimp_curves_spline (effect_layer, GIMP_HISTOGRAM_RED, 18, red_pts);
+      gimp_curves_spline (effect_layer, GIMP_HISTOGRAM_GREEN, 18, green_pts);
+      gimp_curves_spline (effect_layer, GIMP_HISTOGRAM_BLUE, 18, blue_pts);
+
+      gint32     layer;
+      GdkPixbuf *pixbuf;
+
+      pixbuf = gdk_pixbuf_new_from_inline (-1, texture_beam_gradient, FALSE, NULL);
+      layer = gimp_layer_new_from_pixbuf (image_ID, "texture", pixbuf, 100, GIMP_SCREEN_MODE, 0, 0);
+      gimp_image_add_layer (image_ID, layer, -1);
+      gimp_layer_scale (layer, width, height, FALSE);
+      gimp_image_merge_down (image_ID, layer, GIMP_CLIP_TO_BOTTOM_LAYER);
+      break;
+    }
     case BEAUTIFY_EFFECT_PINK_BLUE_GRADIENT:
     {
       gint32     layer;

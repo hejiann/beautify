@@ -94,6 +94,7 @@ static const BeautifyEffectType fashion_effects[] =
 
 static const BeautifyEffectType gradient_effects[] =
 {
+  BEAUTIFY_EFFECT_BEAM_GRADIENT,
   BEAUTIFY_EFFECT_PINK_BLUE_GRADIENT,
 };
 
@@ -948,6 +949,9 @@ effect_icon_new (BeautifyEffectType effect)
       break;
     case BEAUTIFY_EFFECT_PICK_LIGHT:
       title = "Pick Light";
+      break;
+    case BEAUTIFY_EFFECT_BEAM_GRADIENT:
+      title = "Beam Gradient";
       break;
     case BEAUTIFY_EFFECT_PINK_BLUE_GRADIENT:
       title = "Pink Blue";
