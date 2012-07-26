@@ -32,6 +32,9 @@ Support: #beautify on FreeNode
 CHANGELOG
 ===================
 
+2012-07-26
+beautify: fix gimp-2.6 issue: undefined reference to `gimp_item_delete'
+
 2012-07-25
 beautify: add beam gradient effect
 beautify: add reset feature

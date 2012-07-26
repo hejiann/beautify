@@ -781,6 +781,9 @@ effects_switch_page (GtkNotebook *notebook, GtkWidget *page, guint page_num, gpo
     return;
   }
 
+  // fix gtk2
+  page = gtk_notebook_get_nth_page (notebook, page_num);
+
   const BeautifyEffectType* effects;
   guint n_effects;
 
@@ -1091,7 +1094,7 @@ cancel_effect ()
   }
 
   gint32 current_layer = gimp_image_get_active_layer (preview_image);
-  gimp_item_delete (current_layer);
+  gimp_drawable_delete (current_layer);
 
   current_effect = BEAUTIFY_EFFECT_NONE;
 
