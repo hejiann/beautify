@@ -92,6 +92,11 @@ static const BeautifyEffectType fashion_effects[] =
   BEAUTIFY_EFFECT_PICK_LIGHT,
 };
 
+static const BeautifyEffectType art_effects[] =
+{
+  BEAUTIFY_EFFECT_SKETCH,
+};
+
 static const BeautifyEffectType gradient_effects[] =
 {
   BEAUTIFY_EFFECT_BEAM_GRADIENT,
@@ -752,6 +757,7 @@ create_effect_pages (GtkNotebook *notebook) {
   create_effect_page (notebook, "LOMO");
   create_effect_page (notebook, "Studio");
   create_effect_page (notebook, "Fashion");
+  create_effect_page (notebook, "Art");
   create_effect_page (notebook, "Gradient");
 
   g_signal_connect (notebook, "switch-page", G_CALLBACK (effects_switch_page), NULL);
@@ -774,7 +780,7 @@ create_effect_page (GtkNotebook *notebook, gchar *str) {
 static void
 effects_switch_page (GtkNotebook *notebook, GtkWidget *page, guint page_num, gpointer user_data)
 {
-  static time_t effects_timestamp [] = {0, 0, 0, 0, 0};
+  static time_t effects_timestamp [] = {0, 0, 0, 0, 0, 0};
 
   if (effects_timestamp[page_num] > 0)
   {
@@ -814,6 +820,12 @@ effects_switch_page (GtkNotebook *notebook, GtkWidget *page, guint page_num, gpo
       break;
     }
     case 4:
+    {
+      effects = art_effects;
+      n_effects = G_N_ELEMENTS (art_effects);
+      break;
+    }
+    case 5:
     {
       effects = gradient_effects;
       n_effects = G_N_ELEMENTS (gradient_effects);
@@ -978,6 +990,9 @@ effect_icon_new (BeautifyEffectType effect)
       break;
     case BEAUTIFY_EFFECT_PICK_LIGHT:
       title = "Pick Light";
+      break;
+    case BEAUTIFY_EFFECT_SKETCH:
+      title = "Sketch";
       break;
     case BEAUTIFY_EFFECT_BEAM_GRADIENT:
       title = "Beam Gradient";

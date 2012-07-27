@@ -721,8 +721,61 @@ run_effect (gint32 image_ID, BeautifyEffectType effect)
       break;
     }
     case BEAUTIFY_EFFECT_ABAO:
-      /* TODO */
+    {
+      /*GimpPixelRgn  src_rgn, dest_rgn;
+      gint          x1, y1;
+      gint          width, height;
+      gpointer      pr;
+
+      GimpDrawable *drawable = gimp_drawable_get (effect_layer);
+      if (!gimp_drawable_mask_intersect (drawable->drawable_id,
+                                         &x1, &y1, &width, &height))
+        return;
+
+      gimp_pixel_rgn_init (&src_rgn, drawable, x1, y1, width, height, FALSE, FALSE);
+      gimp_pixel_rgn_init (&dest_rgn, drawable, x1, y1, width, height, TRUE, TRUE);
+      for (pr = gimp_pixel_rgns_register (2, &src_rgn, &dest_rgn);
+           pr != NULL;
+           pr = gimp_pixel_rgns_process (pr))
+      {
+        const guchar *src = src_rgn.data;
+        guchar       *dest = dest_rgn.data;
+        gint          x, y;
+
+        for (y = 0; y < src_rgn.h; y++)
+        {
+          const guchar *s = src;
+          guchar *d = dest;
+
+          for (x = 0; x < src_rgn.w; x++)
+          {
+            GimpRGB rgb = {s[0], s[1], s[2], 1};
+            GimpHSV hsv;
+            gimp_rgb_to_hsv (&rgb, &hsv);
+            if (hsv.h <= 0.1) {
+              printf ("hsv.h = %f\n", hsv.h);
+              hsv.s = (0.1 - hsv.h) / 0.1;
+            }
+            gimp_hsv_to_rgb (&hsv, &rgb);
+            d[0] = rgb.r;
+            d[1] = rgb.g;
+            d[2] = rgb.b;
+            
+            s += src_rgn.bpp;
+            d += dest_rgn.bpp;
+          }
+
+          src += src_rgn.rowstride;
+          dest += dest_rgn.rowstride;
+        }
+      }
+
+      gimp_drawable_flush (drawable);
+      gimp_drawable_merge_shadow (drawable->drawable_id, TRUE);
+      gimp_drawable_update (drawable->drawable_id, x1, y1, width, height);*/
+
       break;
+    }
     case BEAUTIFY_EFFECT_ICE_SPIRIT:
     {
       guint8 red_pts[] = {
@@ -1243,6 +1296,35 @@ run_effect (gint32 image_ID, BeautifyEffectType effect)
       gimp_image_add_layer (image_ID, layer, -1);
       gimp_layer_scale (layer, width, height, FALSE);
       gimp_image_merge_down (image_ID, layer, GIMP_CLIP_TO_BOTTOM_LAYER);
+      break;
+    }
+    case BEAUTIFY_EFFECT_SKETCH:
+    {
+      gint32     layer;
+
+      gimp_desaturate_full (effect_layer, GIMP_DESATURATE_LUMINOSITY);
+      layer = gimp_layer_copy (effect_layer);
+      gimp_image_add_layer (image_ID, layer, -1);
+      gimp_layer_set_mode  (layer, GIMP_DODGE_MODE);
+      gimp_invert (layer);
+
+      GimpParam *return_vals;
+      gint nreturn_vals;
+      return_vals = gimp_run_procedure ("plug-in-gauss",
+                                        &nreturn_vals,
+                                        GIMP_PDB_INT32, GIMP_RUN_NONINTERACTIVE,
+                                        GIMP_PDB_IMAGE, image_ID,
+                                        GIMP_PDB_DRAWABLE, layer,
+                                        GIMP_PDB_FLOAT, 20.0,
+                                        GIMP_PDB_FLOAT, 20.0,
+                                        GIMP_PDB_INT32, 1,
+                                        GIMP_PDB_END);
+      gimp_destroy_params (return_vals, nreturn_vals);
+
+      gimp_levels (layer, GIMP_HISTOGRAM_VALUE, 0, 255, 1, 0, 240);
+
+      gimp_image_merge_down (image_ID, layer, GIMP_CLIP_TO_BOTTOM_LAYER);
+      
       break;
     }
     case BEAUTIFY_EFFECT_BEAM_GRADIENT:
