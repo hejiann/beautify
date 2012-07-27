@@ -388,7 +388,7 @@ texture_border_dialog ()
 
   gimp_ui_init (PLUG_IN_BINARY, FALSE);
 
-  dialog = gimp_dialog_new ("Rip border", PLUG_IN_ROLE,
+  dialog = gimp_dialog_new ("Texture border", PLUG_IN_ROLE,
                             NULL, 0,
                             gimp_standard_help_func, PLUG_IN_PROC,
 
