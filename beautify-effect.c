@@ -17,9 +17,8 @@
 
 #include <libgimp/gimp.h>
 
-#if GTK_MAJOR_VERSION < 3
-#include <gdk-pixbuf/gdk-pixbuf.h>
-#endif
+// fix gimp-2.6 issue: Procedure 'gimp-layer-new' has been called with value '100' for argument 'mode'
+#include <libgimp/gimpui.h>
 
 #include "beautify-effect.h"
 #include "beautify-textures.h"
