@@ -37,6 +37,9 @@ typedef struct
   gdouble cyan_red;
   gdouble magenta_green;
   gdouble yellow_blue;
+
+  BeautifyEffectType effect;
+  gdouble opacity;
 } BeautifyValues;
 
 static const BeautifyEffectType basic_effects[] =
@@ -59,7 +62,7 @@ static const BeautifyEffectType lomo_effects[] =
   BEAUTIFY_EFFECT_CLASSIC_HDR,
   BEAUTIFY_EFFECT_YELLOWING_DARK_CORNERS,
   BEAUTIFY_EFFECT_IMPRESSION,
-  BEAUTIFY_EFFECT_DEEP_BLUE,
+  BEAUTIFY_EFFECT_DEEP_BLUE_TEAR_RAIN,
   BEAUTIFY_EFFECT_PURPLE_SENSATION,
   BEAUTIFY_EFFECT_BRONZE,
   BEAUTIFY_EFFECT_RECALL,
@@ -71,10 +74,10 @@ static const BeautifyEffectType studio_effects[] =
   BEAUTIFY_EFFECT_LITTLE_FRESH,
   BEAUTIFY_EFFECT_RETRO,
   BEAUTIFY_EFFECT_PINK_LADY,
-  BEAUTIFY_EFFECT_ABAO,
+  BEAUTIFY_EFFECT_ABAO_COLOR,
   BEAUTIFY_EFFECT_ICE_SPIRIT,
-  BEAUTIFY_EFFECT_JAPANESE,
-  BEAUTIFY_EFFECT_NEW_JAPANESE,
+  BEAUTIFY_EFFECT_JAPANESE_STYLE,
+  BEAUTIFY_EFFECT_NEW_JAPANESE_STYLE,
   BEAUTIFY_EFFECT_MILK,
   BEAUTIFY_EFFECT_OLD_PHOTOS,
   BEAUTIFY_EFFECT_WARM_YELLOW,
@@ -111,11 +114,11 @@ static void     run      (const gchar      *name,
                           gint             *nreturn_vals,
                           GimpParam       **return_vals);
 
-static void     beautify (GimpDrawable *drawable);
+static void     beautify        (GimpDrawable *drawable);
+static void     beautify_effect (GimpDrawable *drawable);
 
 static gboolean beautify_dialog (gint32        image_ID,
                                  GimpDrawable *drawable);
-
 
 static void     create_base_page (GtkNotebook *notebook);
 static void     create_color_page (GtkNotebook *notebook);
@@ -168,6 +171,9 @@ static BeautifyValues bvals =
   0,  /* cyan_red */
   0,  /* magenta_green */
   0,  /* yellow_blue */
+
+  BEAUTIFY_EFFECT_NONE, /* effect */
+  100,  /* opacity */
 };
 
 static gint32     image_ID         = 0;
@@ -216,6 +222,8 @@ query (void)
     { GIMP_PDB_INT32,    "run-mode",   "The run mode { RUN-INTERACTIVE (0), RUN-NONINTERACTIVE (1) }" },
     { GIMP_PDB_IMAGE,    "image",      "Input image" },
     { GIMP_PDB_DRAWABLE, "drawable",   "Input drawable" },
+    { GIMP_PDB_INT32,    "effect",     "The effect to apply { SOFT_LIGHT (1), WARM (2), SHARPEN (3), SOFT (4), REMOVE_FOG (5), STRONG_CONTRAST (6), SMART_COLOR (7), FULL_COLOR (8), BLACK_AND_WHITE (9), INVERT (10), NOISE (11), CLASSIC_LOMO (12), RETRO_LOMO (13), GOTHIC_STYLE (14), FILM (15), HDR (16), CLASSIC_HDR (17), REVERSE_COLOR (18) TIME_TUNNEL (19), AFTER_THE_YOUTH (20), AXIS_LENS (21), YELLOWING_DARK_CORNERS (22), OLD_DAYS (23), NOSTALGIA (24), IMPRESSION (25), DEEP_BLUE_TEAR_RAIN (26), PURPLE_SENSATION (27), BRONZE (28), COOL_COLORS (29), RECALL (30), RETRO_BLACK_AND_WHITE (31), COLORFUL_LOMO (32), ELEGANT (33), LITTLE_FRESH (34), CLASSIC_STUDIO (35), RETRO (36), PINK_LADY (37), ABAO_COLOR (38), ICE_SPIRIT (39), MATTE_FINISH_STYLE (40), JAPANESE_STYLE (41), NEW_JAPANESE_STYLE (42), MILK (43), FLEETING_TIME (44), CLOUD (45), OLD_PHOTOS (46), WARM_YELLOW (47), BLUES (48), COLD_BLUE (49), COLD_GREEN (50), PURPLE_FANTASY (51), COLD_PURPLE (52), BRIGHT_RED (53), CHRISTMAS_EVE (54), SNOW (55), NIGHT_VIEW (56), ASTRAL (57), COLORFUL_GLOW (58), BACKLIGHT (59), PICK_LIGHT (60), COLORFUL (61), HEART_SHAPED_HALO (62), GLASS_DROPS (63), NEW_YEAR_ATMOSPHERE (64), SKETCH (65), SKETCH_SKETCH (66), CLASSIC_SKETCH (67), COLOR_PENCIL (68), TV_LINES (69), BLACK_AND_WHITE_NEWSPAPER (70), RELIEF (71), BEAUTIFY_EFFECT_PAINTING (72), BEAM_GRADIENT (73), SUNSET_GRADIENT (74), COOL_GRADIENT (75), BLUE_YELLOW_GRADIENT (76), RAINBOW_GRADIENT (77), FOUR_COLOR_GRADIENT (78), PINK_PURPLE_GRADIENG (79), PINK_BLUE_GRADIENT (80) }" },
+    { GIMP_PDB_FLOAT,    "opacity",   "The effect opacity (0 <= opacity <= 100)" }
   };
 
   gimp_install_procedure (PLUG_IN_PROC,
@@ -267,9 +275,20 @@ run (const gchar      *name,
       break;
 
     case GIMP_RUN_NONINTERACTIVE:
+      /*  Make sure all the arguments are there!  */
+      if (nparams != 5)
+        status = GIMP_PDB_CALLING_ERROR;
+
+      if (status == GIMP_PDB_SUCCESS)
+      {
+        bvals.effect = param[3].data.d_int32;
+        bvals.opacity = param[4].data.d_float;
+      }
       break;
 
     case GIMP_RUN_WITH_LAST_VALS:
+      /*  Possibly retrieve data  */
+      gimp_get_data (PLUG_IN_PROC, &bvals);
       break;
 
     default:
@@ -282,7 +301,10 @@ run (const gchar      *name,
     {
       /* Run! */
       gimp_image_undo_group_start (image_ID);
-      beautify (drawable);
+      if (run_mode == GIMP_RUN_INTERACTIVE)
+        beautify (drawable);
+      else
+        beautify_effect (drawable);
       gimp_image_undo_group_end (image_ID);
 
       /* If run mode is interactive, flush displays */
@@ -306,6 +328,17 @@ beautify (GimpDrawable *drawable)
   gimp_edit_copy (source);
   gint32 floating_sel = gimp_edit_paste (drawable->drawable_id, FALSE);
   gimp_floating_sel_anchor (floating_sel);
+}
+
+static void
+beautify_effect (GimpDrawable *drawable)
+{
+  run_effect (image_ID, bvals.effect);
+
+  gint32 layer = gimp_image_get_active_layer (image_ID);
+  gimp_layer_set_opacity (layer, bvals.opacity);
+
+  gimp_image_merge_down (image_ID, layer, GIMP_EXPAND_AS_NECESSARY);
 }
 
 static gboolean
@@ -923,7 +956,7 @@ effect_icon_new (BeautifyEffectType effect)
     case BEAUTIFY_EFFECT_IMPRESSION:
       title = "Impression";
       break;
-    case BEAUTIFY_EFFECT_DEEP_BLUE:
+    case BEAUTIFY_EFFECT_DEEP_BLUE_TEAR_RAIN:
       title = "Deep Blue";
       break;
     case BEAUTIFY_EFFECT_PURPLE_SENSATION:
@@ -947,16 +980,16 @@ effect_icon_new (BeautifyEffectType effect)
     case BEAUTIFY_EFFECT_PINK_LADY:
       title = "Pink Lady";
       break;
-    case BEAUTIFY_EFFECT_ABAO:
+    case BEAUTIFY_EFFECT_ABAO_COLOR:
       title = "A Bao";
       break;
     case BEAUTIFY_EFFECT_ICE_SPIRIT:
       title = "Ice Spirit";
       break;
-    case BEAUTIFY_EFFECT_JAPANESE:
+    case BEAUTIFY_EFFECT_JAPANESE_STYLE:
       title = "Japanese";
       break;
-    case BEAUTIFY_EFFECT_NEW_JAPANESE:
+    case BEAUTIFY_EFFECT_NEW_JAPANESE_STYLE:
       title = "New Japanese";
       break;
     case BEAUTIFY_EFFECT_MILK:

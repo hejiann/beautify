@@ -449,7 +449,7 @@ run_effect (gint32 image_ID, BeautifyEffectType effect)
       gimp_curves_spline (effect_layer, GIMP_HISTOGRAM_BLUE, 18, blue_pts);
       break;
     }
-    case BEAUTIFY_EFFECT_DEEP_BLUE:
+    case BEAUTIFY_EFFECT_DEEP_BLUE_TEAR_RAIN:
     {
       guint8 red_pts[] = {
         0.000000 * 255, 0.003922 * 255,
@@ -732,7 +732,7 @@ run_effect (gint32 image_ID, BeautifyEffectType effect)
       gimp_curves_spline (effect_layer, GIMP_HISTOGRAM_BLUE, 18, blue_pts);
       break;
     }
-    case BEAUTIFY_EFFECT_ABAO:
+    case BEAUTIFY_EFFECT_ABAO_COLOR:
     {
       /*GimpPixelRgn  src_rgn, dest_rgn;
       gint          x1, y1;
@@ -765,7 +765,6 @@ run_effect (gint32 image_ID, BeautifyEffectType effect)
             GimpHSV hsv;
             gimp_rgb_to_hsv (&rgb, &hsv);
             if (hsv.h <= 0.1) {
-              printf ("hsv.h = %f\n", hsv.h);
               hsv.s = (0.1 - hsv.h) / 0.1;
             }
             gimp_hsv_to_rgb (&hsv, &rgb);
@@ -816,7 +815,7 @@ run_effect (gint32 image_ID, BeautifyEffectType effect)
       gimp_curves_spline (effect_layer, GIMP_HISTOGRAM_BLUE, 18, blue_pts);
     }
       break;
-    case BEAUTIFY_EFFECT_JAPANESE:
+    case BEAUTIFY_EFFECT_JAPANESE_STYLE:
     {
       guint8 red_pts[] = {
         0.0, 0.098039 * 255, 0.121569 * 255, 0.188479 * 255,
@@ -844,7 +843,7 @@ run_effect (gint32 image_ID, BeautifyEffectType effect)
       gimp_curves_spline (effect_layer, GIMP_HISTOGRAM_BLUE, 18, blue_pts);
     }
       break;
-    case BEAUTIFY_EFFECT_NEW_JAPANESE:
+    case BEAUTIFY_EFFECT_NEW_JAPANESE_STYLE:
     {
       guint8 red_pts[] = {
         0.0, 0.042969 * 255,
