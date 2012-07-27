@@ -1,5 +1,7 @@
 texture_yellowing_dark_corners
   ./textures/effects/yellowing-dark-corners.png
+texture_recall
+  ./textures/effects/recall.jpg
 texture_milk
   ./textures/effects/milk.jpg
 texture_old_photos

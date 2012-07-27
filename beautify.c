@@ -62,6 +62,7 @@ static const BeautifyEffectType lomo_effects[] =
   BEAUTIFY_EFFECT_DEEP_BLUE,
   BEAUTIFY_EFFECT_PURPLE_SENSATION,
   BEAUTIFY_EFFECT_BRONZE,
+  BEAUTIFY_EFFECT_RECALL,
 };
 
 static const BeautifyEffectType studio_effects[] =
@@ -930,6 +931,9 @@ effect_icon_new (BeautifyEffectType effect)
       break;
     case BEAUTIFY_EFFECT_BRONZE:
       title = "Bronze";
+      break;
+    case BEAUTIFY_EFFECT_RECALL:
+      title = "Recall";
       break;
     case BEAUTIFY_EFFECT_ELEGANT:
       title = "Elegant";

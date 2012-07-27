@@ -1,7 +1,7 @@
 README
 ===================
 
-GIMP Beautify is a set of GIMP plug-ins for quick and easy beautify photo.
+GIMP Beautify is a set of GIMP plug-ins for quickly and easily beautify photo.
 
 INSTALL
 ===================
@@ -34,6 +34,7 @@ CHANGELOG
 
 2012-07-27
 beautify: add sketch effect
+beautify: add recall effect
 
 2012-07-26
 beautify: fix gimp-2.6 issue: undefined reference to `gimp_item_delete'
