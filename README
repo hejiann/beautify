@@ -27,10 +27,18 @@ Tools -> Beautify -> Skin whitening
 Tools -> Beautify -> Rip Border
 Tools -> Beautify -> Texture Border
 
+Add custom textures into Texture Border filter:
+mkdir ~/.gimp-2.8/texture-border
+mkdir ~/.gimp-2.8/texture-border/custom
+cp my-textures/*.jpg ~/.gimp-2.8/texture-border/custom/
+
 Support: #beautify on FreeNode
 
 CHANGELOG
 ===================
+
+2012-07-29
+texture-border: add custom texures support.
 
 2012-07-27
 beautify: add sketch effect

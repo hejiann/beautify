@@ -24,14 +24,17 @@
 #define PLUG_IN_BINARY "texture-border"
 #define PLUG_IN_ROLE   "gimp-texture-border"
 
+#define TEXTURE_PATH   "texture-border"
+
 #define PREVIEW_SIZE  480
 #define THUMBNAIL_SIZE  80
 
 typedef struct
 {
-  const guint8* texture;
+  const guint8 *texture;
   GimpRGB  color;
   gdouble  opacity;
+  const gchar *custom_texture;
 } TextureBorderValues;
 
 static void     query    (void);
@@ -46,6 +49,21 @@ static void     texture_border (gint32     image_ID);
 static gboolean texture_border_dialog ();
 
 static void create_texture_page (GtkNotebook *notebook, const gchar* category, const guint8** textures, guint n_textures);
+static void create_custom_texture_pages (GtkNotebook *notebook);
+static void create_custom_texture_page (GtkNotebook *notebook, const gchar* category, const gchar* path);
+
+static gboolean texture_press (GtkWidget *event_box, GdkEventButton *event, const guint8 *texture);
+static gboolean custom_texture_press (GtkWidget *event_box, GdkEventButton *event, const gchar *texture);
+static void     do_texture_press ();
+
+static inline gboolean
+is_hidden (const gchar *filename)
+{
+  /* skip files starting with '.' so we don't try to parse
+* stuff like .DS_Store or other metadata storage files
+*/
+  return (filename[0] == '.');
+}
 
 const GimpPlugInInfo PLUG_IN_INFO =
 {
@@ -60,6 +78,7 @@ static TextureBorderValues tbvals =
   NULL,                 /* texture */
   {1.0, 1.0, 1.0, 1.0}, /* color */
   100,                  /* opacity */
+  NULL,                 /* custom_texture */
 };
 
 static gint32     image_ID         = 0;
@@ -336,27 +355,6 @@ preview_update (GtkWidget *preview)
   gtk_image_set_from_pixbuf (GTK_IMAGE(preview), pixbuf);
 }
 
-static gboolean
-select_texture (GtkWidget *event_box, GdkEventButton *event, const guint8* texture)
-{
-  tbvals.texture = texture;
-
-  GdkPixbuf *pixbuf = gdk_pixbuf_new_from_inline (-1, tbvals.texture, FALSE, NULL);
-  gint32 texture_layer = gimp_layer_new_from_pixbuf (preview_image,
-                                              "texture",
-                                              pixbuf,
-                                              tbvals.opacity,
-                                              GIMP_NORMAL_MODE, 0, 0);
-  gimp_image_add_layer (preview_image, texture_layer, -1);
-  gimp_layer_scale (texture_layer, width, height, FALSE);
-  gimp_invert (texture_layer);
-  gimp_edit_copy (texture_layer);
-  gimp_edit_paste (texture_mask, TRUE);
-  gimp_image_remove_layer (preview_image, texture_layer);
-
-  preview_update (preview);
-}
-
 static void
 color_update (GtkWidget *preview)
 {
@@ -498,6 +496,8 @@ texture_border_dialog ()
   create_texture_page (GTK_NOTEBOOK (notebook), "Grid",     grid_textures,    G_N_ELEMENTS (grid_textures));
   create_texture_page (GTK_NOTEBOOK (notebook), "Others",   other_textures,   G_N_ELEMENTS (other_textures));
 
+  create_custom_texture_pages (GTK_NOTEBOOK (notebook));
+
   run = (gimp_dialog_run (GIMP_DIALOG (dialog)) == GTK_RESPONSE_OK);
 
   gtk_widget_destroy (dialog);
@@ -544,9 +544,125 @@ create_texture_page (GtkNotebook *notebook, const gchar* category, const guint8*
       col = 1;
     }
 
-    g_signal_connect (event_box, "button_press_event", G_CALLBACK (select_texture), (gpointer)textures[i]);
+    g_signal_connect (event_box, "button_press_event", G_CALLBACK (texture_press), (gpointer)textures[i]);
   }
 
   gtk_notebook_append_page_menu (notebook, thispage, label, NULL);
 }
 
+static void
+create_custom_texture_pages (GtkNotebook *notebook)
+{
+  const gchar *gimp_dir = gimp_directory ();
+  const gchar *texture_dir = g_build_filename (gimp_dir, TEXTURE_PATH, NULL);
+  GDir *dir = g_dir_open (texture_dir, 0, NULL);
+  if (dir)
+  {
+    const gchar *dir_ent;
+    while (dir_ent = g_dir_read_name (dir))
+    {
+      if (is_hidden (dir_ent))
+        continue;
+
+      gchar *filename = g_build_filename (texture_dir, dir_ent, NULL);
+      if (g_file_test (filename, G_FILE_TEST_IS_DIR)) {
+        create_custom_texture_page (GTK_NOTEBOOK (notebook), dir_ent, filename);
+      }
+    }
+  }
+}
+
+static void
+create_custom_texture_page (GtkNotebook *notebook, const gchar* category, const gchar* path) {
+  GtkWidget *label = gtk_label_new (category);
+
+  GtkWidget *thispage = gtk_box_new (GTK_ORIENTATION_VERTICAL, 12);
+  gtk_container_set_border_width (GTK_CONTAINER (thispage), 12);
+  gtk_widget_show (thispage);
+
+  /* table */
+  gint rows = 5;
+  gint cols = 3;
+  GtkWidget *table = gtk_table_new (rows, cols, FALSE);
+  gtk_table_set_col_spacings (GTK_TABLE (table), 6);
+  gtk_table_set_row_spacings (GTK_TABLE (table), 6);
+  gtk_box_pack_start (GTK_BOX (thispage), table, FALSE, FALSE, 0);
+  gtk_widget_show (table);
+
+  gint row = 1;
+  gint col = 1;
+
+  GDir *dir = g_dir_open (path, 0, NULL);
+  if (dir)
+  {
+    const gchar *dir_ent;
+    while (dir_ent = g_dir_read_name (dir))
+    {
+      if (is_hidden (dir_ent))
+        continue;
+
+      gchar *filename = g_build_filename (path, dir_ent, NULL);
+      GdkPixbuf *pixbuf = gdk_pixbuf_new_from_file (filename, NULL);
+      pixbuf = gdk_pixbuf_scale_simple (pixbuf, THUMBNAIL_SIZE, THUMBNAIL_SIZE, GDK_INTERP_BILINEAR);
+      GtkWidget *image = gtk_image_new_from_pixbuf (pixbuf);
+      GtkWidget *event_box = gtk_event_box_new ();
+      gtk_container_add (GTK_CONTAINER (event_box), image);
+      gtk_widget_show (image);
+      gtk_table_attach_defaults (GTK_TABLE (table), event_box, col - 1, col, row - 1, row);
+      gtk_widget_show (event_box);
+
+      col++;
+      if (col > cols)
+      {
+        row++;
+        col = 1;
+      }
+
+      g_signal_connect (event_box, "button_press_event", G_CALLBACK (custom_texture_press), filename);
+    }
+  }
+
+  gtk_notebook_append_page_menu (notebook, thispage, label, NULL);
+}
+
+static gboolean
+texture_press (GtkWidget *event_box, GdkEventButton *event, const guint8* texture)
+{
+  tbvals.texture = texture;
+  tbvals.custom_texture = NULL;
+
+  do_texture_press ();
+}
+
+static gboolean
+custom_texture_press (GtkWidget *event_box, GdkEventButton *event, const gchar *texture)
+{
+  tbvals.texture = NULL;
+  tbvals.custom_texture = texture;
+
+  do_texture_press ();
+}
+
+static void
+do_texture_press ()
+{
+  GdkPixbuf *pixbuf;
+  if (tbvals.texture)
+    pixbuf = gdk_pixbuf_new_from_inline (-1, tbvals.texture, FALSE, NULL);
+  else
+    pixbuf = gdk_pixbuf_new_from_file (tbvals.custom_texture, NULL);
+    
+  gint32 texture_layer = gimp_layer_new_from_pixbuf (preview_image,
+                                              "texture",
+                                              pixbuf,
+                                              tbvals.opacity,
+                                              GIMP_NORMAL_MODE, 0, 0);
+  gimp_image_add_layer (preview_image, texture_layer, -1);
+  gimp_layer_scale (texture_layer, width, height, FALSE);
+  gimp_invert (texture_layer);
+  gimp_edit_copy (texture_layer);
+  gimp_edit_paste (texture_mask, TRUE);
+  gimp_image_remove_layer (preview_image, texture_layer);
+
+  preview_update (preview);
+}
