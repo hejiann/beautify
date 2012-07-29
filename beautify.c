@@ -93,6 +93,7 @@ static const BeautifyEffectType fashion_effects[] =
 {
   BEAUTIFY_EFFECT_BRIGHT_RED,
   BEAUTIFY_EFFECT_CHRISTMAS_EVE,
+  BEAUTIFY_EFFECT_NIGHT_VIEW,
   BEAUTIFY_EFFECT_ASTRAL,
   BEAUTIFY_EFFECT_PICK_LIGHT,
 };
@@ -1025,6 +1026,9 @@ effect_icon_new (BeautifyEffectType effect)
       break;
     case BEAUTIFY_EFFECT_CHRISTMAS_EVE:
       title = "Eve";
+      break;
+    case BEAUTIFY_EFFECT_NIGHT_VIEW:
+      title = "Night View";
       break;
     case BEAUTIFY_EFFECT_ASTRAL:
       title = "Astral";

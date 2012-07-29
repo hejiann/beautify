@@ -1308,6 +1308,56 @@ run_effect (gint32 image_ID, BeautifyEffectType effect)
       gimp_image_merge_down (image_ID, texture_layer, GIMP_CLIP_TO_BOTTOM_LAYER);
       break;
     }
+    case BEAUTIFY_EFFECT_NIGHT_VIEW:
+    {
+      guint8 red_pts[] = {
+        0.000000 * 255, 0.003922 * 255,
+        0.121569 * 255, 0.181978 * 255,
+        0.247059 * 255, 0.348183 * 255,
+        0.372549 * 255, 0.498116 * 255,
+        0.498039 * 255, 0.630567 * 255,
+        0.623529 * 255, 0.746150 * 255,
+        0.749020 * 255, 0.848447 * 255,
+        0.874510 * 255, 0.939235 * 255,
+        1.000000 * 255, 1.000000 * 255,
+      };
+      guint8 green_pts[] = {
+        0.000000 * 255, 0.002451 * 255,
+        0.121569 * 255, 0.182281 * 255,
+        0.247059 * 255, 0.347678 * 255,
+        0.372549 * 255, 0.495968 * 255,
+        0.498039 * 255, 0.629733 * 255,
+        0.623529 * 255, 0.747508 * 255,
+        0.749020 * 255, 0.852278 * 255,
+        0.874510 * 255, 0.937573 * 255,
+        1.000000 * 255, 1.000000 * 255,
+      };
+      guint8 blue_pts[] = {
+        0.000000 * 255, 0.005240 * 255,
+        0.121569 * 255, 0.182529 * 255,
+        0.247059 * 255, 0.347919 * 255,
+        0.372549 * 255, 0.496757 * 255,
+        0.498039 * 255, 0.638620 * 255,
+        0.623529 * 255, 0.753394 * 255,
+        0.749020 * 255, 0.852676 * 255,
+        0.874510 * 255, 0.948770 * 255,
+        1.000000 * 255, 1.000000 * 255,
+      };
+      gimp_curves_spline (effect_layer, GIMP_HISTOGRAM_RED, 18, red_pts);
+      gimp_curves_spline (effect_layer, GIMP_HISTOGRAM_GREEN, 18, green_pts);
+      gimp_curves_spline (effect_layer, GIMP_HISTOGRAM_BLUE, 18, blue_pts);
+
+      gint32     layer;
+      GdkPixbuf *pixbuf;
+
+      pixbuf = gdk_pixbuf_new_from_inline (-1, texture_night_view, FALSE, NULL);
+      layer = gimp_layer_new_from_pixbuf (image_ID, "texture", pixbuf, 100, GIMP_SCREEN_MODE, 0, 0);
+      gimp_image_add_layer (image_ID, layer, -1);
+      gimp_layer_scale (layer, width, height, FALSE);
+      gimp_image_merge_down (image_ID, layer, GIMP_CLIP_TO_BOTTOM_LAYER);
+
+      break;
+    }
     case BEAUTIFY_EFFECT_ASTRAL:
     {
       GdkPixbuf *pixbuf = gdk_pixbuf_new_from_inline (-1, texture_astral, FALSE, NULL);

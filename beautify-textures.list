@@ -10,6 +10,8 @@ texture_bright_red
   ./textures/effects/bright-red.jpg
 texture_christmas_eve
   ./textures/effects/christmas-eve.jpg
+texture_night_view
+  ./textures/effects/night-view.jpg
 texture_astral
   ./textures/effects/astral.jpg
 texture_pick_light_1
