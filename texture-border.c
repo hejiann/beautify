@@ -311,7 +311,14 @@ run (const gchar      *name,
 static void
 texture_border (gint32 image_ID)
 {
-  if (tbvals.texture != NULL)
+  GdkPixbuf *pixbuf = NULL;
+
+  if (tbvals.texture)
+    pixbuf = gdk_pixbuf_new_from_inline (-1, tbvals.texture, FALSE, NULL);
+  else if (tbvals.custom_texture)
+    pixbuf = gdk_pixbuf_new_from_file (tbvals.custom_texture, NULL);
+
+  if (pixbuf)
   {
     gint32 color_layer = gimp_layer_new (image_ID, "color",
                                          width, height,
@@ -327,7 +334,6 @@ texture_border (gint32 image_ID)
                                                   GIMP_ADD_WHITE_MASK);
     gimp_layer_add_mask (color_layer, texture_mask);
 
-    GdkPixbuf *pixbuf = gdk_pixbuf_new_from_inline (-1, tbvals.texture, FALSE, NULL);
     gint32 texture = gimp_layer_new_from_pixbuf (image_ID, "texture", pixbuf, tbvals.opacity, GIMP_NORMAL_MODE, 0, 0);
     gimp_image_add_layer (image_ID, texture, -1);
     gimp_layer_scale (texture, width, height, FALSE);
