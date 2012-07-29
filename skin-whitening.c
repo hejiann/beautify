@@ -53,6 +53,8 @@ static void     skin_whitening (GimpDrawable *drawable);
 static gboolean skin_whitening_dialog (gint32        image_ID,
                                        GimpDrawable *drawable);
 
+static void     reset_pressed (GtkButton *button, gpointer user_date);
+
 static void     preview_update (GtkWidget *preview);
 
 static GtkWidget* effects_box_new ();
@@ -234,6 +236,16 @@ skin_whitening_dialog (gint32        image_ID,
   gtk_box_pack_start (GTK_BOX (main_hbox), right_vbox, TRUE, TRUE, 0);
   gtk_widget_show (right_vbox);
 
+  /* buttons */
+  GtkWidget *buttons = gtk_box_new (GTK_ORIENTATION_HORIZONTAL, 12);
+  gtk_box_pack_start (GTK_BOX (middle_vbox), buttons, FALSE, FALSE, 0);
+  gtk_widget_show (buttons);
+
+  GtkWidget *reset = gtk_button_new_with_label ("Reset");
+  gtk_box_pack_start (GTK_BOX (buttons), reset, FALSE, FALSE, 0);
+  gtk_widget_show (reset);
+  g_signal_connect (reset, "pressed", G_CALLBACK (reset_pressed), NULL);
+
   /* preview */
   preview_image = gimp_image_duplicate (image_ID);
 
@@ -257,6 +269,14 @@ skin_whitening_dialog (gint32        image_ID,
   gtk_widget_destroy (dialog);
 
   return run;
+}
+
+static void
+reset_pressed (GtkButton *button, gpointer user_date)
+{
+  gimp_image_delete (preview_image);
+  preview_image = gimp_image_duplicate (image_ID);
+  preview_update (preview);
 }
 
 static void
