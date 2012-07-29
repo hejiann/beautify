@@ -18,6 +18,7 @@
 #include <libgimp/gimp.h>
 #include <libgimp/gimpui.h>
 
+#include "skin-whitening-effect.h"
 #include "skin-whitening-images.h"
 
 #define PLUG_IN_PROC   "plug-in-skin-whitening"
@@ -27,12 +28,10 @@
 #define PREVIEW_SIZE  480
 #define THUMBNAIL_SIZE  80
 
-typedef enum
+typedef struct
 {
-  WHITENING_EFFECT_LITTLE_WHITENING,
-  WHITENING_EFFECT_MODERATE_WHITENING,
-  WHITENING_EFFECT_HIGH_WHITENING,
-} WhiteningEffectType;
+  WhiteningEffectType effect;
+} WhiteningValues;
 
 static const WhiteningEffectType effects[] =
 {
@@ -49,6 +48,7 @@ static void     run      (const gchar      *name,
                           GimpParam       **return_vals);
 
 static void     skin_whitening (GimpDrawable *drawable);
+static void     skin_whitening_effect (GimpDrawable *drawable);
 
 static gboolean skin_whitening_dialog (gint32        image_ID,
                                        GimpDrawable *drawable);
@@ -67,6 +67,11 @@ const GimpPlugInInfo PLUG_IN_INFO =
   NULL,  /* quit_proc  */
   query, /* query_proc */
   run,   /* run_proc   */
+};
+
+static WhiteningValues wvals =
+{
+  WHITENING_EFFECT_NONE,  /* effect */
 };
 
 static gint32     image_ID         = 0;
@@ -99,11 +104,12 @@ query (void)
     { GIMP_PDB_INT32,    "run-mode",   "The run mode { RUN-INTERACTIVE (0), RUN-NONINTERACTIVE (1) }" },
     { GIMP_PDB_IMAGE,    "image",      "Input image" },
     { GIMP_PDB_DRAWABLE, "drawable",   "Input drawable" },
+    { GIMP_PDB_INT32,    "effect",     "The effect to apply { LITTLE_WHITENING (1), MODERATE_WHITENING (2), HIGH_WHITENING (3), LITTLE_PINK (4), MODERATE_PINK (5), HIGH_PINK (6), LITTLE_FLESH (7), MODERATE_FLESH (8), HIGH_FLESH (9) }" }
   };
 
   gimp_install_procedure (PLUG_IN_PROC,
-                          "the easiest way for skin whitening.",
-                          "the easiest way for skin whitening.",
+                          "Quickly and easily whiten the skin.",
+                          "Quickly and easily whiten the skin. Goto https://github.com/hejiann/beautify/wiki get more help.",
                           "Hejian <hejian.he@gmail.com>",
                           "Hejian <hejian.he@gmail.com>",
                           "2012",
@@ -150,9 +156,19 @@ run (const gchar      *name,
       break;
 
     case GIMP_RUN_NONINTERACTIVE:
+      /*  Make sure all the arguments are there!  */
+      if (nparams != 4)
+        status = GIMP_PDB_CALLING_ERROR;
+
+      if (status == GIMP_PDB_SUCCESS)
+      {
+        wvals.effect = param[3].data.d_int32;
+      }
       break;
 
     case GIMP_RUN_WITH_LAST_VALS:
+      /*  Possibly retrieve data  */
+      gimp_get_data (PLUG_IN_PROC, &wvals);
       break;
 
     default:
@@ -165,7 +181,10 @@ run (const gchar      *name,
     {
       /* Run! */
       gimp_image_undo_group_start (image_ID);
-      skin_whitening (drawable);
+      if (run_mode == GIMP_RUN_INTERACTIVE)
+        skin_whitening (drawable);
+      else
+        skin_whitening_effect (drawable);
       gimp_image_undo_group_end (image_ID);
 
       /* If run mode is interactive, flush displays */
@@ -173,8 +192,8 @@ run (const gchar      *name,
         gimp_displays_flush ();
 
       /* Store data */
-      /*if (run_mode == GIMP_RUN_INTERACTIVE)
-        gimp_set_data (PLUG_IN_PROC, &bvals, sizeof (BeautifyValues));*/
+      if (run_mode == GIMP_RUN_INTERACTIVE)
+        gimp_set_data (PLUG_IN_PROC, &wvals, sizeof (WhiteningValues));
 
     }
 
@@ -188,6 +207,12 @@ skin_whitening (GimpDrawable *drawable)
   gimp_edit_copy (source);
   gint32 floating_sel = gimp_edit_paste (drawable->drawable_id, FALSE);
   gimp_floating_sel_anchor (floating_sel);
+}
+
+static void
+skin_whitening_effect (GimpDrawable *drawable)
+{
+  run_effect (image_ID, wvals.effect);
 }
 
 static gboolean
@@ -367,64 +392,7 @@ effect_icon_new (WhiteningEffectType effect)
 static gboolean
 effect_select (GtkWidget *event_box, GdkEventButton *event, WhiteningEffectType effect)
 {
-  gint32 layer = gimp_image_get_active_layer (preview_image);
-  switch (effect)
-  {
-    case WHITENING_EFFECT_LITTLE_WHITENING:
-    {
-      guint8 pts[] = {
-        0.000000 * 255, 0.007843 * 255,
-        0.121569 * 255, 0.160784 * 255,
-        0.247059 * 255, 0.317647 * 255,
-        0.372549 * 255, 0.462745 * 255,
-        0.498039 * 255, 0.592157 * 255,
-        0.623529 * 255, 0.713725 * 255,
-        0.749020 * 255, 0.819608 * 255,
-        0.874510 * 255, 0.913725 * 255,
-        1.000000 * 255, 0.996078 * 255,
-      };
-      gimp_curves_spline (layer, GIMP_HISTOGRAM_RED, 18, pts);
-      gimp_curves_spline (layer, GIMP_HISTOGRAM_GREEN, 18, pts);
-      gimp_curves_spline (layer, GIMP_HISTOGRAM_BLUE, 18, pts);
-      break;
-    }
-    case WHITENING_EFFECT_MODERATE_WHITENING:
-    {
-      guint8 pts[] = {
-        0.000000 * 255, 0.007843 * 255,
-        0.121569 * 255, 0.192157 * 255,
-        0.247059 * 255, 0.372549 * 255,
-        0.372549 * 255, 0.529412 * 255,
-        0.498039 * 255, 0.666667 * 255,
-        0.623529 * 255, 0.784314 * 255,
-        0.749020 * 255, 0.874510 * 255,
-        0.874510 * 255, 0.945098 * 255,
-        1.000000 * 255, 0.996078 * 255,
-      };
-      gimp_curves_spline (layer, GIMP_HISTOGRAM_RED, 18, pts);
-      gimp_curves_spline (layer, GIMP_HISTOGRAM_GREEN, 18, pts);
-      gimp_curves_spline (layer, GIMP_HISTOGRAM_BLUE, 18, pts);
-      break;
-    }
-    case WHITENING_EFFECT_HIGH_WHITENING:
-    {
-      guint8 pts[] = {
-        0.000000 * 255, 0.007843 * 255,
-        0.121569 * 255, 0.223529 * 255,
-        0.247059 * 255, 0.427451 * 255,
-        0.372549 * 255, 0.600000 * 255,
-        0.498039 * 255, 0.741176 * 255,
-        0.623529 * 255, 0.854902 * 255,
-        0.749020 * 255, 0.933333 * 255,
-        0.874510 * 255, 0.980392 * 255,
-        1.000000 * 255, 0.996078 * 255,
-      };
-      gimp_curves_spline (layer, GIMP_HISTOGRAM_RED, 18, pts);
-      gimp_curves_spline (layer, GIMP_HISTOGRAM_GREEN, 18, pts);
-      gimp_curves_spline (layer, GIMP_HISTOGRAM_BLUE, 18, pts);
-      break;
-    }
-  }
+  run_effect (preview_image, effect);
 
   preview_update (preview);
 }

@@ -74,7 +74,7 @@ beautify-effect.o: beautify-effect.c beautify-textures.h
 beautify-textures.h: beautify-textures.list
 	$(GDK_PIXBUF_CSOURCE) --raw --build-list `cat beautify-textures.list` > $(@F)
 
-skin-whitening: skin-whitening.o
+skin-whitening: skin-whitening.o skin-whitening-effect.o
 	$(CC) -o $@ $^ $(LIBS)
 
 skin-whitening.o: skin-whitening.c skin-whitening-images.h
@@ -82,6 +82,9 @@ skin-whitening.o: skin-whitening.c skin-whitening-images.h
 
 skin-whitening-images.h: skin-whitening-images.list
 	$(GDK_PIXBUF_CSOURCE) --raw --build-list `cat skin-whitening-images.list` > $(@F)
+
+skin-whitening-effect.o: skin-whitening-effect.c skin-whitening-effect.h
+	$(CC) $(CFLAGS) -c skin-whitening-effect.c -o skin-whitening-effect.o
 
 rip-border: rip-border.o
 	$(CC) -o $@ $^ $(LIBS)

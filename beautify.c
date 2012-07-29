@@ -227,8 +227,8 @@ query (void)
   };
 
   gimp_install_procedure (PLUG_IN_PROC,
-                          "Beautify, the easiest way to beautify photo.",
-                          "Beautify, the easiest way to beautify photo.",
+                          "Quickly and easily beautify the photo.",
+                          "Quickly and easily beautify the photo. Goto https://github.com/hejiann/beautify/wiki get more help.",
                           "Hejian <hejian.he@gmail.com>",
                           "Hejian <hejian.he@gmail.com>",
                           "2012",

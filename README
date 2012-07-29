@@ -40,6 +40,7 @@ CHANGELOG
 2012-07-29
 texture-border: add custom texures support.
 skin-whitening: add reset feature.
+skin-whitening: fix skin-whitening procedure to let this plug-in can be used in scirpts.
 
 2012-07-27
 beautify: add sketch effect
