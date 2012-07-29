@@ -46,6 +46,7 @@ skin-whitening: fix plug-in-skin-whitening procedure to let this filter can be u
 Change all the beautify plug-ins under the "Filters" menu instead of "Tools" menu.
 beautify: add classic studio effect.
 beautify: add night view effect.
+beautify: add colorful glow effect.
 
 2012-07-27
 beautify: add sketch effect

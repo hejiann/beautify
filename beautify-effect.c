@@ -1367,6 +1367,56 @@ run_effect (gint32 image_ID, BeautifyEffectType effect)
       gimp_image_merge_down (image_ID, texture_layer, GIMP_CLIP_TO_BOTTOM_LAYER);
     }
       break;
+    case BEAUTIFY_EFFECT_COLORFUL_GLOW:
+    {
+      guint8 red_pts[] = {
+        0.000000 * 255, 0.151307 * 255,
+        0.121569 * 255, 0.322524 * 255,
+        0.247059 * 255, 0.448847 * 255,
+        0.372549 * 255, 0.575643 * 255,
+        0.498039 * 255, 0.686567 * 255,
+        0.623529 * 255, 0.782251 * 255,
+        0.749020 * 255, 0.867647 * 255,
+        0.874510 * 255, 0.945974 * 255,
+        1.000000 * 255, 1.000000 * 255,
+      };
+      guint8 green_pts[] = {
+        0.000000 * 255, 0.141176 * 255,
+        0.121569 * 255, 0.293870 * 255,
+        0.247059 * 255, 0.430463 * 255,
+        0.372549 * 255, 0.557343 * 255,
+        0.498039 * 255, 0.673448 * 255,
+        0.623529 * 255, 0.772324 * 255,
+        0.749020 * 255, 0.849510 * 255,
+        0.874510 * 255, 0.933274 * 255,
+        1.000000 * 255, 0.991523 * 255,
+      };
+      guint8 blue_pts[] = {
+        0.000000 * 255, 0.141529 * 255,
+        0.121569 * 255, 0.292286 * 255,
+        0.247059 * 255, 0.434369 * 255,
+        0.372549 * 255, 0.557046 * 255,
+        0.498039 * 255, 0.669468 * 255,
+        0.623529 * 255, 0.772360 * 255,
+        0.749020 * 255, 0.858682 * 255,
+        0.874510 * 255, 0.932288 * 255,
+        1.000000 * 255, 0.987544 * 255,
+      };
+      gimp_curves_spline (effect_layer, GIMP_HISTOGRAM_RED, 18, red_pts);
+      gimp_curves_spline (effect_layer, GIMP_HISTOGRAM_GREEN, 18, green_pts);
+      gimp_curves_spline (effect_layer, GIMP_HISTOGRAM_BLUE, 18, blue_pts);
+
+      gint32     layer;
+      GdkPixbuf *pixbuf;
+
+      pixbuf = gdk_pixbuf_new_from_inline (-1, texture_colorful_glow, FALSE, NULL);
+      layer = gimp_layer_new_from_pixbuf (image_ID, "texture", pixbuf, 100, GIMP_SCREEN_MODE, 0, 0);
+      gimp_image_add_layer (image_ID, layer, -1);
+      gimp_layer_scale (layer, width, height, FALSE);
+      gimp_image_merge_down (image_ID, layer, GIMP_CLIP_TO_BOTTOM_LAYER);
+
+      break;
+    }
     case BEAUTIFY_EFFECT_PICK_LIGHT:
     {
       gint32     layer;

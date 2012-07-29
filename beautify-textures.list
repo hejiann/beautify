@@ -14,6 +14,8 @@ texture_night_view
   ./textures/effects/night-view.jpg
 texture_astral
   ./textures/effects/astral.jpg
+texture_colorful_glow
+  ./textures/effects/colorful-glow.jpg
 texture_pick_light_1
   ./textures/effects/pick-light-1.jpg
 texture_pick_light_2
