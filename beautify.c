@@ -72,6 +72,7 @@ static const BeautifyEffectType studio_effects[] =
 {
   BEAUTIFY_EFFECT_ELEGANT,
   BEAUTIFY_EFFECT_LITTLE_FRESH,
+  BEAUTIFY_EFFECT_CLASSIC_STUDIO,
   BEAUTIFY_EFFECT_RETRO,
   BEAUTIFY_EFFECT_PINK_LADY,
   BEAUTIFY_EFFECT_ABAO_COLOR,
@@ -973,6 +974,9 @@ effect_icon_new (BeautifyEffectType effect)
       break;
     case BEAUTIFY_EFFECT_LITTLE_FRESH:
       title = "Little Fresh";
+      break;
+    case BEAUTIFY_EFFECT_CLASSIC_STUDIO:
+      title = "Classic Studio";
       break;
     case BEAUTIFY_EFFECT_RETRO:
       title = "Retro";
