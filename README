@@ -22,10 +22,10 @@ USING
 ===================
 
 GIMP menu:
-Tools -> Beautify -> Beautify
-Tools -> Beautify -> Skin whitening
-Tools -> Beautify -> Rip Border
-Tools -> Beautify -> Texture Border
+Filters -> Beautify -> Beautify
+Filters -> Beautify -> Skin whitening
+Filters -> Beautify -> Rip Border
+Filters -> Beautify -> Texture Border
 
 Add custom textures into Texture Border filter:
 mkdir ~/.gimp-2.8/texture-border
@@ -40,7 +40,8 @@ CHANGELOG
 2012-07-29
 texture-border: add custom texures support.
 skin-whitening: add reset feature.
-skin-whitening: fix skin-whitening procedure to let this plug-in can be used in scirpts.
+skin-whitening: fix plug-in-skin-whitening procedure to let this filter can be used in scirpts.
+Change all the beautify plug-ins under the "Filters" menu instead of "Tools" menu.
 
 2012-07-27
 beautify: add sketch effect
