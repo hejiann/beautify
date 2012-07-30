@@ -97,6 +97,7 @@ static const BeautifyEffectType fashion_effects[] =
   BEAUTIFY_EFFECT_ASTRAL,
   BEAUTIFY_EFFECT_COLORFUL_GLOW,
   BEAUTIFY_EFFECT_PICK_LIGHT,
+  BEAUTIFY_EFFECT_GLASS_DROPS,
 };
 
 static const BeautifyEffectType art_effects[] =
@@ -1039,6 +1040,9 @@ effect_icon_new (BeautifyEffectType effect)
       break;
     case BEAUTIFY_EFFECT_PICK_LIGHT:
       title = "Pick Light";
+      break;
+    case BEAUTIFY_EFFECT_GLASS_DROPS:
+      title = "Glass Drops";
       break;
     case BEAUTIFY_EFFECT_SKETCH:
       title = "Sketch";

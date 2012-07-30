@@ -20,6 +20,8 @@ texture_pick_light_1
   ./textures/effects/pick-light-1.jpg
 texture_pick_light_2
   ./textures/effects/pick-light-2.jpg
+texture_glass_drops
+  ./textures/effects/glass-drops.png
 texture_beam_gradient
   ./textures/effects/beam-gradient.png
 texture_pink_blue_gradient
