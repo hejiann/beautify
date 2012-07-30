@@ -42,6 +42,7 @@ CHANGELOG
 2012-07-30:
 beautify: fix missing effect.
 beautify: add glass drops effect.
+beautify: add life sketch effect.
 
 2012-07-29
 texture-border: add custom texures support.

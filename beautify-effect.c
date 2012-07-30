@@ -1490,6 +1490,65 @@ run_effect (gint32 image_ID, BeautifyEffectType effect)
       
       break;
     }
+    case BEAUTIFY_EFFECT_LIFE_SKETCH:
+    {
+      gimp_desaturate_full (effect_layer, GIMP_DESATURATE_LUMINOSITY);
+
+      gint32     layer;
+      GdkPixbuf *pixbuf;
+
+      pixbuf = gdk_pixbuf_new_from_inline (-1, texture_life_sketch_1, FALSE, NULL);
+      layer = gimp_layer_new_from_pixbuf (image_ID, "texture", pixbuf, 60, GIMP_OVERLAY_MODE, 0, 0);
+      gimp_image_add_layer (image_ID, layer, -1);
+      gimp_layer_scale (layer, width, height, FALSE);
+      gimp_image_merge_down (image_ID, layer, GIMP_CLIP_TO_BOTTOM_LAYER);
+
+      pixbuf = gdk_pixbuf_new_from_inline (-1, texture_life_sketch_2, FALSE, NULL);
+      layer = gimp_layer_new_from_pixbuf (image_ID, "texture", pixbuf, 100, GIMP_SCREEN_MODE, 0, 0);
+      gimp_image_add_layer (image_ID, layer, -1);
+      gimp_layer_scale (layer, width, height, FALSE);
+      gimp_image_merge_down (image_ID, layer, GIMP_CLIP_TO_BOTTOM_LAYER);
+
+      guint8 red_pts[] = {
+        0.000000 * 255, 0.074510 * 255,
+        0.121569 * 255, 0.105882 * 255,
+        0.247059 * 255, 0.203391 * 255,
+        0.372549 * 255, 0.325314 * 255,
+        0.498039 * 255, 0.451172 * 255,
+        0.623529 * 255, 0.582024 * 255,
+        0.749020 * 255, 0.717003 * 255,
+        0.874510 * 255, 0.855324 * 255,
+        1.000000 * 255, 0.995987 * 255,
+      };
+      guint8 green_pts[] = {
+        0.000000 * 255, 0.070588 * 255,
+        0.121569 * 255, 0.102941 * 255,
+        0.247059 * 255, 0.205857 * 255,
+        0.372549 * 255, 0.330846 * 255,
+        0.498039 * 255, 0.457491 * 255,
+        0.623529 * 255, 0.591683 * 255,
+        0.749020 * 255, 0.724243 * 255,
+        0.874510 * 255, 0.859604 * 255,
+        1.000000 * 255, 0.996069 * 255,
+      };
+      guint8 blue_pts[] = {
+        0.000000 * 255, 0.062745 * 255,
+        0.121569 * 255, 0.110294 * 255,
+        0.247059 * 255, 0.223629 * 255,
+        0.372549 * 255, 0.355159 * 255,
+        0.498039 * 255, 0.490793 * 255,
+        0.623529 * 255, 0.626121 * 255,
+        0.749020 * 255, 0.753347 * 255,
+        0.874510 * 255, 0.877884 * 255,
+        1.000000 * 255, 0.996034 * 255,
+      };
+      layer = gimp_image_get_active_layer (image_ID);
+      gimp_curves_spline (layer, GIMP_HISTOGRAM_RED, 18, red_pts);
+      gimp_curves_spline (layer, GIMP_HISTOGRAM_GREEN, 18, green_pts);
+      gimp_curves_spline (layer, GIMP_HISTOGRAM_BLUE, 18, blue_pts);
+
+      break;
+    }
     case BEAUTIFY_EFFECT_BEAM_GRADIENT:
     {
       guint8 red_pts[] = {

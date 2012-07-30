@@ -22,6 +22,10 @@ texture_pick_light_2
   ./textures/effects/pick-light-2.jpg
 texture_glass_drops
   ./textures/effects/glass-drops.png
+texture_life_sketch_1
+  ./textures/effects/life-sketch-1.jpg
+texture_life_sketch_2
+  ./textures/effects/life-sketch-2.jpg
 texture_beam_gradient
   ./textures/effects/beam-gradient.png
 texture_pink_blue_gradient
