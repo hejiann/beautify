@@ -30,5 +30,7 @@ texture_color_pencil
   ./textures/effects/color-pencil.jpg
 texture_beam_gradient
   ./textures/effects/beam-gradient.png
+texture_sunset_gradient
+  ./textures/effects/sunset-gradient.jpg
 texture_pink_blue_gradient
   ./textures/effects/pink-blue-gradient.png
