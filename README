@@ -34,7 +34,12 @@ mkdir ~/.gimp-2.8/texture-border
 mkdir ~/.gimp-2.8/texture-border/custom
 cp my-textures/*.jpg ~/.gimp-2.8/texture-border/custom/
 
-Support: #beautify on FreeNode
+SUPPORT
+===================
+
+IRC:                  #beautify on FreeNode
+GIMP Plugin Registry: http://registry.gimp.org/node/26835
+GIMP Chat:            http://www.gimpchat.com/viewtopic.php?f=9&t=4811
 
 CHANGELOG
 ===================
