@@ -29,7 +29,12 @@ Filters -> Beautify -> Skin whitening
 Filters -> Beautify -> Rip Border
 Filters -> Beautify -> Texture Border
 
-Add custom textures into Texture Border filter:
+Add custom textures for Rip Border filter:
+mkdir ~/.gimp-2.8/rip-border
+mkdir ~/.gimp-2.8/rip-border/custom
+cp my-textures/*.jpg ~/.gimp-2.8/rip-border/custom/
+
+Add custom textures for Texture Border filter:
 mkdir ~/.gimp-2.8/texture-border
 mkdir ~/.gimp-2.8/texture-border/custom
 cp my-textures/*.jpg ~/.gimp-2.8/texture-border/custom/
@@ -49,6 +54,7 @@ beautify: fix missing effect.
 beautify: add glass drops effect.
 beautify: add life sketch effect.
 beautify: add color pencil effect.
+rip-border: add custom texures support.
 
 2012-07-29
 texture-border: add custom texures support.
