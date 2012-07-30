@@ -32,5 +32,7 @@ texture_beam_gradient
   ./textures/effects/beam-gradient.png
 texture_sunset_gradient
   ./textures/effects/sunset-gradient.jpg
+texture_rainbow_gradient
+  ./textures/effects/rainbow-gradient.png
 texture_pink_blue_gradient
   ./textures/effects/pink-blue-gradient.png

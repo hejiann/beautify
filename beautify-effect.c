@@ -1568,19 +1568,6 @@ run_effect (gint32 image_ID, BeautifyEffectType effect)
 
       break;
     }
-    case BEAUTIFY_EFFECT_SUNSET_GRADIENT:
-    {
-      gint32     layer;
-      GdkPixbuf *pixbuf;
-
-      pixbuf = gdk_pixbuf_new_from_inline (-1, texture_sunset_gradient, FALSE, NULL);
-      layer = gimp_layer_new_from_pixbuf (image_ID, "texture", pixbuf, 100, GIMP_SCREEN_MODE, 0, 0);
-      gimp_image_add_layer (image_ID, layer, -1);
-      gimp_layer_scale (layer, width, height, FALSE);
-      gimp_image_merge_down (image_ID, layer, GIMP_CLIP_TO_BOTTOM_LAYER);
-
-      break;
-    }
     case BEAUTIFY_EFFECT_BEAM_GRADIENT:
     {
       guint8 red_pts[] = {
@@ -1628,6 +1615,70 @@ run_effect (gint32 image_ID, BeautifyEffectType effect)
       gimp_image_add_layer (image_ID, layer, -1);
       gimp_layer_scale (layer, width, height, FALSE);
       gimp_image_merge_down (image_ID, layer, GIMP_CLIP_TO_BOTTOM_LAYER);
+
+      break;
+    }
+    case BEAUTIFY_EFFECT_SUNSET_GRADIENT:
+    {
+      gint32     layer;
+      GdkPixbuf *pixbuf;
+
+      pixbuf = gdk_pixbuf_new_from_inline (-1, texture_sunset_gradient, FALSE, NULL);
+      layer = gimp_layer_new_from_pixbuf (image_ID, "texture", pixbuf, 100, GIMP_SCREEN_MODE, 0, 0);
+      gimp_image_add_layer (image_ID, layer, -1);
+      gimp_layer_scale (layer, width, height, FALSE);
+      gimp_image_merge_down (image_ID, layer, GIMP_CLIP_TO_BOTTOM_LAYER);
+
+      break;
+    }
+    case BEAUTIFY_EFFECT_RAINBOW_GRADIENT:
+    {
+      guint8 red_pts[] = {
+        0.000000 * 255, 0.024183 * 255,
+        0.121569 * 255, 0.048308 * 255,
+        0.247059 * 255, 0.154831 * 255,
+        0.372549 * 255, 0.314038 * 255,
+        0.498039 * 255, 0.497584 * 255,
+        0.623529 * 255, 0.683345 * 255,
+        0.749020 * 255, 0.841507 * 255,
+        0.874510 * 255, 0.957243 * 255,
+        1.000000 * 255, 0.997723 * 255,
+      };
+      guint8 green_pts[] = {
+        0.000000 * 255, 0.010784 * 255,
+        0.121569 * 255, 0.042665 * 255,
+        0.247059 * 255, 0.155542 * 255,
+        0.372549 * 255, 0.319728 * 255,
+        0.498039 * 255, 0.499008 * 255,
+        0.623529 * 255, 0.686299 * 255,
+        0.749020 * 255, 0.843454 * 255,
+        0.874510 * 255, 0.957699 * 255,
+        1.000000 * 255, 0.999459 * 255,
+      };
+      guint8 blue_pts[] = {
+        0.000000 * 255, 0.005853 * 255,
+        0.121569 * 255, 0.043693 * 255,
+        0.247059 * 255, 0.154759 * 255,
+        0.372549 * 255, 0.318024 * 255,
+        0.498039 * 255, 0.499930 * 255,
+        0.623529 * 255, 0.681052 * 255,
+        0.749020 * 255, 0.850097 * 255,
+        0.874510 * 255, 0.959228 * 255,
+        1.000000 * 255, 0.994901 * 255,
+      };
+      gimp_curves_spline (effect_layer, GIMP_HISTOGRAM_RED, 18, red_pts);
+      gimp_curves_spline (effect_layer, GIMP_HISTOGRAM_GREEN, 18, green_pts);
+      gimp_curves_spline (effect_layer, GIMP_HISTOGRAM_BLUE, 18, blue_pts);
+
+      gint32     layer;
+      GdkPixbuf *pixbuf;
+
+      pixbuf = gdk_pixbuf_new_from_inline (-1, texture_rainbow_gradient, FALSE, NULL);
+      layer = gimp_layer_new_from_pixbuf (image_ID, "texture", pixbuf, 100, GIMP_SCREEN_MODE, 0, 0);
+      gimp_image_add_layer (image_ID, layer, -1);
+      gimp_layer_scale (layer, width, height, FALSE);
+      gimp_image_merge_down (image_ID, layer, GIMP_CLIP_TO_BOTTOM_LAYER);
+
       break;
     }
     case BEAUTIFY_EFFECT_PINK_BLUE_GRADIENT:

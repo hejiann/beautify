@@ -111,6 +111,7 @@ static const BeautifyEffectType gradient_effects[] =
 {
   BEAUTIFY_EFFECT_BEAM_GRADIENT,
   BEAUTIFY_EFFECT_SUNSET_GRADIENT,
+  BEAUTIFY_EFFECT_RAINBOW_GRADIENT,
   BEAUTIFY_EFFECT_PINK_BLUE_GRADIENT,
 };
 
@@ -1056,11 +1057,14 @@ effect_icon_new (BeautifyEffectType effect)
     case BEAUTIFY_EFFECT_COLOR_PENCIL:
       title = "Color Pencil";
       break;
+    case BEAUTIFY_EFFECT_BEAM_GRADIENT:
+      title = "Beam Gradient";
+      break;
     case BEAUTIFY_EFFECT_SUNSET_GRADIENT:
       title = "Sunset Gradient";
       break;
-    case BEAUTIFY_EFFECT_BEAM_GRADIENT:
-      title = "Beam Gradient";
+    case BEAUTIFY_EFFECT_RAINBOW_GRADIENT:
+      title = "Rainbow Gradient";
       break;
     case BEAUTIFY_EFFECT_PINK_BLUE_GRADIENT:
       title = "Pink Blue";
