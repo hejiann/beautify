@@ -773,56 +773,111 @@ run_effect (gint32 image_ID, BeautifyEffectType effect)
     }
     case BEAUTIFY_EFFECT_ABAO_COLOR:
     {
-      /*GimpPixelRgn  src_rgn, dest_rgn;
-      gint          x1, y1;
-      gint          width, height;
-      gpointer      pr;
+      gint       nreturn_vals;
+      GimpParam *return_vals;
+      gint      *layers;
+      gint       num_layers;
+      gint32     layer;
+      gint32     image;
 
-      GimpDrawable *drawable = gimp_drawable_get (effect_layer);
-      if (!gimp_drawable_mask_intersect (drawable->drawable_id,
-                                         &x1, &y1, &width, &height))
-        return;
+      return_vals = gimp_run_procedure ("plug-in-decompose",
+                                        &nreturn_vals,
+                                        GIMP_PDB_INT32, 1,
+                                        GIMP_PDB_IMAGE, image_ID,
+                                        GIMP_PDB_DRAWABLE, effect_layer,
+                                        GIMP_PDB_STRING, "LAB",
+                                        GIMP_PDB_INT32, 1,
+                                        GIMP_PDB_END);
+      gint32 lab = return_vals[1].data.d_int32;
+      gimp_destroy_params (return_vals, nreturn_vals);
 
-      gimp_pixel_rgn_init (&src_rgn, drawable, x1, y1, width, height, FALSE, FALSE);
-      gimp_pixel_rgn_init (&dest_rgn, drawable, x1, y1, width, height, TRUE, TRUE);
-      for (pr = gimp_pixel_rgns_register (2, &src_rgn, &dest_rgn);
-           pr != NULL;
-           pr = gimp_pixel_rgns_process (pr))
-      {
-        const guchar *src = src_rgn.data;
-        guchar       *dest = dest_rgn.data;
-        gint          x, y;
+      layers = gimp_image_get_layers (lab, &num_layers);
+      return_vals = gimp_run_procedure ("plug-in-drawable-compose",
+                                        &nreturn_vals,
+                                        GIMP_PDB_INT32, 1,
+                                        GIMP_PDB_IMAGE, lab,
+                                        GIMP_PDB_DRAWABLE, layers[0],
+                                        GIMP_PDB_DRAWABLE, layers[1],
+                                        GIMP_PDB_DRAWABLE, layers[2],
+                                        GIMP_PDB_DRAWABLE, 0,
+                                        GIMP_PDB_STRING, "RGB",
+                                        GIMP_PDB_END);
+      gimp_image_delete (lab);
+      image = return_vals[1].data.d_int32;
+      gimp_destroy_params (return_vals, nreturn_vals);
 
-        for (y = 0; y < src_rgn.h; y++)
-        {
-          const guchar *s = src;
-          guchar *d = dest;
+      guint8 red_pts[] = {
+        0.000000 * 255, 0.164706 * 255,
+        0.121569 * 255, 0.164706 * 255,
+        0.247059 * 255, 0.261490 * 255,
+        0.372549 * 255, 0.394953 * 255,
+        0.498039 * 255, 0.527504 * 255,
+        0.623529 * 255, 0.656387 * 255,
+        0.749020 * 255, 0.779222 * 255,
+        0.874510 * 255, 0.892678 * 255,
+        1.000000 * 255, 0.999900 * 255,
+      };
+      guint8 green_pts[] = {
+        0.000000 * 255, 0.454902 * 255,
+        0.121569 * 255, 0.454902 * 255,
+        0.247059 * 255, 0.454902 * 255,
+        0.372549 * 255, 0.460784 * 255,
+        0.498039 * 255, 0.498059 * 255,
+        0.623529 * 255, 0.628643 * 255,
+        0.749020 * 255, 0.731092 * 255,
+        0.874510 * 255, 0.884314 * 255,
+        1.000000 * 255, 0.901961 * 255,
+      };
+      guint8 blue_pts[] = {
+        0.000000 * 255, 0.539216 * 255,
+        0.121569 * 255, 0.539216 * 255,
+        0.247059 * 255, 0.539216 * 255,
+        0.372549 * 255, 0.539216 * 255,
+        0.498039 * 255, 0.515212 * 255,
+        0.623529 * 255, 0.544887 * 255,
+        0.749020 * 255, 0.590534 * 255,
+        0.874510 * 255, 0.666667 * 255,
+        1.000000 * 255, 0.666667 * 255,
+      };
+      layer = gimp_image_get_active_layer (image);
+      gimp_curves_spline (layer, GIMP_HISTOGRAM_RED, 18, red_pts);
+      gimp_curves_spline (layer, GIMP_HISTOGRAM_GREEN, 18, green_pts);
+      gimp_curves_spline (layer, GIMP_HISTOGRAM_BLUE, 18, blue_pts);
 
-          for (x = 0; x < src_rgn.w; x++)
-          {
-            GimpRGB rgb = {s[0], s[1], s[2], 1};
-            GimpHSV hsv;
-            gimp_rgb_to_hsv (&rgb, &hsv);
-            if (hsv.h <= 0.1) {
-              hsv.s = (0.1 - hsv.h) / 0.1;
-            }
-            gimp_hsv_to_rgb (&hsv, &rgb);
-            d[0] = rgb.r;
-            d[1] = rgb.g;
-            d[2] = rgb.b;
-            
-            s += src_rgn.bpp;
-            d += dest_rgn.bpp;
-          }
+      layer = gimp_image_get_active_layer (image);
+      return_vals = gimp_run_procedure ("plug-in-decompose",
+                                        &nreturn_vals,
+                                        GIMP_PDB_INT32, 1,
+                                        GIMP_PDB_IMAGE, image,
+                                        GIMP_PDB_DRAWABLE, layer,
+                                        GIMP_PDB_STRING, "RGB",
+                                        GIMP_PDB_INT32, 1,
+                                        GIMP_PDB_END);
+      gimp_image_delete (image);
+      gint32 rgb = return_vals[1].data.d_int32;
+      gimp_destroy_params (return_vals, nreturn_vals);
 
-          src += src_rgn.rowstride;
-          dest += dest_rgn.rowstride;
-        }
-      }
+      layers = gimp_image_get_layers (rgb, &num_layers);
+      return_vals = gimp_run_procedure ("plug-in-drawable-compose",
+                                        &nreturn_vals,
+                                        GIMP_PDB_INT32, 1,
+                                        GIMP_PDB_IMAGE, rgb,
+                                        GIMP_PDB_DRAWABLE, layers[0],
+                                        GIMP_PDB_DRAWABLE, layers[1],
+                                        GIMP_PDB_DRAWABLE, layers[2],
+                                        GIMP_PDB_DRAWABLE, 0,
+                                        GIMP_PDB_STRING, "LAB",
+                                        GIMP_PDB_END);
+      gimp_image_delete (rgb);
+      image = return_vals[1].data.d_int32;
+      gimp_destroy_params (return_vals, nreturn_vals);
 
-      gimp_drawable_flush (drawable);
-      gimp_drawable_merge_shadow (drawable->drawable_id, TRUE);
-      gimp_drawable_update (drawable->drawable_id, x1, y1, width, height);*/
+      layer = gimp_image_get_active_layer (image);
+      gimp_edit_copy (layer);
+      gint32 floating_sel = gimp_edit_paste (effect_layer, FALSE);
+      gimp_floating_sel_anchor (floating_sel);
+
+      gimp_image_delete (image);
 
       break;
     }

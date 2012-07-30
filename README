@@ -57,6 +57,7 @@ beautify: add color pencil effect.
 rip-border: add custom texures support.
 beautify: add sunset gradient effect.
 beautify: add rainbow gradient effect.
+beautify: fix ABao color effect.
 
 2012-07-29
 texture-border: add custom texures support.
