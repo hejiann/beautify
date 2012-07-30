@@ -49,6 +49,9 @@ GIMP Chat:            http://www.gimpchat.com/viewtopic.php?f=9&t=4811
 CHANGELOG
 ===================
 
+2012-07-31:
+beautify: fix ABao color effect.
+
 2012-07-30:
 beautify: fix missing effect.
 beautify: add glass drops effect.
@@ -57,7 +60,6 @@ beautify: add color pencil effect.
 rip-border: add custom texures support.
 beautify: add sunset gradient effect.
 beautify: add rainbow gradient effect.
-beautify: fix ABao color effect.
 
 2012-07-29
 texture-border: add custom texures support.
