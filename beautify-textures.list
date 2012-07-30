@@ -26,6 +26,8 @@ texture_life_sketch_1
   ./textures/effects/life-sketch-1.jpg
 texture_life_sketch_2
   ./textures/effects/life-sketch-2.jpg
+texture_color_pencil
+  ./textures/effects/color-pencil.jpg
 texture_beam_gradient
   ./textures/effects/beam-gradient.png
 texture_pink_blue_gradient

@@ -104,6 +104,7 @@ static const BeautifyEffectType art_effects[] =
 {
   BEAUTIFY_EFFECT_SKETCH,
   BEAUTIFY_EFFECT_LIFE_SKETCH,
+  BEAUTIFY_EFFECT_COLOR_PENCIL,
 };
 
 static const BeautifyEffectType gradient_effects[] =
@@ -1050,6 +1051,9 @@ effect_icon_new (BeautifyEffectType effect)
       break;
     case BEAUTIFY_EFFECT_LIFE_SKETCH:
       title = "Life Sketch";
+      break;
+    case BEAUTIFY_EFFECT_COLOR_PENCIL:
+      title = "Color Pencil";
       break;
     case BEAUTIFY_EFFECT_BEAM_GRADIENT:
       title = "Beam Gradient";
