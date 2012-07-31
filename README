@@ -52,6 +52,7 @@ texture-border: add scrollbar to textures and make the dialog display quickly.
 rip-border: slim the plug-in size by only provide top textures and let other textures can be download.
 rip-border: add scrollbar to textures and make the dialog display quickly.
 skin whitening: add the little pink effect.
+skin whitening: add the moderate pink effect.
 
 2012-07-30:
 beautify: fix missing effect.

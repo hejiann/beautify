@@ -93,18 +93,7 @@ run_effect (gint32 image_ID, WhiteningEffectType effect)
         0.874510 * 255, 0.913725 * 255,
         1.000000 * 255, 0.996078 * 255,
       };
-      guint8 green_pts[] = {
-        0.000000 * 255, 0.007843 * 255,
-        0.121569 * 255, 0.145098 * 255,
-        0.247059 * 255, 0.290196 * 255,
-        0.372549 * 255, 0.427451 * 255,
-        0.498039 * 255, 0.556863 * 255,
-        0.623529 * 255, 0.678431 * 255,
-        0.749020 * 255, 0.792157 * 255,
-        0.874510 * 255, 0.898039 * 255,
-        1.000000 * 255, 0.996078 * 255,
-      };
-      guint8 blue_pts[] = {
+      guint8 pts[] = {
         0.000000 * 255, 0.007843 * 255,
         0.121569 * 255, 0.145098 * 255,
         0.247059 * 255, 0.290196 * 255,
@@ -116,8 +105,37 @@ run_effect (gint32 image_ID, WhiteningEffectType effect)
         1.000000 * 255, 0.996078 * 255,
       };
       gimp_curves_spline (layer, GIMP_HISTOGRAM_RED, 18, red_pts);
-      gimp_curves_spline (layer, GIMP_HISTOGRAM_GREEN, 18, green_pts);
-      gimp_curves_spline (layer, GIMP_HISTOGRAM_BLUE, 18, blue_pts);
+      gimp_curves_spline (layer, GIMP_HISTOGRAM_GREEN, 18, pts);
+      gimp_curves_spline (layer, GIMP_HISTOGRAM_BLUE, 18, pts);
+      break;
+    }
+    case WHITENING_EFFECT_MODERATE_PINK:
+    {
+      guint8 red_pts[] = {
+        0.000000 * 255, 0.007843 * 255,
+        0.121569 * 255, 0.192157 * 255,
+        0.247059 * 255, 0.372549 * 255,
+        0.372549 * 255, 0.529412 * 255,
+        0.498039 * 255, 0.666667 * 255,
+        0.623529 * 255, 0.784314 * 255,
+        0.749020 * 255, 0.874510 * 255,
+        0.874510 * 255, 0.945098 * 255,
+        1.000000 * 255, 0.996078 * 255,
+      };
+      guint8 pts[] = {
+        0.000000 * 255, 0.007843 * 255,
+        0.121569 * 255, 0.160784 * 255,
+        0.247059 * 255, 0.321569 * 255,
+        0.372549 * 255, 0.470588 * 255,
+        0.498039 * 255, 0.600000 * 255,
+        0.623529 * 255, 0.721569 * 255,
+        0.749020 * 255, 0.827451 * 255,
+        0.874510 * 255, 0.917647 * 255,
+        1.000000 * 255, 0.996078 * 255,
+      };
+      gimp_curves_spline (layer, GIMP_HISTOGRAM_RED, 18, red_pts);
+      gimp_curves_spline (layer, GIMP_HISTOGRAM_GREEN, 18, pts);
+      gimp_curves_spline (layer, GIMP_HISTOGRAM_BLUE, 18, pts);
       break;
     }
   }

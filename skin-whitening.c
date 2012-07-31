@@ -39,6 +39,7 @@ static const WhiteningEffectType effects[] =
   WHITENING_EFFECT_MODERATE_WHITENING,
   WHITENING_EFFECT_HIGH_WHITENING,
   WHITENING_EFFECT_LITTLE_PINK,
+  WHITENING_EFFECT_MODERATE_PINK,
 };
 
 static void     query    (void);
@@ -360,7 +361,7 @@ effect_icon_new (WhiteningEffectType effect)
       break;
     case WHITENING_EFFECT_MODERATE_WHITENING:
       data = skin_whitening_2;
-      title = "Middle Whitening";
+      title = "Moderate Whitening";
       break;
     case WHITENING_EFFECT_HIGH_WHITENING:
       data = skin_whitening_3;
@@ -370,6 +371,9 @@ effect_icon_new (WhiteningEffectType effect)
       data = skin_whitening_4;
       title = "Little Pink";
       break;
+    case WHITENING_EFFECT_MODERATE_PINK:
+      data = skin_whitening_5;
+      title = "Moderate Pink";
   }
 
   GtkWidget *box = gtk_box_new (GTK_ORIENTATION_VERTICAL, 2);
