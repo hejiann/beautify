@@ -138,5 +138,34 @@ run_effect (gint32 image_ID, WhiteningEffectType effect)
       gimp_curves_spline (layer, GIMP_HISTOGRAM_BLUE, 18, pts);
       break;
     }
+    case WHITENING_EFFECT_HIGH_PINK:
+    {
+      guint8 red_pts[] = {
+        0.000000 * 255, 0.007843 * 255,
+        0.121569 * 255, 0.223529 * 255,
+        0.247059 * 255, 0.427451 * 255,
+        0.372549 * 255, 0.600000 * 255,
+        0.498039 * 255, 0.741176 * 255,
+        0.623529 * 255, 0.854902 * 255,
+        0.749020 * 255, 0.933333 * 255,
+        0.874510 * 255, 0.980392 * 255,
+        1.000000 * 255, 0.996078 * 255,
+      };
+      guint8 pts[] = {
+        0.000000 * 255, 0.007843 * 255,
+        0.121569 * 255, 0.180392 * 255,
+        0.247059 * 255, 0.356863 * 255,
+        0.372549 * 255, 0.513725 * 255,
+        0.498039 * 255, 0.647059 * 255,
+        0.623529 * 255, 0.764706 * 255,
+        0.749020 * 255, 0.862745 * 255,
+        0.874510 * 255, 0.937255 * 255,
+        1.000000 * 255, 0.996078 * 255,
+      };
+      gimp_curves_spline (layer, GIMP_HISTOGRAM_RED, 18, red_pts);
+      gimp_curves_spline (layer, GIMP_HISTOGRAM_GREEN, 18, pts);
+      gimp_curves_spline (layer, GIMP_HISTOGRAM_BLUE, 18, pts);
+      break;
+    }
   }
 }
