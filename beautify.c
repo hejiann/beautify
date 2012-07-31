@@ -113,6 +113,7 @@ static const BeautifyEffectType gradient_effects[] =
   BEAUTIFY_EFFECT_BEAM_GRADIENT,
   BEAUTIFY_EFFECT_SUNSET_GRADIENT,
   BEAUTIFY_EFFECT_RAINBOW_GRADIENT,
+  BEAUTIFY_EFFECT_PINK_PURPLE_GRADIENG,
   BEAUTIFY_EFFECT_PINK_BLUE_GRADIENT,
 };
 
@@ -930,13 +931,13 @@ effect_icon_new (BeautifyEffectType effect)
       title = "Sharpen";
       break;
     case BEAUTIFY_EFFECT_STRONG_CONTRAST:
-      title = "Strong Contrast";
+      title = "Strong\nContrast";
       break;
     case BEAUTIFY_EFFECT_SMART_COLOR:
       title = "Smart Color";
       break;
     case BEAUTIFY_EFFECT_BLACK_AND_WHITE:
-      title = "Black & White";
+      title = "Black\nand White";
       break;
     case BEAUTIFY_EFFECT_INVERT:
       title = "Invert";
@@ -960,16 +961,16 @@ effect_icon_new (BeautifyEffectType effect)
       title = "Classic HDR";
       break;
     case BEAUTIFY_EFFECT_YELLOWING_DARK_CORNERS:
-      title = "Yellow Dark Corner";
+      title = "Yellow Dark\nCorner";
       break;
     case BEAUTIFY_EFFECT_IMPRESSION:
       title = "Impression";
       break;
     case BEAUTIFY_EFFECT_DEEP_BLUE_TEAR_RAIN:
-      title = "Deep Blue";
+      title = "Deep Blue\nTear Rain";
       break;
     case BEAUTIFY_EFFECT_PURPLE_SENSATION:
-      title = "Purple Sensation";
+      title = "Purple\nSensation";
       break;
     case BEAUTIFY_EFFECT_BRONZE:
       title = "Bronze";
@@ -993,7 +994,7 @@ effect_icon_new (BeautifyEffectType effect)
       title = "Pink Lady";
       break;
     case BEAUTIFY_EFFECT_ABAO_COLOR:
-      title = "A Bao";
+      title = "ABao Color";
       break;
     case BEAUTIFY_EFFECT_ICE_SPIRIT:
       title = "Ice Spirit";
@@ -1002,7 +1003,7 @@ effect_icon_new (BeautifyEffectType effect)
       title = "Japanese";
       break;
     case BEAUTIFY_EFFECT_NEW_JAPANESE_STYLE:
-      title = "New Japanese";
+      title = "New\nJapanese";
       break;
     case BEAUTIFY_EFFECT_MILK:
       title = "Milk";
@@ -1023,7 +1024,7 @@ effect_icon_new (BeautifyEffectType effect)
       title = "Cold Green";
       break;
     case BEAUTIFY_EFFECT_PURPLE_FANTASY:
-      title = "Purple Fantasy";
+      title = "Purple\nFantasy";
       break;
     case BEAUTIFY_EFFECT_COLD_PURPLE:
       title = "Cold Purple";
@@ -1032,7 +1033,7 @@ effect_icon_new (BeautifyEffectType effect)
       title = "Bright Red";
       break;
     case BEAUTIFY_EFFECT_CHRISTMAS_EVE:
-      title = "Eve";
+      title = "Christmas Eve";
       break;
     case BEAUTIFY_EFFECT_NIGHT_VIEW:
       title = "Night View";
@@ -1059,16 +1060,19 @@ effect_icon_new (BeautifyEffectType effect)
       title = "Color Pencil";
       break;
     case BEAUTIFY_EFFECT_BEAM_GRADIENT:
-      title = "Beam Gradient";
+      title = "Beam\nGradient";
       break;
     case BEAUTIFY_EFFECT_SUNSET_GRADIENT:
-      title = "Sunset Gradient";
+      title = "Sunset\nGradient";
       break;
     case BEAUTIFY_EFFECT_RAINBOW_GRADIENT:
-      title = "Rainbow Gradient";
+      title = "Rainbow\nGradient";
+      break;
+    case BEAUTIFY_EFFECT_PINK_PURPLE_GRADIENG:
+      title = "Pink Purple\nGradient";
       break;
     case BEAUTIFY_EFFECT_PINK_BLUE_GRADIENT:
-      title = "Pink Blue";
+      title = "Pink Blue\nGradient";
       break;
   }
 
@@ -1086,6 +1090,10 @@ effect_icon_new (BeautifyEffectType effect)
   gtk_widget_show (event_box);
 
   GtkWidget *label = gtk_label_new (title);
+  /* gtk_label_set_line_wrap will let textalign to left instead of center :(
+  gtk_widget_set_size_request (label, THUMBNAIL_SIZE, -1);
+  gtk_label_set_line_wrap (GTK_LABEL (label), TRUE);*/
+  gtk_label_set_justify (GTK_LABEL (label), GTK_JUSTIFY_CENTER);
   gtk_box_pack_start (GTK_BOX (box), label, FALSE, FALSE, 0);
   gtk_widget_show (label);
 

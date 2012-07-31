@@ -1793,6 +1793,19 @@ run_effect (gint32 image_ID, BeautifyEffectType effect)
 
       break;
     }
+    case BEAUTIFY_EFFECT_PINK_PURPLE_GRADIENG:
+    {
+      gint32     layer;
+      GdkPixbuf *pixbuf;
+
+      pixbuf = gdk_pixbuf_new_from_inline (-1, texture_pink_purple_gradient, FALSE, NULL);
+      layer = gimp_layer_new_from_pixbuf (image_ID, "texture", pixbuf, 100, GIMP_SCREEN_MODE, 0, 0);
+      gimp_image_add_layer (image_ID, layer, -1);
+      gimp_layer_scale (layer, width, height, FALSE);
+      gimp_image_merge_down (image_ID, layer, GIMP_CLIP_TO_BOTTOM_LAYER);
+
+      break;
+    }
     case BEAUTIFY_EFFECT_PINK_BLUE_GRADIENT:
     {
       gint32     layer;

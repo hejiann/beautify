@@ -412,8 +412,8 @@ effect_icon_new (WhiteningEffectType effect)
 
   /* label */
   GtkWidget *label = gtk_label_new (title);
-  gtk_label_set_line_wrap (GTK_LABEL (label), TRUE);
   gtk_widget_set_size_request (label, 80, -1);
+  gtk_label_set_line_wrap (GTK_LABEL (label), TRUE);
   gtk_box_pack_start (GTK_BOX (box), label, FALSE, FALSE, 0);
   gtk_widget_show (label);
 
