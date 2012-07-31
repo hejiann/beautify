@@ -26,7 +26,7 @@ typedef enum
   WHITENING_EFFECT_HIGH_PINK,
   WHITENING_EFFECT_LITTLE_FLESH,
   WHITENING_EFFECT_MODERATE_FLESH,
-  WHITENING_EFFECT_HIGH_FLESH, // TODO
+  WHITENING_EFFECT_HIGH_FLESH,
 } WhiteningEffectType;
 
 void run_effect (gint32 image_ID, WhiteningEffectType effect);
