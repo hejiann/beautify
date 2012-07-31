@@ -51,6 +51,7 @@ static gboolean rip_border_dialog ();
 static void     create_texture_page (GtkNotebook *notebook, const gchar* category, const guint8** textures, guint n_textures);
 static gboolean create_custom_texture_pages (GtkNotebook *notebook);
 static void     create_custom_texture_page (GtkNotebook *notebook, const gchar* category, const gchar* path);
+static void     textures_switch_page (GtkNotebook *notebook, GtkWidget *page, guint page_num, gpointer user_data);
 
 static gboolean texture_press (GtkWidget *event_box, GdkEventButton *event, const guint8 *texture);
 static gboolean custom_texture_press (GtkWidget *event_box, GdkEventButton *event, const gchar *texture);
@@ -108,6 +109,8 @@ static const guint8* top_textures[] =
   texture_200549,
   texture_200442,
 };
+
+static GArray *textures_timestamps = NULL;
 
 /* compatable with gtk2 */
 #if GTK_MAJOR_VERSION < 3
@@ -407,10 +410,13 @@ rip_border_dialog ()
 
   if (create_custom_texture_pages (GTK_NOTEBOOK (notebook)))
   {
+    textures_timestamps = g_array_new (FALSE, TRUE, sizeof (time_t));
+    g_array_set_size (textures_timestamps, gtk_notebook_get_n_pages (GTK_NOTEBOOK (notebook)));
+    g_signal_connect (notebook, "switch-page", G_CALLBACK (textures_switch_page), NULL);
   }
   else
   {
-    label = gtk_label_new ("You can download more textures at https://github.com/hejiann/beautify/wiki");
+    label = gtk_label_new ("You can download more textures at https://github.com/hejiann/beautify/wiki/Textures-Download");
     gtk_label_set_line_wrap (GTK_LABEL (label), TRUE);
     gtk_box_pack_start (GTK_BOX (right_vbox), label, FALSE, FALSE, 0);
     gtk_widget_show (label);
@@ -503,17 +509,45 @@ create_custom_texture_page (GtkNotebook *notebook, const gchar* category, const 
   gtk_container_set_border_width (GTK_CONTAINER (thispage), 12);
   gtk_widget_show (thispage);
 
+  gtk_notebook_append_page_menu (notebook, thispage, label, NULL);
+}
+
+static void
+textures_switch_page (GtkNotebook *notebook, GtkWidget *page, guint page_num, gpointer user_data)
+{
+  if (page_num == 0 || g_array_index (textures_timestamps, time_t, page_num) > 0)
+    return;
+
+  // fix gtk2
+  page = gtk_notebook_get_nth_page (notebook, page_num);
+
+  gtk_container_set_border_width (GTK_CONTAINER (page), 0);
+  gtk_widget_set_size_request (page, -1, 480);
+
+  const gchar *category = gtk_notebook_get_tab_label_text(notebook, page);
+
+  /* scrolled window */
+  GtkWidget *scrolled_window = gtk_scrolled_window_new (NULL, NULL);
+  gtk_scrolled_window_set_policy (GTK_SCROLLED_WINDOW (scrolled_window), GTK_POLICY_NEVER, GTK_POLICY_AUTOMATIC);
+  gtk_box_pack_start (GTK_BOX (page), scrolled_window, TRUE, TRUE, 0);
+  gtk_widget_show (scrolled_window);
+
   /* table */
   gint rows = 5;
   gint cols = 3;
   GtkWidget *table = gtk_table_new (rows, cols, FALSE);
   gtk_table_set_col_spacings (GTK_TABLE (table), 6);
   gtk_table_set_row_spacings (GTK_TABLE (table), 6);
-  gtk_box_pack_start (GTK_BOX (thispage), table, FALSE, FALSE, 0);
+  gtk_container_set_border_width (GTK_CONTAINER (table), 10);
+  gtk_scrolled_window_add_with_viewport (GTK_SCROLLED_WINDOW (scrolled_window), table);
   gtk_widget_show (table);
 
   gint row = 1;
   gint col = 1;
+
+  const gchar *gimp_dir = gimp_directory ();
+  const gchar *texture_dir = g_build_filename (gimp_dir, TEXTURE_PATH, NULL);
+  const gchar *path = g_build_filename (texture_dir, category, NULL);
 
   GDir *dir = g_dir_open (path, 0, NULL);
   if (dir)
@@ -545,7 +579,7 @@ create_custom_texture_page (GtkNotebook *notebook, const gchar* category, const 
     }
   }
 
-  gtk_notebook_append_page_menu (notebook, thispage, label, NULL);
+  g_array_index (textures_timestamps, time_t, page_num) = time (NULL);
 }
 
 static gboolean

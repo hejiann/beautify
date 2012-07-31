@@ -415,7 +415,7 @@ texture_border_dialog ()
   }
   else
   {
-    label = gtk_label_new ("You can download more textures at https://github.com/hejiann/beautify/wiki");
+    label = gtk_label_new ("You can download more textures at https://github.com/hejiann/beautify/wiki/Textures-Download");
     gtk_label_set_line_wrap (GTK_LABEL (label), TRUE);
     gtk_box_pack_start (GTK_BOX (right_vbox), label, FALSE, FALSE, 0);
     gtk_widget_show (label);
