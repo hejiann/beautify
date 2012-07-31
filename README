@@ -22,13 +22,8 @@ make userinstall
 INSTALL TEXTURES
 ===================
 
-You can download texture-border textures at https://github.com/hejiann/beautify/wiki
-
-Install texture-border textures:
-cd ~/.gimp-2.8
-tar xvjf texture-border-textures.tar.bz
-
-And you can copy your own textures into ~/.gimp-2.8/rip-border and ~/.gimp-2.8/texture-border directory.
+You can download and install the textures following this document:
+https://github.com/hejiann/beautify/wiki/Textures-Download
 
 USING
 ===================
@@ -42,6 +37,7 @@ Filters -> Beautify -> Texture Border
 SUPPORT
 ===================
 
+Document & Tutorials: https://github.com/hejiann/beautify/wiki
 IRC:                  #beautify on FreeNode
 GIMP Plugin Registry: http://registry.gimp.org/node/26835
 GIMP Chat:            http://www.gimpchat.com/viewtopic.php?f=9&t=4811
@@ -53,6 +49,7 @@ CHANGELOG
 beautify: fix ABao color effect.
 texture-border: slim the plug-in size by only provide top textures and let other textures can be download.
 texture-border: add scrollbar to textures and make the dialog display quickly.
+rip-border: slim the plug-in size by only provide top textures and let other textures can be download.
 
 2012-07-30:
 beautify: fix missing effect.

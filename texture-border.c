@@ -405,14 +405,16 @@ texture_border_dialog ()
   gtk_notebook_set_scrollable (GTK_NOTEBOOK (notebook), TRUE);
   gtk_widget_show (notebook);
 
-  create_texture_page (GTK_NOTEBOOK (notebook), "Top",      top_textures,     G_N_ELEMENTS (top_textures));
+  create_texture_page (GTK_NOTEBOOK (notebook), "Top", top_textures, G_N_ELEMENTS (top_textures));
 
-  if (create_custom_texture_pages (GTK_NOTEBOOK (notebook))) {
+  if (create_custom_texture_pages (GTK_NOTEBOOK (notebook)))
+  {
     textures_timestamps = g_array_new (FALSE, TRUE, sizeof (time_t));
     g_array_set_size (textures_timestamps, gtk_notebook_get_n_pages (GTK_NOTEBOOK (notebook)));
     g_signal_connect (notebook, "switch-page", G_CALLBACK (textures_switch_page), NULL);
   }
-  else {
+  else
+  {
     label = gtk_label_new ("You can download more textures at https://github.com/hejiann/beautify/wiki");
     gtk_label_set_line_wrap (GTK_LABEL (label), TRUE);
     gtk_box_pack_start (GTK_BOX (right_vbox), label, FALSE, FALSE, 0);
