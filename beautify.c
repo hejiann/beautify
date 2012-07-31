@@ -825,9 +825,7 @@ effects_switch_page (GtkNotebook *notebook, GtkWidget *page, guint page_num, gpo
   static time_t effects_timestamp [] = {0, 0, 0, 0, 0, 0};
 
   if (effects_timestamp[page_num] > 0)
-  {
     return;
-  }
 
   // fix gtk2
   page = gtk_notebook_get_nth_page (notebook, page_num);
