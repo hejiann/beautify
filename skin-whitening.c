@@ -42,6 +42,7 @@ static const WhiteningEffectType effects[] =
   WHITENING_EFFECT_MODERATE_PINK,
   WHITENING_EFFECT_HIGH_PINK,
   WHITENING_EFFECT_LITTLE_FLESH,
+  WHITENING_EFFECT_MODERATE_FLESH,
 };
 
 static void     query    (void);
@@ -384,6 +385,10 @@ effect_icon_new (WhiteningEffectType effect)
     case WHITENING_EFFECT_LITTLE_FLESH:
       data = skin_whitening_7;
       title = "Little Flesh";
+      break;
+    case WHITENING_EFFECT_MODERATE_FLESH:
+      data = skin_whitening_8;
+      title = "Moderate Flesh";
       break;
   }
 
