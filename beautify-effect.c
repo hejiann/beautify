@@ -182,6 +182,63 @@ run_effect (gint32 image_ID, BeautifyEffectType effect)
     case BEAUTIFY_EFFECT_INVERT:
       gimp_invert (effect_layer);
       break;
+    case BEAUTIFY_EFFECT_CLASSIC_LOMO:
+    {
+      gint32     layer;
+      GdkPixbuf *pixbuf;
+
+      pixbuf = gdk_pixbuf_new_from_inline (-1, texture_classic_LOMO_1, FALSE, NULL);
+      layer = gimp_layer_new_from_pixbuf (image_ID, "texture", pixbuf, 100, GIMP_OVERLAY_MODE, 0, 0);
+      gimp_image_add_layer (image_ID, layer, -1);
+      gimp_layer_scale (layer, width, height, FALSE);
+      gimp_image_merge_down (image_ID, layer, GIMP_CLIP_TO_BOTTOM_LAYER);
+
+      guint8 red_pts[] = {
+        0.000000 * 255, 0.000430 * 255,
+        0.121569 * 255, 0.034226 * 255,
+        0.247059 * 255, 0.156268 * 255,
+        0.372549 * 255, 0.337497 * 255,
+        0.498039 * 255, 0.542195 * 255,
+        0.623529 * 255, 0.728355 * 255,
+        0.749020 * 255, 0.862534 * 255,
+        0.874510 * 255, 0.942754 * 255,
+        1.000000 * 255, 0.994413 * 255,
+      };
+      guint8 green_pts[] = {
+        0.000000 * 255, 0.000167 * 255,
+        0.121569 * 255, 0.023472 * 255,
+        0.247059 * 255, 0.139498 * 255,
+        0.372549 * 255, 0.318074 * 255,
+        0.498039 * 255, 0.520901 * 255,
+        0.623529 * 255, 0.705862 * 255,
+        0.749020 * 255, 0.849380 * 255,
+        0.874510 * 255, 0.952092 * 255,
+        1.000000 * 255, 0.994484 * 255,
+      };
+      guint8 blue_pts[] = {
+        0.000000 * 255, 0.000377 * 255,
+        0.121569 * 255, 0.030137 * 255,
+        0.247059 * 255, 0.160170 * 255,
+        0.372549 * 255, 0.335944 * 255,
+        0.498039 * 255, 0.545279 * 255,
+        0.623529 * 255, 0.719690 * 255,
+        0.749020 * 255, 0.867722 * 255,
+        0.874510 * 255, 0.965811 * 255,
+        1.000000 * 255, 0.995110 * 255,
+      };
+      layer = gimp_image_get_active_layer (image_ID);
+      gimp_curves_spline (layer, GIMP_HISTOGRAM_RED, 18, red_pts);
+      gimp_curves_spline (layer, GIMP_HISTOGRAM_GREEN, 18, green_pts);
+      gimp_curves_spline (layer, GIMP_HISTOGRAM_BLUE, 18, blue_pts);
+
+      pixbuf = gdk_pixbuf_new_from_inline (-1, texture_classic_LOMO_2, FALSE, NULL);
+      layer = gimp_layer_new_from_pixbuf (image_ID, "texture", pixbuf, 100, GIMP_MULTIPLY_MODE, 0, 0);
+      gimp_image_add_layer (image_ID, layer, -1);
+      gimp_layer_scale (layer, width, height, FALSE);
+      gimp_image_merge_down (image_ID, layer, GIMP_CLIP_TO_BOTTOM_LAYER);
+
+      break;
+    }
     case BEAUTIFY_EFFECT_RETRO_LOMO:
     {
       guint8 red_pts[] = {

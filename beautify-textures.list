@@ -1,3 +1,7 @@
+texture_classic_LOMO_1
+  ./textures/effects/classic-LOMO-1.jpg
+texture_classic_LOMO_2
+  ./textures/effects/classic-LOMO-2.png
 texture_yellowing_dark_corners
   ./textures/effects/yellowing-dark-corners.png
 texture_recall
