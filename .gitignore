@@ -1,7 +1,7 @@
 *.o
 beautify
 beautify-textures.h
-skin-whitening
+# skin-whitening
 skin-whitening-images.h
 # rip-border
 rip-border-textures.h

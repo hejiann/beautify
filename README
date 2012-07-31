@@ -51,28 +51,29 @@ texture-border: slim the plug-in size by only provide top textures and let other
 texture-border: add scrollbar to textures and make the dialog display quickly.
 rip-border: slim the plug-in size by only provide top textures and let other textures can be download.
 rip-border: add scrollbar to textures and make the dialog display quickly.
+skin whitening: add the little pink effect.
 
 2012-07-30:
 beautify: fix missing effect.
-beautify: add glass drops effect.
-beautify: add life sketch effect.
-beautify: add color pencil effect.
-rip-border: add custom texures support.
-beautify: add sunset gradient effect.
-beautify: add rainbow gradient effect.
+beautify: add the glass drops effect.
+beautify: add the life sketch effect.
+beautify: add the color pencil effect.
+rip-border: add the custom texures support.
+beautify: add the sunset gradient effect.
+beautify: add the rainbow gradient effect.
 
 2012-07-29
 texture-border: add custom texures support.
-skin-whitening: add reset feature.
+skin-whitening: add the reset feature.
 skin-whitening: fix plug-in-skin-whitening procedure to let this filter can be used in scirpts.
 Change all the beautify plug-ins under the "Filters" menu instead of "Tools" menu.
-beautify: add classic studio effect.
-beautify: add night view effect.
-beautify: add colorful glow effect.
+beautify: add the classic studio effect.
+beautify: add the night view effect.
+beautify: add the colorful glow effect.
 
 2012-07-27
-beautify: add sketch effect
-beautify: add recall effect
+beautify: add the sketch effect
+beautify: add the recall effect
 beautify: fix the plug-in-beautify procedure to let this plug-in can be used in a script
 beautify: fix gimp-2.6 issue: Procedure 'gimp-layer-new' has been called with value '100' for argument 'mode'
 

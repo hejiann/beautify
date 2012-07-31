@@ -38,6 +38,7 @@ static const WhiteningEffectType effects[] =
   WHITENING_EFFECT_LITTLE_WHITENING,
   WHITENING_EFFECT_MODERATE_WHITENING,
   WHITENING_EFFECT_HIGH_WHITENING,
+  WHITENING_EFFECT_LITTLE_PINK,
 };
 
 static void     query    (void);
@@ -355,20 +356,23 @@ effect_icon_new (WhiteningEffectType effect)
   switch (effect) {
     case WHITENING_EFFECT_LITTLE_WHITENING:
       data = skin_whitening_1;
-      title = "Little W";
+      title = "Little Whitening";
       break;
     case WHITENING_EFFECT_MODERATE_WHITENING:
       data = skin_whitening_2;
-      title = "Middle W";
+      title = "Middle Whitening";
       break;
     case WHITENING_EFFECT_HIGH_WHITENING:
       data = skin_whitening_3;
-      title = "High W";
+      title = "High Whitening";
+      break;
+    case WHITENING_EFFECT_LITTLE_PINK:
+      data = skin_whitening_4;
+      title = "Little Pink";
       break;
   }
 
-  GtkWidget *box = gtk_box_new (GTK_ORIENTATION_VERTICAL, 12);
-  gtk_container_set_border_width (GTK_CONTAINER (box), 12);
+  GtkWidget *box = gtk_box_new (GTK_ORIENTATION_VERTICAL, 2);
 
   /* image */
   GdkPixbuf *pixbuf = gdk_pixbuf_new_from_inline (-1, data, FALSE, NULL);
@@ -383,6 +387,8 @@ effect_icon_new (WhiteningEffectType effect)
 
   /* label */
   GtkWidget *label = gtk_label_new (title);
+  gtk_label_set_line_wrap (GTK_LABEL (label), TRUE);
+  gtk_widget_set_size_request (label, 80, -1);
   gtk_box_pack_start (GTK_BOX (box), label, FALSE, FALSE, 0);
   gtk_widget_show (label);
 
