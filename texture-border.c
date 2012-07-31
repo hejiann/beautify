@@ -48,9 +48,9 @@ static void     texture_border (gint32     image_ID);
 
 static gboolean texture_border_dialog ();
 
-static void create_texture_page (GtkNotebook *notebook, const gchar* category, const guint8** textures, guint n_textures);
-static void create_custom_texture_pages (GtkNotebook *notebook);
-static void create_custom_texture_page (GtkNotebook *notebook, const gchar* category, const gchar* path);
+static void     create_texture_page (GtkNotebook *notebook, const gchar* category, const guint8** textures, guint n_textures);
+static gboolean create_custom_texture_pages (GtkNotebook *notebook);
+static gboolean create_custom_texture_page (GtkNotebook *notebook, const gchar* category, const gchar* path);
 
 static gboolean texture_press (GtkWidget *event_box, GdkEventButton *event, const guint8 *texture);
 static gboolean custom_texture_press (GtkWidget *event_box, GdkEventButton *event, const gchar *texture);
@@ -90,117 +90,23 @@ static gint32     preview_image    = 0;
 static gint32     color_layer      = 0;
 static gint32     texture_mask     = 0;
 
-static const guint8* art_textures[] =
+static const guint8* top_textures[] =
 {
-  texture_12841,
-  texture_12852,
   texture_12854,
-  texture_12855,
-  texture_12856,
-  texture_14662,
-  texture_14913,
-  texture_14914,
-  texture_15322,
-  texture_15323,
-  texture_15324,
-  texture_200543,
-  texture_200650,
-  texture_200763,
-  texture_200835,
-};
-
-static const guint8* wall_textures[] =
-{
-  texture_13049,
-  texture_13050,
-  texture_13051,
-  texture_13053,
-  texture_13054,
-  texture_13056,
-  texture_13058,
-  texture_13059,
-  texture_13060,
   texture_200542,
-};
-
-static const guint8* texture_textures[] =
-{
-  texture_13032,
-  texture_13038,
-  texture_13039,
-  texture_13040,
-  texture_13042,
-  texture_13046,
-  texture_15311,
-  texture_15316,
-  texture_15317,
-  texture_15319,
-  texture_15325,
-  texture_15326,
-  texture_114860,
-  texture_200034,
-  texture_200153,
-};
-
-static const guint8* cloth_textures[] =
-{
-  texture_13027,
-  texture_13029,
-  texture_13030,
-  texture_13031,
-  texture_13041,
-  texture_13043,
-  texture_15312,
-  texture_15321,
-  texture_201367,
-};
-
-static const guint8* paper_textures[] =
-{
-  texture_14663,
-  texture_15313,
-  texture_114548,
-  texture_114549,
-  texture_114550,
-  texture_114551,
-  texture_114552,
-  texture_114553,
-  texture_114554,
-  texture_114823,
-  texture_114861,
-  texture_200230,
-  texture_201122,
-};
-
-static const guint8* grid_textures[] =
-{
-  texture_13034,
-  texture_13036,
-  texture_13055,
-  texture_14661,
-  texture_14664,
-  texture_14912,
-  texture_15314,
-  texture_15320,
-  texture_114547,
-  texture_200622,
-};
-
-static const guint8* other_textures[] =
-{
-  texture_12846,
-  texture_13028,
-  texture_13035,
-  texture_13037,
-  texture_13044,
-  texture_13045,
-  texture_13047,
-  texture_13048,
-  texture_13057,
   texture_15315,
-  texture_200022,
+  texture_13039,
+  texture_201367,
+  texture_15311,
+  texture_200835,
+  texture_201122,
+  texture_114549,
+  texture_200650,
+  texture_15319,
+  texture_200622,
+  texture_200763,
   texture_200285,
-  texture_200286,
+  texture_200543,
 };
 
 /* compatable with gtk2 */
@@ -423,6 +329,7 @@ texture_border_dialog ()
 
   right_vbox = gtk_box_new (GTK_ORIENTATION_VERTICAL, 12);
   gtk_container_set_border_width (GTK_CONTAINER (right_vbox), 12);
+  gtk_widget_set_size_request (right_vbox, 300, -1);
   gtk_box_pack_start (GTK_BOX (main_hbox), right_vbox, TRUE, TRUE, 0);
   gtk_widget_show (right_vbox);
 
@@ -492,17 +399,17 @@ texture_border_dialog ()
 
   GtkWidget *notebook = gtk_notebook_new ();
   gtk_box_pack_start (GTK_BOX (right_vbox), notebook, FALSE, FALSE, 0);
+  gtk_notebook_set_scrollable (GTK_NOTEBOOK (notebook), TRUE);
   gtk_widget_show (notebook);
 
-  create_texture_page (GTK_NOTEBOOK (notebook), "Art",      art_textures,     G_N_ELEMENTS (art_textures));
-  create_texture_page (GTK_NOTEBOOK (notebook), "Wall",     wall_textures,    G_N_ELEMENTS (wall_textures));
-  create_texture_page (GTK_NOTEBOOK (notebook), "Texture",  texture_textures, G_N_ELEMENTS (texture_textures));
-  create_texture_page (GTK_NOTEBOOK (notebook), "Cloth",    cloth_textures,   G_N_ELEMENTS (cloth_textures));
-  create_texture_page (GTK_NOTEBOOK (notebook), "Paper",    paper_textures,   G_N_ELEMENTS (paper_textures));
-  create_texture_page (GTK_NOTEBOOK (notebook), "Grid",     grid_textures,    G_N_ELEMENTS (grid_textures));
-  create_texture_page (GTK_NOTEBOOK (notebook), "Others",   other_textures,   G_N_ELEMENTS (other_textures));
+  create_texture_page (GTK_NOTEBOOK (notebook), "Top",      top_textures,     G_N_ELEMENTS (top_textures));
 
-  create_custom_texture_pages (GTK_NOTEBOOK (notebook));
+  if (!create_custom_texture_pages (GTK_NOTEBOOK (notebook))) {
+    label = gtk_label_new ("You can download more textures at https://github.com/hejiann/beautify/wiki");
+    gtk_label_set_line_wrap (GTK_LABEL (label), TRUE);
+    gtk_box_pack_start (GTK_BOX (right_vbox), label, FALSE, FALSE, 0);
+    gtk_widget_show (label);
+  }
 
   run = (gimp_dialog_run (GIMP_DIALOG (dialog)) == GTK_RESPONSE_OK);
 
@@ -556,9 +463,11 @@ create_texture_page (GtkNotebook *notebook, const gchar* category, const guint8*
   gtk_notebook_append_page_menu (notebook, thispage, label, NULL);
 }
 
-static void
+static gboolean
 create_custom_texture_pages (GtkNotebook *notebook)
 {
+  gboolean has_custom_texture = FALSE;
+
   const gchar *gimp_dir = gimp_directory ();
   const gchar *texture_dir = g_build_filename (gimp_dir, TEXTURE_PATH, NULL);
   GDir *dir = g_dir_open (texture_dir, 0, NULL);
@@ -572,14 +481,19 @@ create_custom_texture_pages (GtkNotebook *notebook)
 
       gchar *filename = g_build_filename (texture_dir, dir_ent, NULL);
       if (g_file_test (filename, G_FILE_TEST_IS_DIR)) {
-        create_custom_texture_page (GTK_NOTEBOOK (notebook), dir_ent, filename);
+        if (create_custom_texture_page (GTK_NOTEBOOK (notebook), dir_ent, filename))
+          has_custom_texture = TRUE;
       }
     }
   }
+
+  return has_custom_texture;
 }
 
-static void
+static gboolean
 create_custom_texture_page (GtkNotebook *notebook, const gchar* category, const gchar* path) {
+  gboolean has_custom_texture = FALSE;
+
   GtkWidget *label = gtk_label_new (category);
 
   GtkWidget *thispage = gtk_box_new (GTK_ORIENTATION_VERTICAL, 12);
@@ -625,10 +539,14 @@ create_custom_texture_page (GtkNotebook *notebook, const gchar* category, const 
       }
 
       g_signal_connect (event_box, "button_press_event", G_CALLBACK (custom_texture_press), filename);
+
+      has_custom_texture = TRUE;
     }
   }
 
   gtk_notebook_append_page_menu (notebook, thispage, label, NULL);
+
+  return has_custom_texture;
 }
 
 static gboolean
