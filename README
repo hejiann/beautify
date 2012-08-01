@@ -3,6 +3,8 @@ README
 
 GIMP Beautify is a set of GIMP plug-ins for quickly and easily beautify photo.
 
+Thanks all GIMP developers, because they give us a great Image Manipulation Program with a strong plug-in architecture, so we can write great plug-ins doing more fantastic things.
+
 !!! Important: All the beautify plug-ins has been changed to under the "Filters" menu instead of "Tools" menu.
 
 INSTALL
