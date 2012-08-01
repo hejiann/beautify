@@ -361,15 +361,15 @@ effect_icon_new (WhiteningEffectType effect)
   switch (effect) {
     case WHITENING_EFFECT_LITTLE_WHITENING:
       data = skin_whitening_1;
-      title = "Little Whitening";
+      title = "Little\nWhitening";
       break;
     case WHITENING_EFFECT_MODERATE_WHITENING:
       data = skin_whitening_2;
-      title = "Moderate Whitening";
+      title = "Moderate\nWhitening";
       break;
     case WHITENING_EFFECT_HIGH_WHITENING:
       data = skin_whitening_3;
-      title = "High Whitening";
+      title = "High\nWhitening";
       break;
     case WHITENING_EFFECT_LITTLE_PINK:
       data = skin_whitening_4;
@@ -377,7 +377,7 @@ effect_icon_new (WhiteningEffectType effect)
       break;
     case WHITENING_EFFECT_MODERATE_PINK:
       data = skin_whitening_5;
-      title = "Moderate Pink";
+      title = "Moderate\nPink";
       break;
     case WHITENING_EFFECT_HIGH_PINK:
       data = skin_whitening_6;
@@ -389,7 +389,7 @@ effect_icon_new (WhiteningEffectType effect)
       break;
     case WHITENING_EFFECT_MODERATE_FLESH:
       data = skin_whitening_8;
-      title = "Moderate Flesh";
+      title = "Moderate\nFlesh";
       break;
     case WHITENING_EFFECT_HIGH_FLESH:
       data = skin_whitening_9;
@@ -412,8 +412,10 @@ effect_icon_new (WhiteningEffectType effect)
 
   /* label */
   GtkWidget *label = gtk_label_new (title);
+  /* gtk_label_set_line_wrap will let textalign to left instead of center :(
   gtk_widget_set_size_request (label, 80, -1);
-  gtk_label_set_line_wrap (GTK_LABEL (label), TRUE);
+  gtk_label_set_line_wrap (GTK_LABEL (label), TRUE);*/
+  gtk_label_set_justify (GTK_LABEL (label), GTK_JUSTIFY_CENTER);
   gtk_box_pack_start (GTK_BOX (box), label, FALSE, FALSE, 0);
   gtk_widget_show (label);
 
