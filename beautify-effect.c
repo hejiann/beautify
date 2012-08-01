@@ -864,37 +864,37 @@ run_effect (gint32 image_ID, BeautifyEffectType effect)
       gimp_destroy_params (return_vals, nreturn_vals);
 
       guint8 red_pts[] = {
-        0.000000 * 255, 0.164706 * 255,
-        0.121569 * 255, 0.164706 * 255,
-        0.247059 * 255, 0.261490 * 255,
-        0.372549 * 255, 0.394953 * 255,
-        0.498039 * 255, 0.527504 * 255,
-        0.623529 * 255, 0.656387 * 255,
-        0.749020 * 255, 0.779222 * 255,
-        0.874510 * 255, 0.892678 * 255,
-        1.000000 * 255, 0.999900 * 255,
+        0.000000 * 255, 0.003922 * 255,
+        0.121569 * 255, 0.132068 * 255,
+        0.247059 * 255, 0.270845 * 255,
+        0.372549 * 255, 0.400251 * 255,
+        0.498039 * 255, 0.526639 * 255,
+        0.623529 * 255, 0.644370 * 255,
+        0.749020 * 255, 0.777614 * 255,
+        0.874510 * 255, 0.890458 * 255,
+        1.000000 * 255, 0.998224 * 255,
       };
       guint8 green_pts[] = {
-        0.000000 * 255, 0.454902 * 255,
-        0.121569 * 255, 0.454902 * 255,
-        0.247059 * 255, 0.454902 * 255,
-        0.372549 * 255, 0.460784 * 255,
-        0.498039 * 255, 0.498059 * 255,
-        0.623529 * 255, 0.628643 * 255,
-        0.749020 * 255, 0.731092 * 255,
-        0.874510 * 255, 0.884314 * 255,
-        1.000000 * 255, 0.901961 * 255,
+        0.000000 * 255, 0.247059 * 255,
+        0.121569 * 255, 0.258731 * 255,
+        0.247059 * 255, 0.288818 * 255,
+        0.372549 * 255, 0.362942 * 255,
+        0.498039 * 255, 0.494041 * 255,
+        0.623529 * 255, 0.613636 * 255,
+        0.749020 * 255, 0.736961 * 255,
+        0.874510 * 255, 0.860510 * 255,
+        1.000000 * 255, 0.905882 * 255,
       };
       guint8 blue_pts[] = {
-        0.000000 * 255, 0.539216 * 255,
-        0.121569 * 255, 0.539216 * 255,
-        0.247059 * 255, 0.539216 * 255,
-        0.372549 * 255, 0.539216 * 255,
-        0.498039 * 255, 0.515212 * 255,
-        0.623529 * 255, 0.544887 * 255,
-        0.749020 * 255, 0.590534 * 255,
-        0.874510 * 255, 0.666667 * 255,
-        1.000000 * 255, 0.666667 * 255,
+        0.000000 * 255, 0.766094 * 255,
+        0.121569 * 255, 0.762986 * 255,
+        0.247059 * 255, 0.708980 * 255,
+        0.372549 * 255, 0.587155 * 255,
+        0.498039 * 255, 0.507613 * 255,
+        0.623529 * 255, 0.478932 * 255,
+        0.749020 * 255, 0.458030 * 255,
+        0.874510 * 255, 0.434199 * 255,
+        1.000000 * 255, 0.454517 * 255,
       };
       layer = gimp_image_get_active_layer (image);
       gimp_curves_spline (layer, GIMP_HISTOGRAM_RED, 18, red_pts);
@@ -1658,6 +1658,71 @@ run_effect (gint32 image_ID, BeautifyEffectType effect)
       gimp_curves_spline (layer, GIMP_HISTOGRAM_RED, 18, red_pts);
       gimp_curves_spline (layer, GIMP_HISTOGRAM_GREEN, 18, green_pts);
       gimp_curves_spline (layer, GIMP_HISTOGRAM_BLUE, 18, blue_pts);
+
+      break;
+    }
+    case BEAUTIFY_EFFECT_CLASSIC_SKETCH:
+    {
+      gimp_desaturate_full (effect_layer, GIMP_DESATURATE_LUMINOSITY);
+
+      gint32     layer;
+      GdkPixbuf *pixbuf;
+
+      pixbuf = gdk_pixbuf_new_from_inline (-1, texture_classic_sketch_1, FALSE, NULL);
+      layer = gimp_layer_new_from_pixbuf (image_ID, "texture", pixbuf, 100, GIMP_SCREEN_MODE, 0, 0);
+      gimp_image_add_layer (image_ID, layer, -1);
+      gimp_layer_scale (layer, width, height, FALSE);
+      gimp_image_merge_down (image_ID, layer, GIMP_CLIP_TO_BOTTOM_LAYER);
+
+      pixbuf = gdk_pixbuf_new_from_inline (-1, texture_classic_sketch_2, FALSE, NULL);
+      layer = gimp_layer_new_from_pixbuf (image_ID, "texture", pixbuf, 100, GIMP_SCREEN_MODE, 0, 0);
+      gimp_image_add_layer (image_ID, layer, -1);
+      gimp_layer_scale (layer, width, height, FALSE);
+      gimp_image_merge_down (image_ID, layer, GIMP_CLIP_TO_BOTTOM_LAYER);
+
+      guint8 red_pts[] = {
+        0.000000 * 255, 0.035294 * 255,
+        0.121569 * 255, 0.035294 * 255,
+        0.247059 * 255, 0.100000 * 255,
+        0.372549 * 255, 0.219095 * 255,
+        0.498039 * 255, 0.373810 * 255,
+        0.623529 * 255, 0.541166 * 255,
+        0.749020 * 255, 0.697497 * 255,
+        0.874510 * 255, 0.850874 * 255,
+        1.000000 * 255, 0.996065 * 255,
+      };
+      guint8 green_pts[] = {
+        0.000000 * 255, 0.015686 * 255,
+        0.121569 * 255, 0.015686 * 255,
+        0.247059 * 255, 0.085098 * 255,
+        0.372549 * 255, 0.206671 * 255,
+        0.498039 * 255, 0.357512 * 255,
+        0.623529 * 255, 0.526512 * 255,
+        0.749020 * 255, 0.687917 * 255,
+        0.874510 * 255, 0.845067 * 255,
+        1.000000 * 255, 0.996069 * 255,
+      };
+      guint8 blue_pts[] = {
+        0.000000 * 255, 0.001961 * 255,
+        0.121569 * 255, 0.001961 * 255,
+        0.247059 * 255, 0.054390 * 255,
+        0.372549 * 255, 0.180870 * 255,
+        0.498039 * 255, 0.328319 * 255,
+        0.623529 * 255, 0.497803 * 255,
+        0.749020 * 255, 0.665890 * 255,
+        0.874510 * 255, 0.835076 * 255,
+        1.000000 * 255, 0.996066 * 255,
+      };
+      layer = gimp_image_get_active_layer (image_ID);
+      gimp_curves_spline (layer, GIMP_HISTOGRAM_RED, 18, red_pts);
+      gimp_curves_spline (layer, GIMP_HISTOGRAM_GREEN, 18, green_pts);
+      gimp_curves_spline (layer, GIMP_HISTOGRAM_BLUE, 18, blue_pts);
+
+      pixbuf = gdk_pixbuf_new_from_inline (-1, texture_classic_sketch_3, FALSE, NULL);
+      layer = gimp_layer_new_from_pixbuf (image_ID, "texture", pixbuf, 100, GIMP_MULTIPLY_MODE, 0, 0);
+      gimp_image_add_layer (image_ID, layer, -1);
+      gimp_layer_scale (layer, width, height, FALSE);
+      gimp_image_merge_down (image_ID, layer, GIMP_CLIP_TO_BOTTOM_LAYER);
 
       break;
     }

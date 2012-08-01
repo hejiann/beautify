@@ -50,6 +50,7 @@ CHANGELOG
 2012-08-01:
 Make 0.5.2 release.
 Merge rip-border and texture-border into border.
+beautify: add the classic sketch effect.
 
 2012-07-31:
 beautify: fix ABao color effect.

@@ -30,6 +30,12 @@ texture_life_sketch_1
   ./textures/effects/life-sketch-1.jpg
 texture_life_sketch_2
   ./textures/effects/life-sketch-2.jpg
+texture_classic_sketch_1
+  ./textures/effects/classic-sketch-1.jpg
+texture_classic_sketch_2
+  ./textures/effects/classic-sketch-2.png
+texture_classic_sketch_3
+  ./textures/effects/classic-sketch-3.png
 texture_color_pencil
   ./textures/effects/color-pencil.jpg
 texture_beam_gradient
