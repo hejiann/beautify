@@ -45,6 +45,9 @@ GIMP Chat:            http://www.gimpchat.com/viewtopic.php?f=9&t=4811
 CHANGELOG
 ===================
 
+2012-08-01:
+Make 0.5.2 release.
+
 2012-07-31:
 beautify: fix ABao color effect.
 texture-border: slim the plug-in size by only provide top textures and let other textures can be download.
