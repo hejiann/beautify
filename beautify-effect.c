@@ -116,8 +116,8 @@ run_effect (gint32 image_ID, BeautifyEffectType effect)
                                                    GIMP_PDB_INT32, 1,
                                                    GIMP_PDB_IMAGE, image_ID,
                                                    GIMP_PDB_DRAWABLE, effect_layer,
-                                                   GIMP_PDB_FLOAT, 1.0,
-                                                   GIMP_PDB_FLOAT, 1.0,
+                                                   GIMP_PDB_FLOAT, 1.2,
+                                                   GIMP_PDB_FLOAT, 1.2,
                                                    GIMP_PDB_INT32, 1,
                                                    GIMP_PDB_END);
       gimp_destroy_params (return_vals, nreturn_vals);
