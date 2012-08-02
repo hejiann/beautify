@@ -47,6 +47,7 @@ static const BeautifyEffectType basic_effects[] =
   BEAUTIFY_EFFECT_SOFT_LIGHT,
   BEAUTIFY_EFFECT_WARM,
   BEAUTIFY_EFFECT_SHARPEN,
+  BEAUTIFY_EFFECT_SOFT,
   BEAUTIFY_EFFECT_STRONG_CONTRAST,
   BEAUTIFY_EFFECT_SMART_COLOR,
   BEAUTIFY_EFFECT_BLACK_AND_WHITE,
@@ -931,6 +932,9 @@ effect_icon_new (BeautifyEffectType effect)
       break;
     case BEAUTIFY_EFFECT_SHARPEN:
       title = "Sharpen";
+      break;
+    case BEAUTIFY_EFFECT_SOFT:
+      title = "Soft";
       break;
     case BEAUTIFY_EFFECT_STRONG_CONTRAST:
       title = "Strong\nContrast";
