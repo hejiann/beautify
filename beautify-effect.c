@@ -1745,6 +1745,33 @@ run_effect (gint32 image_ID, BeautifyEffectType effect)
 
       break;
     }
+    case BEAUTIFY_EFFECT_RELIEF:
+    {
+      gint32     layer;
+
+      layer = gimp_layer_copy (effect_layer);
+      gimp_image_add_layer (image_ID, layer, -1);
+
+      gimp_layer_set_offsets (effect_layer, 1, -1);
+      gimp_layer_set_offsets (layer, -1, 1);
+
+      gimp_layer_set_mode (layer, GIMP_GRAIN_EXTRACT_MODE);
+      gimp_image_merge_down (image_ID, layer, GIMP_CLIP_TO_IMAGE);
+
+      //gimp_image_select_rectangle (image_ID, GIMP_CHANNEL_OP_REPLACE, 0, 0, width, 1);
+      //gimp_image_select_rectangle (image_ID, GIMP_CHANNEL_OP_ADD, 0, 0, 1, height);
+      gimp_image_select_rectangle (image_ID, GIMP_CHANNEL_OP_REPLACE, 1, 1, width - 2, height - 2);
+      gimp_selection_invert (image_ID);
+
+      layer = gimp_image_get_active_layer (image_ID);
+      GimpRGB color = { 0.5, 0.5, 0.5, 1.0 };
+      gimp_context_set_foreground (&color);
+      gimp_edit_fill (layer, GIMP_FOREGROUND_FILL);
+
+      gimp_selection_none (image_ID);
+
+      break;
+    }
     case BEAUTIFY_EFFECT_BEAM_GRADIENT:
     {
       guint8 red_pts[] = {
