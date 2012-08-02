@@ -352,7 +352,7 @@ beautify_effect (GimpDrawable *drawable)
   gint32 layer = gimp_image_get_active_layer (image_ID);
   gimp_layer_set_opacity (layer, bvals.opacity);
 
-  gimp_image_merge_down (image_ID, layer, GIMP_EXPAND_AS_NECESSARY);
+  gimp_image_merge_down (image_ID, layer, GIMP_CLIP_TO_IMAGE);
 }
 
 static gboolean
@@ -1183,7 +1183,7 @@ apply_effect ()
   }
 
   gint32 current_layer = gimp_image_get_active_layer (preview_image);
-  gimp_image_merge_down (preview_image, current_layer, GIMP_EXPAND_AS_NECESSARY);
+  gimp_image_merge_down (preview_image, current_layer, GIMP_CLIP_TO_IMAGE);
 
   current_effect = BEAUTIFY_EFFECT_NONE;
 
