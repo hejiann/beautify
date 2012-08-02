@@ -108,6 +108,7 @@ static const BeautifyEffectType art_effects[] =
   BEAUTIFY_EFFECT_LIFE_SKETCH,
   BEAUTIFY_EFFECT_CLASSIC_SKETCH,
   BEAUTIFY_EFFECT_COLOR_PENCIL,
+  BEAUTIFY_EFFECT_TV_LINES,
   BEAUTIFY_EFFECT_RELIEF,
 };
 
@@ -1067,6 +1068,9 @@ effect_icon_new (BeautifyEffectType effect)
       break;
     case BEAUTIFY_EFFECT_COLOR_PENCIL:
       title = "Color Pencil";
+      break;
+    case BEAUTIFY_EFFECT_TV_LINES:
+      title = "TV Lines";
       break;
     case BEAUTIFY_EFFECT_RELIEF:
       title = "Relief";

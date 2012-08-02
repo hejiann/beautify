@@ -1756,7 +1756,20 @@ run_effect (gint32 image_ID, BeautifyEffectType effect)
       layer = gimp_layer_new_from_pixbuf (image_ID, "texture", pixbuf, 100, GIMP_OVERLAY_MODE, 0, 0);
       gimp_image_add_layer (image_ID, layer, -1);
       gimp_layer_scale (layer, width, height, FALSE);
-      gimp_image_merge_down (image_ID, layer, GIMP_CLIP_TO_BOTTOM_LAYER);
+      gimp_image_merge_down (image_ID, layer, GIMP_CLIP_TO_IMAGE);
+
+      break;
+    }
+    case BEAUTIFY_EFFECT_TV_LINES:
+    {
+      gint32     layer;
+
+      layer = gimp_layer_new (image_ID, "texture", width, height, GIMP_RGBA_IMAGE, 60, GIMP_MULTIPLY_MODE);
+      gimp_image_add_layer (image_ID, layer, -1);
+      gimp_drawable_fill (layer, GIMP_TRANSPARENT_FILL);
+      gimp_context_set_pattern ("Stripes Fine");
+      gimp_edit_fill (layer, GIMP_PATTERN_FILL);
+      gimp_image_merge_down (image_ID, layer, GIMP_CLIP_TO_IMAGE);
 
       break;
     }
