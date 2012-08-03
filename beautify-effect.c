@@ -216,8 +216,32 @@ run_effect (gint32 image_ID, BeautifyEffectType effect)
     }
       break;
     case BEAUTIFY_EFFECT_BLACK_AND_WHITE:
+    {
+      gint       nreturn_vals;
+      GimpParam *return_vals;
+
+      return_vals = gimp_run_procedure ("plug-in-colors-channel-mixer",
+                                        &nreturn_vals,
+                                        GIMP_PDB_INT32, 1,
+                                        GIMP_PDB_IMAGE, image_ID,
+                                        GIMP_PDB_DRAWABLE, effect_layer,
+                                        GIMP_PDB_INT32, 0,
+                                        GIMP_PDB_FLOAT, 0.30,
+                                        GIMP_PDB_FLOAT, 0.59,
+                                        GIMP_PDB_FLOAT, 0.11,
+                                        GIMP_PDB_FLOAT, 0.30,
+                                        GIMP_PDB_FLOAT, 0.59,
+                                        GIMP_PDB_FLOAT, 0.11,
+                                        GIMP_PDB_FLOAT, 0.30,
+                                        GIMP_PDB_FLOAT, 0.59,
+                                        GIMP_PDB_FLOAT, 0.11,
+                                        GIMP_PDB_END);
+      gimp_destroy_params (return_vals, nreturn_vals);
+
       gimp_desaturate_full (effect_layer, GIMP_DESATURATE_LUMINOSITY);
+
       break;
+    }
     case BEAUTIFY_EFFECT_INVERT:
       gimp_invert (effect_layer);
       break;

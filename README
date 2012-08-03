@@ -48,32 +48,33 @@ CHANGELOG
 ===================
 
 2012-08-03:
-beautify: fix the soft light effect.
+beautify: fix the Soft Light effect.
+beautify: fix the Black And White effect.
 
 2012-08-02:
-beautify: add the relief effect.
-beautify: add the soft effect.
+beautify: add the Relief effect.
+beautify: add the Soft effect.
 beautify: add the TV Lines effect.
 
 2012-08-01:
 Make 0.5.2 release.
 Merge rip-border and texture-border into border.
-beautify: add the classic sketch effect.
+beautify: add the Classic Sketch effect.
 
 2012-07-31:
-beautify: fix ABao color effect.
+beautify: fix ABao Color effect.
 texture-border: slim the plug-in size by only provide top textures and let other textures can be download.
 texture-border: add scrollbar to textures and make the dialog display quickly.
 rip-border: slim the plug-in size by only provide top textures and let other textures can be download.
 rip-border: add scrollbar to textures and make the dialog display quickly.
-skin whitening: add the little pink effect.
-skin whitening: add the moderate pink effect.
-skin whitening: add the high pink effect.
-skin whitening: add the little flesh effect.
-skin whitening: add the moderate flesh effect.
-skin shitening: add the high flesh effect.
-beautify: add the classic LOMO effect.
-beautify: add the pink purple gradient effect.
+skin whitening: add the Little Pink effect.
+skin whitening: add the Moderate Pink effect.
+skin whitening: add the High Pink effect.
+skin whitening: add the Little Flesh effect.
+skin whitening: add the Moderate Flesh effect.
+skin shitening: add the High Flesh effect.
+beautify: add the Classic LOMO effect.
+beautify: add the Pink Purple Gradient effect.
 
 2012-07-30:
 beautify: fix missing effect.
