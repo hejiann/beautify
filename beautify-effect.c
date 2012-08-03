@@ -31,6 +31,7 @@ run_effect (gint32 image_ID, BeautifyEffectType effect)
   gint32 layer = gimp_image_get_active_layer (image_ID);
   gint32 effect_layer = gimp_layer_copy (layer);
   gimp_image_add_layer (image_ID, effect_layer, -1);
+  //gimp_layer_set_lock_alpha (effect_layer, TRUE);
 
   gint width = gimp_image_width (image_ID);
   gint height = gimp_image_height (image_ID);
@@ -38,9 +39,8 @@ run_effect (gint32 image_ID, BeautifyEffectType effect)
   switch (effect)
   {
     case BEAUTIFY_EFFECT_SOFT_LIGHT:
-      //gimp_layer_set_mode (effect_layer, GIMP_SOFTLIGHT_MODE);
     {
-      guint8 red_pts[] = {
+      /*guint8 red_pts[] = {
         0.000000 * 255, 0.018301 * 255,
         0.121569 * 255, 0.140340 * 255,
         0.247059 * 255, 0.293839 * 255,
@@ -75,7 +75,31 @@ run_effect (gint32 image_ID, BeautifyEffectType effect)
       };
       gimp_curves_spline (effect_layer, GIMP_HISTOGRAM_RED, 18, red_pts);
       gimp_curves_spline (effect_layer, GIMP_HISTOGRAM_GREEN, 18, green_pts);
-      gimp_curves_spline (effect_layer, GIMP_HISTOGRAM_BLUE, 18, blue_pts);
+      gimp_curves_spline (effect_layer, GIMP_HISTOGRAM_BLUE, 18, blue_pts);*/
+
+      gint32     layer;
+
+      layer = gimp_layer_copy (effect_layer);
+      gimp_image_add_layer (image_ID, layer, -1);
+      gimp_levels (layer, GIMP_HISTOGRAM_VALUE, 20, 255, 1, 0, 255);
+
+      GimpParam *return_vals;
+      gint nreturn_vals;
+      return_vals = gimp_run_procedure ("plug-in-gauss",
+                                        &nreturn_vals,
+                                        GIMP_PDB_INT32, GIMP_RUN_NONINTERACTIVE,
+                                        GIMP_PDB_IMAGE, image_ID,
+                                        GIMP_PDB_DRAWABLE, layer,
+                                        GIMP_PDB_FLOAT, 15.0,
+                                        GIMP_PDB_FLOAT, 15.0,
+                                        GIMP_PDB_INT32, 1,
+                                        GIMP_PDB_END);
+      gimp_destroy_params (return_vals, nreturn_vals);
+
+      gimp_layer_set_mode (layer, GIMP_SCREEN_MODE);
+      gimp_layer_set_opacity (layer, 35);
+      gimp_image_merge_down (image_ID, layer, GIMP_CLIP_TO_IMAGE);
+
       break;
     }
     case BEAUTIFY_EFFECT_WARM:
@@ -1593,6 +1617,7 @@ run_effect (gint32 image_ID, BeautifyEffectType effect)
       gint32     layer;
 
       gimp_desaturate_full (effect_layer, GIMP_DESATURATE_LUMINOSITY);
+
       layer = gimp_layer_copy (effect_layer);
       gimp_image_add_layer (image_ID, layer, -1);
       gimp_layer_set_mode  (layer, GIMP_DODGE_MODE);

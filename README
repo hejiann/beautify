@@ -47,6 +47,9 @@ GIMP Chat:            http://www.gimpchat.com/viewtopic.php?f=9&t=4811
 CHANGELOG
 ===================
 
+2012-08-03:
+beautify: fix the soft light effect.
+
 2012-08-02:
 beautify: add the relief effect.
 beautify: add the soft effect.
