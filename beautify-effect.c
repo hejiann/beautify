@@ -344,6 +344,24 @@ run_effect (gint32 image_ID, BeautifyEffectType effect)
       gimp_curves_spline (effect_layer, GIMP_HISTOGRAM_RED, 18, red_pts);
       gimp_curves_spline (effect_layer, GIMP_HISTOGRAM_GREEN, 18, green_pts);
       gimp_curves_spline (effect_layer, GIMP_HISTOGRAM_BLUE, 18, blue_pts);
+
+      gint       nreturn_vals;
+      GimpParam *return_vals;
+
+      return_vals = gimp_run_procedure ("plug-in-rgb-noise",
+                                        &nreturn_vals,
+                                        GIMP_PDB_INT32, 1,
+                                        GIMP_PDB_IMAGE, image_ID,
+                                        GIMP_PDB_DRAWABLE, effect_layer,
+                                        GIMP_PDB_INT32, 0,
+                                        GIMP_PDB_INT32, 0,
+                                        GIMP_PDB_FLOAT, 0.03,
+                                        GIMP_PDB_FLOAT, 0.03,
+                                        GIMP_PDB_FLOAT, 0.03,
+                                        GIMP_PDB_FLOAT, 0.03,
+                                        GIMP_PDB_END);
+      gimp_destroy_params (return_vals, nreturn_vals);
+
       break;
     }
     case BEAUTIFY_EFFECT_GOTHIC_STYLE:
