@@ -23,6 +23,32 @@
 #include "beautify-effect.h"
 #include "beautify-textures.h"
 
+static void black_and_white (gint32 image_ID, gint32 drawable_ID)
+{
+  gint       nreturn_vals;
+  GimpParam *return_vals;
+
+  return_vals = gimp_run_procedure ("plug-in-colors-channel-mixer",
+                                    &nreturn_vals,
+                                    GIMP_PDB_INT32, 1,
+                                    GIMP_PDB_IMAGE, image_ID,
+                                    GIMP_PDB_DRAWABLE, drawable_ID,
+                                    GIMP_PDB_INT32, 0,
+                                    GIMP_PDB_FLOAT, 0.30,
+                                    GIMP_PDB_FLOAT, 0.59,
+                                    GIMP_PDB_FLOAT, 0.11,
+                                    GIMP_PDB_FLOAT, 0.30,
+                                    GIMP_PDB_FLOAT, 0.59,
+                                    GIMP_PDB_FLOAT, 0.11,
+                                    GIMP_PDB_FLOAT, 0.30,
+                                    GIMP_PDB_FLOAT, 0.59,
+                                    GIMP_PDB_FLOAT, 0.11,
+                                    GIMP_PDB_END);
+  gimp_destroy_params (return_vals, nreturn_vals);
+
+  gimp_desaturate_full (drawable_ID, GIMP_DESATURATE_LUMINOSITY);
+}
+
 void
 run_effect (gint32 image_ID, BeautifyEffectType effect)
 {
@@ -217,29 +243,7 @@ run_effect (gint32 image_ID, BeautifyEffectType effect)
       break;
     case BEAUTIFY_EFFECT_BLACK_AND_WHITE:
     {
-      gint       nreturn_vals;
-      GimpParam *return_vals;
-
-      return_vals = gimp_run_procedure ("plug-in-colors-channel-mixer",
-                                        &nreturn_vals,
-                                        GIMP_PDB_INT32, 1,
-                                        GIMP_PDB_IMAGE, image_ID,
-                                        GIMP_PDB_DRAWABLE, effect_layer,
-                                        GIMP_PDB_INT32, 0,
-                                        GIMP_PDB_FLOAT, 0.30,
-                                        GIMP_PDB_FLOAT, 0.59,
-                                        GIMP_PDB_FLOAT, 0.11,
-                                        GIMP_PDB_FLOAT, 0.30,
-                                        GIMP_PDB_FLOAT, 0.59,
-                                        GIMP_PDB_FLOAT, 0.11,
-                                        GIMP_PDB_FLOAT, 0.30,
-                                        GIMP_PDB_FLOAT, 0.59,
-                                        GIMP_PDB_FLOAT, 0.11,
-                                        GIMP_PDB_END);
-      gimp_destroy_params (return_vals, nreturn_vals);
-
-      gimp_desaturate_full (effect_layer, GIMP_DESATURATE_LUMINOSITY);
-
+      black_and_white (image_ID, effect_layer);
       break;
     }
     case BEAUTIFY_EFFECT_INVERT:
@@ -1640,7 +1644,7 @@ run_effect (gint32 image_ID, BeautifyEffectType effect)
     {
       gint32     layer;
 
-      gimp_desaturate_full (effect_layer, GIMP_DESATURATE_LUMINOSITY);
+      black_and_white (image_ID, effect_layer);
 
       layer = gimp_layer_copy (effect_layer);
       gimp_image_add_layer (image_ID, layer, -1);
@@ -1660,7 +1664,7 @@ run_effect (gint32 image_ID, BeautifyEffectType effect)
                                         GIMP_PDB_END);
       gimp_destroy_params (return_vals, nreturn_vals);
 
-      gimp_levels (layer, GIMP_HISTOGRAM_VALUE, 0, 255, 1, 0, 240);
+      gimp_levels (layer, GIMP_HISTOGRAM_VALUE, 0, 255, 1, 0, 251);
 
       gimp_image_merge_down (image_ID, layer, GIMP_CLIP_TO_BOTTOM_LAYER);
       
