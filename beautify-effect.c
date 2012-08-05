@@ -46,7 +46,7 @@ static void black_and_white (gint32 image_ID, gint32 drawable_ID)
                                     GIMP_PDB_END);
   gimp_destroy_params (return_vals, nreturn_vals);
 
-  gimp_desaturate_full (drawable_ID, GIMP_DESATURATE_LUMINOSITY);
+  //gimp_desaturate_full (drawable_ID, GIMP_DESATURATE_LUMINOSITY);
 }
 
 void

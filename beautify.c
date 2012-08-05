@@ -1093,6 +1093,18 @@ effect_icon_new (BeautifyEffectType effect)
   }
 
   gint32 image = gimp_image_duplicate (preview_image);
+
+  /*if (width > THUMBNAIL_SIZE && height > THUMBNAIL_SIZE) {
+    if (width > height)
+    {
+      gimp_image_scale (image, THUMBNAIL_SIZE * width / height, THUMBNAIL_SIZE);
+    }
+    else
+    {
+      gimp_image_scale (image, THUMBNAIL_SIZE, THUMBNAIL_SIZE * height / width);
+    }
+  }*/
+
   run_effect (image, effect);
 
   GtkWidget *box = gtk_box_new (GTK_ORIENTATION_VERTICAL, 2);
