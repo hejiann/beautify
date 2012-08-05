@@ -707,20 +707,24 @@ adjustment () {
     gint high_input = 255;
     gint low_output = 0;
     gint high_output = 255;
+
     if (bvals.brightness > 0) {
       high_input -= bvals.brightness;
     }
     if (bvals.brightness < 0) {
       high_output += bvals.brightness;
     }
-    if (bvals.contrast > 0) {
-      low_input += bvals.contrast;
-      high_input -= bvals.contrast;
+
+    gint value = 62 * (bvals.contrast / 50);
+    if (value > 0) {
+      low_input += value;
+      high_input -= value;
     }
-    if (bvals.contrast < 0) {
-      low_output -= bvals.contrast;
-      high_output += bvals.contrast;
+    if (value < 0) {
+      low_output -= value;
+      high_output += value;
     }
+
     gimp_levels (layer, GIMP_HISTOGRAM_VALUE,
                  low_input, high_input,
                  1,
