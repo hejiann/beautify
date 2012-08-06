@@ -32,7 +32,7 @@ typedef struct
   gint brightness;
   gint contrast;
   gdouble saturation;
-  gdouble sharpeness;
+  gdouble definition;
   gdouble hue;
   gdouble cyan_red;
   gdouble magenta_green;
@@ -140,6 +140,7 @@ static void     create_color_page (GtkNotebook *notebook);
 static void     brightness_update    (GtkRange *range, gpointer data);
 static void     contrast_update      (GtkRange *range, gpointer data);
 static void     saturation_update    (GtkRange *range, gpointer data);
+static void     definition_update    (GtkRange *range, gpointer data);
 static void     hue_update           (GtkRange *range, gpointer data);
 static void     cyan_red_update      (GtkRange *range, gpointer data);
 static void     magenta_green_update (GtkRange *range, gpointer data);
@@ -180,7 +181,7 @@ static BeautifyValues bvals =
   0,  /* brightness */
   0,  /* contrast   */
   0,  /* saturation */
-  0,  /* sharpeness */
+  0,  /* definition */
   0,  /* hue */
   0,  /* cyan_red */
   0,  /* magenta_green */
@@ -197,7 +198,7 @@ static gint       height;
 static GtkWidget *brightness = NULL;
 static GtkWidget *contrast = NULL;
 static GtkWidget *saturation = NULL;
-static GtkWidget *sharpeness = NULL;
+static GtkWidget *definition = NULL;
 static GtkWidget *hue = NULL;
 static GtkWidget *cyan_red = NULL;
 static GtkWidget *magenta_green = NULL;
@@ -502,6 +503,21 @@ create_base_page (GtkNotebook *notebook) {
                    G_CALLBACK (saturation_update),
                    NULL);
 
+  /* definition */
+  label = gtk_label_new ("Definition");
+  gtk_box_pack_start (GTK_BOX (thispage), label, FALSE, FALSE, 0);
+  gtk_widget_show (label);
+
+  definition = gtk_hscale_new_with_range (-50, 50, 1);
+  gtk_range_set_value (GTK_RANGE (definition), bvals.definition);
+  gtk_scale_set_value_pos (GTK_SCALE (definition), GTK_POS_BOTTOM);
+  gtk_box_pack_start (GTK_BOX (thispage), definition, FALSE, FALSE, 0);
+  gtk_widget_show (definition);
+
+  g_signal_connect (definition, "value-changed",
+                   G_CALLBACK (definition_update),
+                   NULL);
+
   gtk_notebook_append_page_menu (notebook, thispage, pagelabel, NULL);
 }
 
@@ -522,6 +538,13 @@ contrast_update (GtkRange *range, gpointer data) {
 static void
 saturation_update (GtkRange *range, gpointer data) {
   bvals.saturation = gtk_range_get_value (range);
+  adjustment ();
+  preview_update (preview);
+}
+
+static void
+definition_update (GtkRange *range, gpointer data) {
+  bvals.definition = gtk_range_get_value (range);
   adjustment ();
   preview_update (preview);
 }
@@ -689,31 +712,28 @@ yellow_blue_update (GtkRange *range, gpointer data) {
 
 static void
 adjustment () {
-  if (bvals.brightness == 0 && bvals.contrast == 0 && bvals.saturation == 0 && bvals.hue == 0 && bvals.cyan_red == 0 && bvals.magenta_green == 0 && bvals.yellow_blue == 0) {
+  if (bvals.brightness == 0 && bvals.contrast == 0 && bvals.saturation == 0 && bvals.definition == 0 && bvals.hue == 0 && bvals.cyan_red == 0 && bvals.magenta_green == 0 && bvals.yellow_blue == 0)
     return;
-  }
 
   apply_effect ();
 
-  if (!saved_image) {
+  if (!saved_image)
     saved_image = gimp_image_duplicate (preview_image);
-  }
 
   preview_image = gimp_image_duplicate (saved_image);
   gint32 layer = gimp_image_get_active_layer (preview_image);
 
-  if (bvals.brightness != 0 || bvals.contrast != 0) {
+  if (bvals.brightness != 0 || bvals.contrast != 0)
+  {
     gint low_input = 0;
     gint high_input = 255;
     gint low_output = 0;
     gint high_output = 255;
 
-    if (bvals.brightness > 0) {
+    if (bvals.brightness > 0)
       high_input -= bvals.brightness;
-    }
-    if (bvals.brightness < 0) {
+    if (bvals.brightness < 0)
       high_output += bvals.brightness;
-    }
 
     gint value = 62 * (bvals.contrast / 50);
     if (value > 0) {
@@ -731,11 +751,30 @@ adjustment () {
                  low_output, high_output);
   }
 
-  if (bvals.saturation != 0 || bvals.hue) {
+  if (bvals.saturation != 0 || bvals.hue)
     gimp_hue_saturation (layer, GIMP_ALL_HUES, bvals.hue, 0, bvals.saturation);
+
+  if (bvals.definition > 0)
+  {
+    gint       nreturn_vals;
+    GimpParam *return_vals;
+    gint32     percent = 78 * (bvals.definition / 50);
+    return_vals = gimp_run_procedure ("plug-in-sharpen",
+                                      &nreturn_vals,
+                                      GIMP_PDB_INT32, GIMP_RUN_NONINTERACTIVE,
+                                      GIMP_PDB_IMAGE, image_ID,
+                                      GIMP_PDB_DRAWABLE, layer,
+                                      GIMP_PDB_INT32, percent,
+                                      GIMP_PDB_END);
+    gimp_destroy_params (return_vals, nreturn_vals);
+  }
+  else if (bvals.definition < 0)
+  {
+    // TODO
   }
 
-  if (bvals.cyan_red != 0 || bvals.magenta_green != 0 || bvals.yellow_blue != 0) {
+  if (bvals.cyan_red != 0 || bvals.magenta_green != 0 || bvals.yellow_blue != 0)
+  {
     gimp_color_balance (layer, GIMP_SHADOWS, TRUE,
                         bvals.cyan_red, bvals.magenta_green, bvals.yellow_blue);
     gimp_color_balance (layer, GIMP_MIDTONES, TRUE,
@@ -1169,9 +1208,9 @@ reset_adjustment ()
     bvals.saturation = 0;
     gtk_range_set_value (GTK_RANGE (saturation), 0);
   }
-  if (bvals.sharpeness != 0) {
-    bvals.sharpeness = 0;
-    gtk_range_set_value (GTK_RANGE (sharpeness), 0);
+  if (bvals.definition != 0) {
+    bvals.definition = 0;
+    gtk_range_set_value (GTK_RANGE (definition), 0);
   }
   if (bvals.hue != 0) {
     bvals.hue = 0;
