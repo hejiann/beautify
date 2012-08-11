@@ -506,8 +506,15 @@ create_texture_page (GtkNotebook *notebook, const gchar* category, const Border*
   GtkWidget *label = gtk_label_new (category);
 
   GtkWidget *thispage = gtk_box_new (GTK_ORIENTATION_VERTICAL, 12);
-  gtk_container_set_border_width (GTK_CONTAINER (thispage), 12);
+  gtk_container_set_border_width (GTK_CONTAINER (thispage), 0);
+  gtk_widget_set_size_request (thispage, -1, 480);
   gtk_widget_show (thispage);
+
+  /* scrolled window */
+  GtkWidget *scrolled_window = gtk_scrolled_window_new (NULL, NULL);
+  gtk_scrolled_window_set_policy (GTK_SCROLLED_WINDOW (scrolled_window), GTK_POLICY_NEVER, GTK_POLICY_AUTOMATIC);
+  gtk_box_pack_start (GTK_BOX (thispage), scrolled_window, TRUE, TRUE, 0);
+  gtk_widget_show (scrolled_window);
 
   /* table */
   gint rows = 5;
@@ -515,7 +522,9 @@ create_texture_page (GtkNotebook *notebook, const gchar* category, const Border*
   GtkWidget *table = gtk_table_new (rows, cols, FALSE);
   gtk_table_set_col_spacings (GTK_TABLE (table), 6);
   gtk_table_set_row_spacings (GTK_TABLE (table), 6);
-  gtk_box_pack_start (GTK_BOX (thispage), table, FALSE, FALSE, 0);
+  //gtk_box_pack_start (GTK_BOX (thispage), table, FALSE, FALSE, 0);
+  gtk_container_set_border_width (GTK_CONTAINER (table), 10);
+  gtk_scrolled_window_add_with_viewport (GTK_SCROLLED_WINDOW (scrolled_window), table);
   gtk_widget_show (table);
 
   gint row = 1;
