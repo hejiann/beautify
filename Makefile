@@ -97,8 +97,11 @@ skin-whitening-effect.o: skin-whitening-effect.c skin-whitening-effect.h
 simple-border: simple-border.o
 	$(CC) -o $@ $^ $(LIBS)
 
-simple-border.o: simple-border.c border-textures.h
+simple-border.o: simple-border.c simple-border-textures.h
 	$(CC) $(CFLAGS) -c simple-border.c -o simple-border.o
+
+simple-border-textures.h: simple-border-textures.list
+	$(GDK_PIXBUF_CSOURCE) --raw --build-list `cat simple-border-textures.list` > $(@F)
 
 border: border.o
 	$(CC) -o $@ $^ $(LIBS)

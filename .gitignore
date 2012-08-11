@@ -3,5 +3,7 @@
 beautify-textures.h
 # skin-whitening
 skin-whitening-images.h
+# simple-border
+simple-border-textures.h
 # border
 border-textures.h

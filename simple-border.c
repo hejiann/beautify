@@ -18,7 +18,7 @@
 #include <libgimp/gimp.h>
 #include <libgimp/gimpui.h>
 
-#include "border-textures.h"
+#include "simple-border-textures.h"
 
 #define PLUG_IN_PROC   "plug-in-simple-border"
 #define PLUG_IN_BINARY "border"
@@ -212,13 +212,17 @@ static void
 border (gint32 image_ID)
 {
   GdkPixbuf *pixbuf = NULL;
+  int        texture_width;
+  int        texture_height;
+  gdouble    margin_x;
+  gdouble    margin_y;
 
   pixbuf = gdk_pixbuf_new_from_inline (-1, bvals.border->texture, FALSE, NULL);
 
   if (pixbuf)
   {
-    gint texture_width = gdk_pixbuf_get_width (pixbuf);
-    gint texture_height = gdk_pixbuf_get_height (pixbuf);
+    texture_width = gdk_pixbuf_get_width (pixbuf);
+    texture_height = gdk_pixbuf_get_height (pixbuf);
 
     gint32 texture_image = gimp_image_new (texture_width, texture_height, GIMP_RGB);
     gint32 texture_layer = gimp_layer_new_from_pixbuf (texture_image, "texture", pixbuf, 100, GIMP_NORMAL_MODE, 0, 0);
@@ -245,8 +249,14 @@ border (gint32 image_ID)
                                    GIMP_NORMAL_MODE);
     gimp_image_add_layer (image_ID, layer, -1);
 
-    gint margin_x = (texture_width - bvals.border->length) / 2;
-    gint margin_y = (texture_height - bvals.border->length) / 2;
+    if (width > texture_width - bvals.border->length)
+      margin_x = (texture_width - bvals.border->length) / 2;
+    else
+      margin_x = (gdouble) width / 2;
+    if (height > texture_height - bvals.border->length)
+      margin_y = (texture_height - bvals.border->length) / 2;
+    else
+      margin_y = (gdouble) height / 2;
 
     gimp_context_set_pattern ("Clipboard");
 
