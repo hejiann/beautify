@@ -49,6 +49,7 @@ CHANGELOG
 
 2012-08-11
 add the Simple Border plug-in.
+change simple-border, rip-border, texture-border under the "Beautify -> Border" menu.
 
 2012-08-06
 beautify: fix contrast adjustment tool.

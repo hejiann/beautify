@@ -182,8 +182,8 @@ query (void)
                           G_N_ELEMENTS (args), 0,
                           args, NULL);
 
-  gimp_plugin_menu_register (RIP_BORDER_PROC,     "<Image>/Filters/Beautify");
-  gimp_plugin_menu_register (TEXTURE_BORDER_PROC, "<Image>/Filters/Beautify");
+  gimp_plugin_menu_register (RIP_BORDER_PROC,     "<Image>/Filters/Beautify/Border");
+  gimp_plugin_menu_register (TEXTURE_BORDER_PROC, "<Image>/Filters/Beautify/Border");
 }
 
 static void
