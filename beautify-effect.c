@@ -66,43 +66,6 @@ run_effect (gint32 image_ID, BeautifyEffectType effect)
   {
     case BEAUTIFY_EFFECT_SOFT_LIGHT:
     {
-      /*guint8 red_pts[] = {
-        0.000000 * 255, 0.018301 * 255,
-        0.121569 * 255, 0.140340 * 255,
-        0.247059 * 255, 0.293839 * 255,
-        0.372549 * 255, 0.436997 * 255,
-        0.498039 * 255, 0.572834 * 255,
-        0.623529 * 255, 0.704905 * 255,
-        0.749020 * 255, 0.822627 * 255,
-        0.874510 * 255, 0.918599 * 255,
-        1.000000 * 255, 1.000000 * 255,
-      };
-      guint8 green_pts[] = {
-        0.000000 * 255, 0.039216 * 255,
-        0.121569 * 255, 0.137287 * 255,
-        0.247059 * 255, 0.287181 * 255,
-        0.372549 * 255, 0.432968 * 255,
-        0.498039 * 255, 0.572484 * 255,
-        0.623529 * 255, 0.698476 * 255,
-        0.749020 * 255, 0.825490 * 255,
-        0.874510 * 255, 0.920394 * 255,
-        1.000000 * 255, 1.000000 * 255,
-      };
-      guint8 blue_pts[] = {
-        0.000000 * 255, 0.005744 * 255,
-        0.121569 * 255, 0.135120 * 255,
-        0.247059 * 255, 0.287459 * 255,
-        0.372549 * 255, 0.429606 * 255,
-        0.498039 * 255, 0.575840 * 255,
-        0.623529 * 255, 0.697813 * 255,
-        0.749020 * 255, 0.823317 * 255,
-        0.874510 * 255, 0.918301 * 255,
-        1.000000 * 255, 1.000000 * 255,
-      };
-      gimp_curves_spline (effect_layer, GIMP_HISTOGRAM_RED, 18, red_pts);
-      gimp_curves_spline (effect_layer, GIMP_HISTOGRAM_GREEN, 18, green_pts);
-      gimp_curves_spline (effect_layer, GIMP_HISTOGRAM_BLUE, 18, blue_pts);*/
-
       gint32     layer;
 
       layer = gimp_layer_copy (effect_layer);
@@ -1020,6 +983,68 @@ run_effect (gint32 image_ID, BeautifyEffectType effect)
       gimp_floating_sel_anchor (floating_sel);
 
       gimp_image_delete (image);
+
+      /*GimpPixelRgn src_rgn, dest_rgn;
+      gint x1, y1;
+      gint width, height;
+      gpointer pr;
+
+      GimpDrawable *drawable = gimp_drawable_get (effect_layer);
+      if (!gimp_drawable_mask_intersect (drawable->drawable_id,
+          &x1, &y1, &width, &height))
+        return;
+
+      gimp_pixel_rgn_init (&src_rgn, drawable, x1, y1, width, height, FALSE, FALSE);
+      gimp_pixel_rgn_init (&dest_rgn, drawable, x1, y1, width, height, TRUE, TRUE);
+      for (pr = gimp_pixel_rgns_register (2, &src_rgn, &dest_rgn);
+           pr != NULL;
+           pr = gimp_pixel_rgns_process (pr))
+      {
+        const guchar *src = src_rgn.data;
+        guchar *dest = dest_rgn.data;
+        gint x, y;
+
+        for (y = 0; y < src_rgn.h; y++)
+        {
+          const guchar *s = src;
+          guchar *d = dest;
+
+          for (x = 0; x < src_rgn.w; x++)
+          {
+            gdouble r, g, b;
+            gdouble v;
+
+            r = (gdouble) s[0] / 255;
+            g = (gdouble) s[1] / 255;
+            b = (gdouble) s[2] / 255;
+
+            v = b - 154.0 / 255;
+            v = MAX (0, v);
+            v = r + v - g * 172.0 / 255;
+            v = MIN (1, MAX (0, v));
+            v = sin(v * G_PI_2);
+            d[0] = v * 255;
+
+            v = g + (27.0 - r * 27) / 255;
+            v = MIN (1, v);
+            d[1] = v * 255;
+
+            v = g + (0.4 + b * 0.2 - sin(r));
+            v = MIN (1, MAX (0, v));
+            d[2] = v * 255;
+
+            s += src_rgn.bpp;
+            d += dest_rgn.bpp;
+          }
+
+          src += src_rgn.rowstride;
+          dest += dest_rgn.rowstride;
+        }
+      }
+
+      gimp_drawable_flush (drawable);
+      gimp_drawable_merge_shadow (drawable->drawable_id, TRUE);
+      gimp_drawable_update (drawable->drawable_id, x1, y1, width, height);*/
 
       break;
     }
