@@ -131,6 +131,14 @@ static const Border textures[] =
   {28,28,25,25,42, texture_113579},
   {0, 0, 0, 0, 10, texture_111569},
   {0, 0, 0, 0, 10, texture_200031},
+  {39,39,40,40,36, texture_113576},
+  {0, 0, 0, 0, 16, texture_114907},
+  {0, 0, 0, 0, 44, texture_114577},
+  {38,38,38,38,34, texture_113575},
+  {27,22,26,24,10, texture_113573},
+  {0, 0, 0, 0, 10, texture_114576},
+  {35,35,35,35,10, texture_111013},
+  {0, 0, 0, 0, 10, texture_114575},
 };
 
 static GArray *textures_timestamps = NULL;

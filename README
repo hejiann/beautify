@@ -48,6 +48,9 @@ GIMP Chat:            http://www.gimpchat.com/viewtopic.php?f=9&t=4811
 CHANGELOG
 ===================
 
+2012-08-12
+simple-border: add 8 simple border effects.
+
 2012-08-11
 add the Simple Border plug-in.
 change simple-border, rip-border, texture-border under the "Beautify -> Border" menu.
