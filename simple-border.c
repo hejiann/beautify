@@ -98,7 +98,10 @@ static gint32     preview_image    = 0;
 static const Border textures[] =
 {
   {0, 0, 0, 0, 10, texture_15356},
-  {24, 37, 29, 41, 10, texture_15327},
+  {24,37,29,41,10, texture_15327},
+  {6, 6, 6, 6, 10, texture_200878},
+  {9, 35,7, 6, 10, texture_15353},
+  {12,11,12,11,10, texture_201365},
 };
 
 static GArray *textures_timestamps = NULL;
@@ -287,9 +290,9 @@ border (gint32 image_ID)
       gimp_edit_copy (texture_layer);
       gimp_rect_select (image_ID,
                         margin_x,
-                        texture_height - margin_y,
+                        height - margin_y,
                         width - margin_x * 2,
-                        texture_height,
+                        height,
                         GIMP_CHANNEL_OP_REPLACE, FALSE, 0);
       gimp_edit_fill (layer, GIMP_PATTERN_FILL);
     }
