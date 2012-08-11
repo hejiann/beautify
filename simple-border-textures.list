@@ -2,8 +2,8 @@ texture_15356
   ./textures/simple-border/15356.png
 texture_15327
   ./textures/simple-border/15327.png
-texture_200878
-  ./textures/simple-border/200878.png
+texture_201544
+  ./textures/simple-border/201544.png
 texture_15353
   ./textures/simple-border/15353.png
 texture_201365
@@ -14,3 +14,12 @@ texture_24252
   ./textures/simple-border/24252.png
 texture_114844
   ./textures/simple-border/114844.png
+texture_200832
+  ./textures/simple-border/200832.png
+texture_200878
+  ./textures/simple-border/200878.png
+texture_201017
+  ./textures/simple-border/201017.png
+texture_114568
+  ./textures/simple-border/114568.png
+
