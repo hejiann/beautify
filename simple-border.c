@@ -18,6 +18,16 @@
 #include <libgimp/gimp.h>
 #include <libgimp/gimpui.h>
 
+/* fix gimp_context_set_pattern ("Clipboard") only works on English versions of Gimp */
+#include <glib/gi18n.h>
+#define GETTEXT_PACKAGE "gimp20"
+#define INIT_I18N()	G_STMT_START{                                \
+  bindtextdomain (GETTEXT_PACKAGE,                    \
+                  gimp_locale_directory ());                         \
+  bind_textdomain_codeset (GETTEXT_PACKAGE, "UTF-8"); \
+  textdomain (GETTEXT_PACKAGE);		             \
+}G_STMT_END
+
 #include "simple-border-textures.h"
 
 #define PLUG_IN_PROC   "plug-in-simple-border"
@@ -276,7 +286,9 @@ border (gint32 image_ID)
     else
       margin_y = (gdouble) height / 2;
 
-    gimp_context_set_pattern ("Clipboard");
+    //gimp_context_set_pattern ("Clipboard");
+    INIT_I18N ();
+    gimp_context_set_pattern (_("Clipboard"));
 
     if (width > margin_x * 2) {
       /* top */
