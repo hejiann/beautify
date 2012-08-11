@@ -33,8 +33,9 @@ USING
 GIMP menu:
 Filters -> Beautify -> Beautify
 Filters -> Beautify -> Skin whitening
-Filters -> Beautify -> Rip Border
-Filters -> Beautify -> Texture Border
+Filters -> Beautify -> Border -> Simple Border
+Filters -> Beautify -> Border -> Rip Border
+Filters -> Beautify -> Border -> Texture Border
 
 SUPPORT
 ===================
