@@ -52,6 +52,7 @@ CHANGELOG
 Make 0.5.3 release.
 simple-border: add the effect ID display.
 simple-border: add 32 simple border effects.
+simple-border: make it works better on small picture.
 
 2012-08-11
 add the Simple Border plug-in.

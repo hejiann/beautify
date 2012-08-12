@@ -277,11 +277,13 @@ run (const gchar      *name,
 static void
 border (gint32 image_ID)
 {
-  GdkPixbuf *pixbuf = NULL;
-  int        texture_width;
-  int        texture_height;
-  gdouble    margin_x;
-  gdouble    margin_y;
+  GdkPixbuf  *pixbuf = NULL;
+  int         texture_width;
+  int         texture_height;
+  gdouble     margin_top;
+  gdouble     margin_bottom;
+  gdouble     margin_left;
+  gdouble     margin_right;
 
   pixbuf = gdk_pixbuf_new_from_inline (-1, bvals.border->texture, FALSE, NULL);
 
@@ -316,83 +318,100 @@ border (gint32 image_ID)
     gimp_image_add_layer (image_ID, layer, -1);
 
     if (width > texture_width - bvals.border->length)
-      margin_x = (texture_width - bvals.border->length) / 2;
+    {
+      margin_left = ((gdouble) texture_width - bvals.border->left - bvals.border->right - bvals.border->length) / 2;
+      margin_right = margin_left;
+    }
     else
-      margin_x = (gdouble) width / 2;
+    {
+      margin_left = ((gdouble) width - bvals.border->left - bvals.border->right) / 2;
+      margin_right = margin_left;
+    }
+    margin_left += bvals.border->left;
+    margin_right += bvals.border->right;
+
     if (height > texture_height - bvals.border->length)
-      margin_y = (texture_height - bvals.border->length) / 2;
+    {
+      margin_top = ((gdouble) texture_height - bvals.border->top - bvals.border->bottom - bvals.border->length) / 2;
+      margin_bottom = margin_top;
+    }
     else
-      margin_y = (gdouble) height / 2;
+    {
+      margin_top = ((gdouble) height - bvals.border->top - bvals.border->bottom) / 2;
+      margin_bottom = margin_top;
+    }
+    margin_top += bvals.border->top;
+    margin_bottom += bvals.border->bottom;
 
     /* fix gimp_context_set_pattern ("Clipboard") only works on English versions of Gimp */
     //gimp_context_set_pattern ("Clipboard");
     INIT_I18N ();
     gimp_context_set_pattern (_("Clipboard"));
 
-    if (width > margin_x * 2) {
+    if (width > margin_left + margin_right) {
       /* top */
       gimp_rect_select (texture_image,
-                        margin_x,
+                        margin_left,
                         0,
-                        texture_width - margin_x * 2,
-                        margin_y,
+                        (gdouble) texture_width - margin_left - margin_right,
+                        margin_top,
                         GIMP_CHANNEL_OP_REPLACE, FALSE, 0);
       gimp_edit_copy (texture_layer);
       gimp_rect_select (image_ID,
-                        margin_x,
+                        margin_left,
                         0,
-                        width - margin_x * 2,
-                        margin_y,
+                        (gdouble) width - margin_left - margin_right,
+                        margin_top,
                         GIMP_CHANNEL_OP_REPLACE, FALSE, 0);
       gimp_edit_fill (layer, GIMP_PATTERN_FILL);
 
       /* bottom */
       gimp_rect_select (texture_image,
-                        margin_x,
-                        texture_height - margin_y,
-                        texture_width - margin_x * 2,
-                        texture_height,
+                        margin_left,
+                        (gdouble) texture_height - margin_bottom,
+                        (gdouble) texture_width - margin_left - margin_right,
+                        margin_bottom,
                         GIMP_CHANNEL_OP_REPLACE, FALSE, 0);
       gimp_edit_copy (texture_layer);
       gimp_rect_select (image_ID,
-                        margin_x,
-                        height - margin_y,
-                        width - margin_x * 2,
-                        height,
+                        margin_left,
+                        (gdouble) height - margin_bottom,
+                        (gdouble) width - margin_left - margin_right,
+                        margin_bottom,
                         GIMP_CHANNEL_OP_REPLACE, FALSE, 0);
       gimp_edit_fill (layer, GIMP_PATTERN_FILL);
     }
 
-    if (height > margin_y * 2) {
+    if (height > margin_top + margin_bottom) {
       /* left */
       gimp_rect_select (texture_image,
                         0,
-                        margin_y,
-                        margin_x,
-                        texture_height - margin_y * 2,
+                        margin_top,
+                        margin_left,
+                        (gdouble) texture_height - margin_top - margin_bottom,
                         GIMP_CHANNEL_OP_REPLACE, FALSE, 0);
       gimp_edit_copy (texture_layer);
       gimp_rect_select (image_ID,
                         0,
-                        margin_y,
-                        margin_x,
-                        height - margin_y * 2,
+                        margin_top,
+                        margin_left,
+                        (gdouble) height - margin_top - margin_bottom,
                         GIMP_CHANNEL_OP_REPLACE, FALSE, 0);
       gimp_edit_fill (layer, GIMP_PATTERN_FILL);
 
       /* right */
       gimp_rect_select (texture_image,
-                        texture_width - margin_x,
-                        margin_y,
-                        margin_x,
-                        texture_height - margin_y * 2,
+                        (gdouble) texture_width - margin_right,
+                        margin_top,
+                        margin_right,
+                        (gdouble) texture_height - margin_top - margin_bottom,
                         GIMP_CHANNEL_OP_REPLACE, FALSE, 0);
       gimp_edit_copy (texture_layer);
       gimp_rect_select (image_ID,
-                        width - margin_x,
-                        margin_y,
-                        margin_x,
-                        height - margin_y * 2,
+                        (gdouble) width - margin_right,
+                        margin_top,
+                        margin_right,
+                        (gdouble) height - margin_top - margin_bottom,
                         GIMP_CHANNEL_OP_REPLACE, FALSE, 0);
       gimp_edit_fill (layer, GIMP_PATTERN_FILL);
     }
@@ -401,63 +420,63 @@ border (gint32 image_ID)
     gimp_rect_select (texture_image,
                       0,
                       0,
-                      margin_x,
-                      margin_y,
+                      margin_left,
+                      margin_top,
                       GIMP_CHANNEL_OP_REPLACE, FALSE, 0);
     gimp_edit_copy (texture_layer);
     gimp_rect_select (image_ID,
                       0,
                       0,
-                      margin_x,
-                      margin_y,
+                      margin_left,
+                      margin_top,
                       GIMP_CHANNEL_OP_REPLACE, FALSE, 0);
     gimp_edit_fill (layer, GIMP_PATTERN_FILL);
 
     /* top right */
     gimp_rect_select (texture_image,
-                      texture_width - margin_x,
+                      (gdouble) texture_width - margin_right,
                       0,
-                      margin_x,
-                      margin_y,
+                      margin_right,
+                      margin_top,
                       GIMP_CHANNEL_OP_REPLACE, FALSE, 0);
     gimp_edit_copy (texture_layer);
     gimp_rect_select (image_ID,
-                      width - margin_x,
+                      (gdouble) width - margin_right,
                       0,
-                      margin_x,
-                      margin_y,
+                      margin_right,
+                      margin_top,
                       GIMP_CHANNEL_OP_REPLACE, FALSE, 0);
     gimp_edit_fill (layer, GIMP_PATTERN_FILL);
 
     /* bottom left */
     gimp_rect_select (texture_image,
                       0,
-                      texture_height - margin_y,
-                      margin_x,
-                      margin_y,
+                      (gdouble) texture_height - margin_bottom,
+                      margin_left,
+                      margin_bottom,
                       GIMP_CHANNEL_OP_REPLACE, FALSE, 0);
     gimp_edit_copy (texture_layer);
     gimp_rect_select (image_ID,
                       0,
-                      height - margin_y,
-                      margin_x,
-                      margin_y,
+                      (gdouble) height - margin_bottom,
+                      margin_left,
+                      margin_bottom,
                       GIMP_CHANNEL_OP_REPLACE, FALSE, 0);
     gimp_edit_fill (layer, GIMP_PATTERN_FILL);
 
     /* bottom right */
     gimp_rect_select (texture_image,
-                      texture_width - margin_x,
-                      texture_height - margin_y,
-                      margin_x,
-                      margin_y,
+                      (gdouble) texture_width - margin_right,
+                      (gdouble) texture_height - margin_bottom,
+                      margin_right,
+                      margin_bottom,
                       GIMP_CHANNEL_OP_REPLACE, FALSE, 0);
     gimp_edit_copy (texture_layer);
     gimp_rect_select (image_ID,
-                      width - margin_x,
-                      height - margin_y,
-                      margin_x,
-                      margin_y,
+                      (gdouble) width - margin_right,
+                      (gdouble) height - margin_bottom,
+                      margin_right,
+                      margin_bottom,
                       GIMP_CHANNEL_OP_REPLACE, FALSE, 0);
     gimp_edit_fill (layer, GIMP_PATTERN_FILL);
 
