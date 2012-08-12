@@ -41,12 +41,13 @@
 
 typedef struct
 {
-  gint32  top;
-  gint32  bottom;
-  gint32  left;
-  gint32  right;
-  gint32  length;
-  const guint8* texture;
+  const gchar  *id;
+  gint32        top;
+  gint32        bottom;
+  gint32        left;
+  gint32        right;
+  gint32        length;
+  const guint8 *texture;
 } Border;
 
 typedef struct
@@ -71,6 +72,7 @@ static void     create_texture_page (GtkNotebook *notebook, const gchar *categor
 static gboolean create_custom_texture_pages (GtkNotebook *notebook, const gchar *texture_path);
 static void     create_custom_texture_page (GtkNotebook *notebook, const gchar *category, const gchar *path);
 static void     textures_switch_page (GtkNotebook *notebook, GtkWidget *page, guint page_num, const gchar *texture_path);
+static GtkWidget* effect_icon_new (const Border *border);
 
 static gboolean texture_press (GtkWidget *event_box, GdkEventButton *event, const Border *border);
 static gboolean custom_texture_press (GtkWidget *event_box, GdkEventButton *event, const gchar *texture);
@@ -107,38 +109,38 @@ static gint32     preview_image    = 0;
 
 static const Border textures[] =
 {
-  {0, 0, 0, 0, 10, texture_15356},
-  {24,37,29,41,10, texture_15327},
-  {6, 6, 6, 6, 10, texture_201544},
-  {9, 35,7, 6, 10, texture_15353},
-  {12,11,12,11,10, texture_201365},
-  {56,63,54,56,10, texture_15349},
-  {40,43,35,38,90, texture_24252},
-  {14,13,14,14,10, texture_114844},
-  {7, 7, 7, 7, 10, texture_200832},
-  {6, 6, 6, 6, 10, texture_200878},
-  {0, 0, 0, 0, 10, texture_201017},
-  {0, 0, 0, 0, 10, texture_114568},
-  {0, 0, 0, 0, 10, texture_111026},
-  {11,88,11,10,10, texture_200377},
-  {6, 6, 6, 6, 10, texture_201385},
-  {13,28,8, 8, 10, texture_111025},
-  {14,13,11,11,10, texture_200547},
-  {8, 8, 8, 8, 10, texture_200776},
-  {9, 9, 4, 4, 18, texture_200646},
-  {0, 0, 0, 0, 16, texture_200282},
-  {16,18,17,19,10, texture_111020},
-  {28,28,25,25,42, texture_113579},
-  {0, 0, 0, 0, 10, texture_111569},
-  {0, 0, 0, 0, 10, texture_200031},
-  {39,39,40,40,36, texture_113576},
-  {0, 0, 0, 0, 16, texture_114907},
-  {0, 0, 0, 0, 44, texture_114577},
-  {38,38,38,38,34, texture_113575},
-  {27,22,26,24,10, texture_113573},
-  {0, 0, 0, 0, 10, texture_114576},
-  {35,35,35,35,10, texture_111013},
-  {0, 0, 0, 0, 10, texture_114575},
+  {"15356",   0, 0, 0, 0, 10, texture_15356},
+  {"15327",   24,37,29,41,10, texture_15327},
+  {"201544",  6, 6, 6, 6, 10, texture_201544},
+  {"15353",   9, 35,7, 6, 10, texture_15353},
+  {"201365",  12,11,12,11,10, texture_201365},
+  {"15349",   56,63,54,56,10, texture_15349},
+  {"24252",   40,43,35,38,90, texture_24252},
+  {"114844",  14,13,14,14,10, texture_114844},
+  {"200832",  7, 7, 7, 7, 10, texture_200832},
+  {"200878",  6, 6, 6, 6, 10, texture_200878},
+  {"201017",  0, 0, 0, 0, 10, texture_201017},
+  {"114568",  0, 0, 0, 0, 10, texture_114568},
+  {"111026",  0, 0, 0, 0, 10, texture_111026},
+  {"200377",  11,88,11,10,10, texture_200377},
+  {"201385",  6, 6, 6, 6, 10, texture_201385},
+  {"111025",  13,28,8, 8, 10, texture_111025},
+  {"200547",  14,13,11,11,10, texture_200547},
+  {"200776",  8, 8, 8, 8, 10, texture_200776},
+  {"200646",  9, 9, 4, 4, 18, texture_200646},
+  {"200282",  0, 0, 0, 0, 16, texture_200282},
+  {"111020",  16,18,17,19,10, texture_111020},
+  {"113579",  28,28,25,25,42, texture_113579},
+  {"111569",  0, 0, 0, 0, 10, texture_111569},
+  {"200031",  0, 0, 0, 0, 10, texture_200031},
+  {"113576",  39,39,40,40,36, texture_113576},
+  {"114907",  0, 0, 0, 0, 16, texture_114907},
+  {"114577",  0, 0, 0, 0, 44, texture_114577},
+  {"113575",  38,38,38,38,34, texture_113575},
+  {"113573",  27,22,26,24,10, texture_113573},
+  {"114576",  0, 0, 0, 0, 10, texture_114576},
+  {"111013",  35,35,35,35,10, texture_111013},
+  {"114575",  0, 0, 0, 0, 10, texture_114575},
 };
 
 static GArray *textures_timestamps = NULL;
@@ -298,6 +300,7 @@ border (gint32 image_ID)
     else
       margin_y = (gdouble) height / 2;
 
+    /* fix gimp_context_set_pattern ("Clipboard") only works on English versions of Gimp */
     //gimp_context_set_pattern ("Clipboard");
     INIT_I18N ();
     gimp_context_set_pattern (_("Clipboard"));
@@ -561,14 +564,9 @@ create_texture_page (GtkNotebook *notebook, const gchar* category, const Border*
   gint i;
   for (i = 0; i < n_textures; i++)
   {
-    GdkPixbuf *pixbuf = gdk_pixbuf_new_from_inline (-1, textures[i].texture, FALSE, NULL);
-    pixbuf = gdk_pixbuf_scale_simple (pixbuf, THUMBNAIL_SIZE, THUMBNAIL_SIZE, GDK_INTERP_BILINEAR);
-    GtkWidget *image = gtk_image_new_from_pixbuf (pixbuf);
-    GtkWidget *event_box = gtk_event_box_new ();
-    gtk_container_add (GTK_CONTAINER (event_box), image);
-    gtk_widget_show (image);
-    gtk_table_attach_defaults (GTK_TABLE (table), event_box, col - 1, col, row - 1, row);
-    gtk_widget_show (event_box);
+    GtkWidget *icon = effect_icon_new (&textures[i]);
+    gtk_table_attach_defaults (GTK_TABLE (table), icon, col - 1, col, row - 1, row);
+    gtk_widget_show (icon);
 
     col++;
     if (col > cols)
@@ -576,8 +574,6 @@ create_texture_page (GtkNotebook *notebook, const gchar* category, const Border*
       row++;
       col = 1;
     }
-
-    g_signal_connect (event_box, "button_press_event", G_CALLBACK (texture_press), (gpointer)&textures[i]);
   }
 
   gtk_notebook_append_page_menu (notebook, thispage, label, NULL);
@@ -619,6 +615,31 @@ create_custom_texture_page (GtkNotebook *notebook, const gchar* category, const 
   gtk_widget_show (thispage);
 
   gtk_notebook_append_page_menu (notebook, thispage, label, NULL);
+}
+
+static GtkWidget *
+effect_icon_new (const Border *border)
+{
+  GtkWidget *box = gtk_box_new (GTK_ORIENTATION_VERTICAL, 2);
+
+  /* image */
+  GdkPixbuf *pixbuf = gdk_pixbuf_new_from_inline (-1, border->texture, FALSE, NULL);
+  pixbuf = gdk_pixbuf_scale_simple (pixbuf, THUMBNAIL_SIZE, THUMBNAIL_SIZE, GDK_INTERP_BILINEAR);
+  GtkWidget *image = gtk_image_new_from_pixbuf (pixbuf);
+  GtkWidget *event_box = gtk_event_box_new ();
+  gtk_container_add (GTK_CONTAINER (event_box), image);
+  gtk_widget_show (image);
+  gtk_box_pack_start (GTK_BOX (box), event_box, FALSE, FALSE, 0);
+  gtk_widget_show (event_box);
+
+  g_signal_connect (event_box, "button_press_event", G_CALLBACK (texture_press), (gpointer)border);
+
+  /* label */
+  GtkWidget *label = gtk_label_new (border->id);
+  gtk_box_pack_start (GTK_BOX (box), label, FALSE, FALSE, 0);
+  gtk_widget_show (label);
+
+  return box;
 }
 
 static void
