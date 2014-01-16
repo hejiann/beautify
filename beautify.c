@@ -207,6 +207,7 @@ static GtkWidget *yellow_blue = NULL;
 static GtkWidget *preview          = NULL;
 static gint32     preview_image    = 0;
 static gint32     saved_image      = 0;
+static gint32     thumbnail        = 0;
 
 static GtkWidget *effect_option    = NULL;
 static GtkWidget *effect_opacity   = NULL;
@@ -438,10 +439,24 @@ beautify_dialog (gint32        image_ID,
   gtk_box_pack_start (GTK_BOX (right_vbox), notebook, FALSE, FALSE, 0);
   gtk_widget_show (notebook);
 
+  /* create thumbnail cache for effect icon */
+  thumbnail = gimp_image_duplicate (preview_image);
+  if (width > THUMBNAIL_SIZE && height > THUMBNAIL_SIZE) {
+    if (width > height)
+    {
+      gimp_image_scale (thumbnail, THUMBNAIL_SIZE * width / height, THUMBNAIL_SIZE);
+    }
+    else
+    {
+      gimp_image_scale (thumbnail, THUMBNAIL_SIZE, THUMBNAIL_SIZE * height / width);
+    }
+  }
+
   create_effect_pages (GTK_NOTEBOOK (notebook));
 
   gboolean run = (gimp_dialog_run (GIMP_DIALOG (dialog)) == GTK_RESPONSE_OK);
 
+  gimp_image_delete(thumbnail);
   gtk_widget_destroy (dialog);
 
   return run;
@@ -1135,18 +1150,7 @@ effect_icon_new (BeautifyEffectType effect)
       break;
   }
 
-  gint32 image = gimp_image_duplicate (preview_image);
-
-  /*if (width > THUMBNAIL_SIZE && height > THUMBNAIL_SIZE) {
-    if (width > height)
-    {
-      gimp_image_scale (image, THUMBNAIL_SIZE * width / height, THUMBNAIL_SIZE);
-    }
-    else
-    {
-      gimp_image_scale (image, THUMBNAIL_SIZE, THUMBNAIL_SIZE * height / width);
-    }
-  }*/
+  gint32 image = gimp_image_duplicate (thumbnail);
 
   run_effect (image, effect);
 
