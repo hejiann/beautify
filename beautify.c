@@ -165,7 +165,7 @@ static gboolean select_effect (GtkWidget *widget, GdkEvent *event, gpointer user
 
 static void reset_adjustment ();
 
-static void apply_effect (gint32 image);
+static void apply_effect ();
 static void cancel_effect ();
 
 const GimpPlugInInfo PLUG_IN_INFO =
@@ -338,26 +338,9 @@ run (const gchar      *name,
 }
 
 static void
-apply_real_image ()
-{
-  /* apply effect */
-  if (current_effect != BEAUTIFY_EFFECT_NONE) {
-    run_effect(real_image, current_effect);
-    /* update opacity */
-    gdouble opacity = gtk_range_get_value (GTK_RANGE (effect_opacity));
-    if (opacity < 100) {
-      gint32 layer = gimp_image_get_active_layer (real_image);
-      gimp_layer_set_opacity (layer, opacity);
-    }
-  }
-  adjustment(real_image);
-  apply_effect(real_image);
-}
-
-static void
 beautify (GimpDrawable *drawable)
 {
-  apply_real_image ();
+  apply_effect ();
   gint32 source = gimp_image_get_active_layer (real_image);
   gimp_edit_copy (source);
   gint32 floating_sel = gimp_edit_paste (drawable->drawable_id, FALSE);
@@ -761,8 +744,7 @@ adjustment (gint32 image) {
      * otherwise, they would accumulate and result in unwanted effect.
      */
     if (!saved_image) {
-      /* first adjustment after effect */
-      apply_effect (image);
+      gtk_widget_hide (effect_option);
       saved_image = gimp_image_duplicate (preview_image);
     }
     preview_image = gimp_image_duplicate (saved_image);
@@ -1216,10 +1198,8 @@ effect_icon_new (BeautifyEffectType effect)
 static gboolean
 select_effect (GtkWidget *widget, GdkEvent *event, gpointer user_data)
 {
-  apply_real_image ();
-
+  apply_effect();
   reset_adjustment ();
-  apply_effect(preview_image);
 
 
   BeautifyEffectType effect = (BeautifyEffectType) user_data;
@@ -1272,13 +1252,22 @@ reset_adjustment ()
 }
 
 static void
-apply_effect (gint32 image)
+apply_effect ()
 {
-  gint32 current_layer = gimp_image_get_active_layer (image);
-  gimp_image_merge_down (image, current_layer, GIMP_CLIP_TO_IMAGE);
-
   gtk_widget_hide (effect_option);
+  /* apply effect to real image */
+  if (current_effect != BEAUTIFY_EFFECT_NONE) {
+    run_effect(real_image, current_effect);
+    /* update opacity */
+    gdouble opacity = gtk_range_get_value (GTK_RANGE (effect_opacity));
+    if (opacity < 100) {
+      gint32 layer = gimp_image_get_active_layer (real_image);
+      gimp_layer_set_opacity (layer, opacity);
+    }
+  }
+  adjustment(real_image);
 
+  /* del saved_image if necessary */
   if (saved_image) {
     gimp_image_delete (saved_image);
     saved_image = 0;
