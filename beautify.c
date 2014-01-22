@@ -782,7 +782,7 @@ adjustment (gint32 image) {
     if (bvals.brightness < 0)
       high_output += bvals.brightness;
 
-    gint value = 62 * (bvals.contrast / 50);
+    gint value = 62 * (bvals.contrast / 50.0);
     if (value > 0) {
       low_input += value;
       high_input -= value;
