@@ -209,6 +209,8 @@ static gint32     real_image       = 0;
 static gint32     preview_image    = 0;
 static gint32     saved_image      = 0;
 static gint32     thumbnail        = 0;
+/* a cache for preview_image, avoid redundant resize when press reset button */
+static gint32     preview_image_cache = 0;
 
 static GtkWidget *effect_option    = NULL;
 static GtkWidget *effect_opacity   = NULL;
@@ -443,7 +445,8 @@ beautify_dialog (gint32        image_ID,
 
   real_image = gimp_image_duplicate (image_ID);
   /* preview */
-  preview_image = image_copy_scale (real_image, PREVIEW_SIZE);
+  preview_image_cache = image_copy_scale (real_image, PREVIEW_SIZE);
+  preview_image = gimp_image_duplicate(preview_image_cache);
   /* create thumbnail cache for effect icon */
   thumbnail = image_copy_scale (preview_image, THUMBNAIL_SIZE);
 
@@ -467,6 +470,7 @@ beautify_dialog (gint32        image_ID,
   gboolean run = (gimp_dialog_run (GIMP_DIALOG (dialog)) == GTK_RESPONSE_OK);
 
   gimp_image_delete(preview_image);
+  gimp_image_delete(preview_image_cache);
   gimp_image_delete(thumbnail);
   gtk_widget_destroy (dialog);
 
@@ -822,7 +826,7 @@ reset_pressed (GtkButton *button, gpointer user_date)
   gimp_image_delete (real_image);
   gimp_image_delete (preview_image);
   real_image = gimp_image_duplicate (image_ID);
-  preview_image = image_copy_scale(real_image, PREVIEW_SIZE);
+  preview_image = gimp_image_duplicate(preview_image_cache);
   preview_update (preview);
 }
 
