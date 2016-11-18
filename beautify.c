@@ -146,7 +146,7 @@ static void     cyan_red_update      (GtkRange *range, gpointer data);
 static void     magenta_green_update (GtkRange *range, gpointer data);
 static void     yellow_blue_update   (GtkRange *range, gpointer data);
 
-static void     adjustment();
+static void     adjustment(gint32 image);
 
 static void     reset_pressed (GtkButton *button, gpointer user_date);
 
@@ -205,8 +205,12 @@ static GtkWidget *magenta_green = NULL;
 static GtkWidget *yellow_blue = NULL;
 
 static GtkWidget *preview          = NULL;
+static gint32     real_image       = 0;
 static gint32     preview_image    = 0;
 static gint32     saved_image      = 0;
+static gint32     thumbnail        = 0;
+/* a cache for preview_image, avoid redundant resize when press reset button */
+static gint32     preview_image_cache = 0;
 
 static GtkWidget *effect_option    = NULL;
 static GtkWidget *effect_opacity   = NULL;
@@ -339,7 +343,7 @@ static void
 beautify (GimpDrawable *drawable)
 {
   apply_effect ();
-  gint32 source = gimp_image_get_active_layer (preview_image);
+  gint32 source = gimp_image_get_active_layer (real_image);
   gimp_edit_copy (source);
   gint32 floating_sel = gimp_edit_paste (drawable->drawable_id, FALSE);
   gimp_floating_sel_anchor (floating_sel);
@@ -354,6 +358,25 @@ beautify_effect (GimpDrawable *drawable)
   gimp_layer_set_opacity (layer, bvals.opacity);
 
   gimp_image_merge_down (image_ID, layer, GIMP_CLIP_TO_IMAGE);
+}
+
+static gint32
+image_copy_scale (gint32 src_image,
+                  gint max_size)
+{
+  gint32 image = gimp_image_duplicate(src_image);
+
+  if (width > max_size && height > max_size) {
+    if (width > height)
+    {
+      gimp_image_scale (image, max_size * width / height, max_size);
+    }
+    else
+    {
+      gimp_image_scale (image, max_size, max_size * height / width);
+    }
+  }
+  return image;
 }
 
 static gboolean
@@ -420,8 +443,12 @@ beautify_dialog (gint32        image_ID,
   gtk_widget_show (reset);
   g_signal_connect (reset, "pressed", G_CALLBACK (reset_pressed), NULL);
 
+  real_image = gimp_image_duplicate (image_ID);
   /* preview */
-  preview_image = gimp_image_duplicate (image_ID);
+  preview_image_cache = image_copy_scale (real_image, PREVIEW_SIZE);
+  preview_image = gimp_image_duplicate(preview_image_cache);
+  /* create thumbnail cache for effect icon */
+  thumbnail = image_copy_scale (preview_image, THUMBNAIL_SIZE);
 
   preview = gtk_image_new();
   preview_update (preview);
@@ -442,6 +469,9 @@ beautify_dialog (gint32        image_ID,
 
   gboolean run = (gimp_dialog_run (GIMP_DIALOG (dialog)) == GTK_RESPONSE_OK);
 
+  gimp_image_delete(preview_image);
+  gimp_image_delete(preview_image_cache);
+  gimp_image_delete(thumbnail);
   gtk_widget_destroy (dialog);
 
   return run;
@@ -521,32 +551,33 @@ create_base_page (GtkNotebook *notebook) {
   gtk_notebook_append_page_menu (notebook, thispage, pagelabel, NULL);
 }
 
+static void adjustment_update () {
+  adjustment (preview_image);
+  preview_update (preview);
+}
+
 static void
 brightness_update (GtkRange *range, gpointer data) {
   bvals.brightness = gtk_range_get_value (range);
-  adjustment ();
-  preview_update (preview);
+  adjustment_update ();
 }
 
 static void
 contrast_update (GtkRange *range, gpointer data) {
   bvals.contrast = gtk_range_get_value (range);
-  adjustment ();
-  preview_update (preview);
+  adjustment_update ();
 }
 
 static void
 saturation_update (GtkRange *range, gpointer data) {
   bvals.saturation = gtk_range_get_value (range);
-  adjustment ();
-  preview_update (preview);
+  adjustment_update ();
 }
 
 static void
 definition_update (GtkRange *range, gpointer data) {
   bvals.definition = gtk_range_get_value (range);
-  adjustment ();
-  preview_update (preview);
+  adjustment_update ();
 }
 
 static void
@@ -685,43 +716,45 @@ create_color_page (GtkNotebook *notebook) {
 static void
 hue_update (GtkRange *range, gpointer data) {
   bvals.hue = gtk_range_get_value (range);
-  adjustment ();
-  preview_update (preview);
+  adjustment_update ();
 }
 
 static void
 cyan_red_update (GtkRange *range, gpointer data) {
   bvals.cyan_red = gtk_range_get_value (range);
-  adjustment ();
-  preview_update (preview);
+  adjustment_update ();
 }
 
 static void
 magenta_green_update (GtkRange *range, gpointer data) {
   bvals.magenta_green = gtk_range_get_value (range);
-  adjustment ();
-  preview_update (preview);
+  adjustment_update ();
 }
 
 static void
 yellow_blue_update (GtkRange *range, gpointer data) {
   bvals.yellow_blue = gtk_range_get_value (range);
-  adjustment ();
-  preview_update (preview);
+  adjustment_update ();
 }
 
 static void
-adjustment () {
+adjustment (gint32 image) {
   if (bvals.brightness == 0 && bvals.contrast == 0 && bvals.saturation == 0 && bvals.definition == 0 && bvals.hue == 0 && bvals.cyan_red == 0 && bvals.magenta_green == 0 && bvals.yellow_blue == 0)
     return;
 
-  apply_effect ();
-
-  if (!saved_image)
-    saved_image = gimp_image_duplicate (preview_image);
-
-  preview_image = gimp_image_duplicate (saved_image);
-  gint32 layer = gimp_image_get_active_layer (preview_image);
+  if (image == preview_image) {
+    /* need to save previous image for preview,
+     * since bvals should to apply origin image,
+     * otherwise, they would accumulate and result in unwanted effect.
+     */
+    if (!saved_image) {
+      gtk_widget_hide (effect_option);
+      saved_image = gimp_image_duplicate (preview_image);
+    }
+    preview_image = gimp_image_duplicate (saved_image);
+    image = preview_image;
+  }
+  gint32 layer = gimp_image_get_active_layer (image);
 
   if (bvals.brightness != 0 || bvals.contrast != 0)
   {
@@ -735,7 +768,7 @@ adjustment () {
     if (bvals.brightness < 0)
       high_output += bvals.brightness;
 
-    gint value = 62 * (bvals.contrast / 50);
+    gint value = 62 * (bvals.contrast / 50.0);
     if (value > 0) {
       low_input += value;
       high_input -= value;
@@ -790,8 +823,10 @@ reset_pressed (GtkButton *button, gpointer user_date)
   reset_adjustment ();
   cancel_effect ();
 
+  gimp_image_delete (real_image);
   gimp_image_delete (preview_image);
-  preview_image = gimp_image_duplicate (image_ID);
+  real_image = gimp_image_duplicate (image_ID);
+  preview_image = gimp_image_duplicate(preview_image_cache);
   preview_update (preview);
 }
 
@@ -1135,18 +1170,7 @@ effect_icon_new (BeautifyEffectType effect)
       break;
   }
 
-  gint32 image = gimp_image_duplicate (preview_image);
-
-  /*if (width > THUMBNAIL_SIZE && height > THUMBNAIL_SIZE) {
-    if (width > height)
-    {
-      gimp_image_scale (image, THUMBNAIL_SIZE * width / height, THUMBNAIL_SIZE);
-    }
-    else
-    {
-      gimp_image_scale (image, THUMBNAIL_SIZE, THUMBNAIL_SIZE * height / width);
-    }
-  }*/
+  gint32 image = gimp_image_duplicate (thumbnail);
 
   run_effect (image, effect);
 
@@ -1178,8 +1202,9 @@ effect_icon_new (BeautifyEffectType effect)
 static gboolean
 select_effect (GtkWidget *widget, GdkEvent *event, gpointer user_data)
 {
-  reset_adjustment ();
   apply_effect();
+  reset_adjustment ();
+
 
   BeautifyEffectType effect = (BeautifyEffectType) user_data;
   run_effect (preview_image, effect);
@@ -1233,17 +1258,20 @@ reset_adjustment ()
 static void
 apply_effect ()
 {
-  if (current_effect == BEAUTIFY_EFFECT_NONE) {
-    return;
-  }
-
-  gint32 current_layer = gimp_image_get_active_layer (preview_image);
-  gimp_image_merge_down (preview_image, current_layer, GIMP_CLIP_TO_IMAGE);
-
-  current_effect = BEAUTIFY_EFFECT_NONE;
-
   gtk_widget_hide (effect_option);
+  /* apply effect to real image */
+  if (current_effect != BEAUTIFY_EFFECT_NONE) {
+    run_effect(real_image, current_effect);
+    /* update opacity */
+    gdouble opacity = gtk_range_get_value (GTK_RANGE (effect_opacity));
+    if (opacity < 100) {
+      gint32 layer = gimp_image_get_active_layer (real_image);
+      gimp_layer_set_opacity (layer, opacity);
+    }
+  }
+  adjustment(real_image);
 
+  /* del saved_image if necessary */
   if (saved_image) {
     gimp_image_delete (saved_image);
     saved_image = 0;
