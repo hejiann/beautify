@@ -10,7 +10,7 @@ Thanks all GIMP developers, because they give us a great Image Manipulation Prog
 INSTALL
 ===================
 
-!!! Be sure that you have installed the gimp-devel-tools package before install.
+!!! Be sure that you have installed the gimp-devel-tools (or libgimp2.0-dev) package before install.
 
 method 1 - install into mathine directory:
 
